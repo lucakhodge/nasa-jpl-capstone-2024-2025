@@ -8,11 +8,11 @@
 
   Adam Carlson |  Brock Hoos | Grace Harrel | Kevin Buhler | Luca Hodge | Oscar Mikus | Ryan Wagster
 
-#### Staff
+### Staff
 
   David Blaines (TA) |  Marcel Llopis (Sponsor)
 
-##### Dependencies
+## Dependencies
 
 - **Windows Subsystem for Linux (WSL)**
 - **GDAL headers: ```sudo apt install libgdal-dev```**
