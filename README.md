@@ -13,4 +13,10 @@
   #### Staff
   David Blaines (TA) |  Marcel Llopis (Sponsor)
 
+
+  #### Dependencies
+
+  - **Windows Subsystem for Linux (WSL)**
+  - **GDAL headers: ```sudo apt install libgdal-dev```**
+
 </div>
