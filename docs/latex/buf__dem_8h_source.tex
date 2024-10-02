@@ -1,0 +1,35 @@
+\doxysection{buf\+\_\+dem.\+h}
+\hypertarget{buf__dem_8h_source}{}\label{buf__dem_8h_source}\index{mempa\_dem/buf\_dem.h@{mempa\_dem/buf\_dem.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ DEM\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ DEM\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{comment}{/*\ C++\ Standard\ Libraries\ */}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <filesystem>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{comment}{/*\ GDAL\ libraries.\ Check\ dependencies\ in\ README.\ */}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <gdal\_priv.h>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceMEMPA}{MEMPA}}}
+\DoxyCodeLine{00030\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classMEMPA_1_1BUF__DEM}{BUF\_DEM}}}
+\DoxyCodeLine{00060\ \ \ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classMEMPA_1_1BUF__DEM}{BUF\_DEM}}(std::string\_view\ ifp,\ std::string\_view\ ofp);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a78dc580e10032d6b7d2956047771eb29}{\string~BUF\_DEM}}();}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ GDALDataset\ *\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\_load}}();}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ GDALDataset\ *\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_aee397fbc85b34b66c6266867d9665e0e}{dem\_grab}}();}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ std::filesystem::path\ dem\_fp;\ \textcolor{comment}{//\ Original\ DEM\ filepath.}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ std::filesystem::path\ out\_fp;\ \textcolor{comment}{//\ Output\ directory.}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ GDALDataset\ *dem\_dataset;\ \ \ \ \ \textcolor{comment}{//\ Pointer\ to\ the\ GDAL\ dataset.}}
+\DoxyCodeLine{00072\ \ \ \ \ \};}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ DEM\_H}}
+
+\end{DoxyCode}
