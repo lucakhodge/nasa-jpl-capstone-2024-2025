@@ -1,0 +1,174 @@
+\doxysection{MEMPA\+::BUF\+\_\+\+DEM Class Reference}
+\hypertarget{classMEMPA_1_1BUF__DEM}{}\label{classMEMPA_1_1BUF__DEM}\index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
+
+
+A class for managing Digital Elevation Model (DEM) data.  
+
+
+
+
+{\ttfamily \#include $<$buf\+\_\+dem.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2}{BUF\+\_\+\+DEM}} (std\+::string\+\_\+view ifp, std\+::string\+\_\+view ofp)
+\begin{DoxyCompactList}\small\item\em Constructs a new {\ttfamily MEMPA\+::\+DEM} object for managing DEM data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a78dc580e10032d6b7d2956047771eb29}{\texorpdfstring{$\sim$}{\string~}\+BUF\+\_\+\+DEM}} ()
+\begin{DoxyCompactList}\small\item\em Destroy the {\ttfamily MEMPA\+::\+DEM} object and sets the {\ttfamily dem\+\_\+dataset} to {\ttfamily nullptr} . \end{DoxyCompactList}\item 
+GDALDataset \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load}} ()
+\begin{DoxyCompactList}\small\item\em Loads the \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. \end{DoxyCompactList}\item 
+GDALDataset \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_aee397fbc85b34b66c6266867d9665e0e}{dem\+\_\+grab}} ()
+\begin{DoxyCompactList}\small\item\em Getter for the {\ttfamily dem\+\_\+dataset} pointer to a \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} GDALDataset. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A class for managing Digital Elevation Model (DEM) data. 
+
+The \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} class is responsible for loading and preparing DEM data using the GDAL library. It handles a pointer to a GDALDataset and provides functions for accessing and processing elevation data.
+
+This class includes\+:
+\begin{DoxyItemize}
+\item {\ttfamily dem\+\_\+fp} A pointer to a GDALDataset that represents the loaded DEM.
+\item {\ttfamily out\+\_\+fp} A file path for the input DEM file.
+\item {\ttfamily dem\+\_\+dataset} An output directory for saving processed data and results.
+\end{DoxyItemize}
+
+The class provides functionality to\+:
+\begin{DoxyItemize}
+\item Load a DEM file from the specified file path.
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000002}{Todo}}]Retrieve metadata and information about the DEM. 
+
+Divide the DEM into smaller, more useful chunks. 
+
+Save processed outputs to the designated directory.\end{DoxyRefDesc}
+
+\end{DoxyItemize}
+
+This class is designed to facilitate easy integration of DEM data into larger geospatial processing workflows for the Mars Buffs CSCI senior project. (Fall 2024 -\/ Spring 2025)
+
+\begin{DoxyAuthor}{Author}
+Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2024-\/10-\/01 
+\end{DoxyDate}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2}\label{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2} 
+\index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}!BUF\_DEM@{BUF\_DEM}}
+\index{BUF\_DEM@{BUF\_DEM}!MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
+\doxysubsubsection{\texorpdfstring{BUF\_DEM()}{BUF\_DEM()}}
+{\footnotesize\ttfamily MEMPA\+::\+BUF\+\_\+\+DEM\+::\+BUF\+\_\+\+DEM (\begin{DoxyParamCaption}\item[{std\+::string\+\_\+view}]{ifp,  }\item[{std\+::string\+\_\+view}]{ofp }\end{DoxyParamCaption})}
+
+
+
+Constructs a new {\ttfamily MEMPA\+::\+DEM} object for managing DEM data. 
+
+This constructor initializes a \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} object by setting the input Geo\+TIFF file path and the output directory path. It performs validation on the output directory to ensure that it exists and is a valid directory. The {\ttfamily dem\+\_\+dataset} is initialized as a {\ttfamily nullptr} and must be loaded through the \doxylink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load} function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ifp} & The file path to the input DEM Geo\+TIFF image. This file contains the Digital Elevation Model data to be processed. \\
+\hline
+{\em ofp} & The output directory where new files, generated from the DEM data (such as chunked DEM data), will be saved. If the directory does not exist or is invalid, an exception is thrown.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::invalid\+\_\+argument} & Thrown if the provided output file path is an empty string. \\
+\hline
+{\em std\+::filesystem\+::filesystem\+\_\+error} & Thrown if the output directory does not exist or is not a valid directory.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyAuthor}{Author}
+Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2024-\/10-\/01 
+\end{DoxyDate}
+\Hypertarget{classMEMPA_1_1BUF__DEM_a78dc580e10032d6b7d2956047771eb29}\label{classMEMPA_1_1BUF__DEM_a78dc580e10032d6b7d2956047771eb29} 
+\index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}!````~BUF\_DEM@{\texorpdfstring{$\sim$}{\string~}BUF\_DEM}}
+\index{````~BUF\_DEM@{\texorpdfstring{$\sim$}{\string~}BUF\_DEM}!MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}BUF\_DEM()}{\string~BUF\_DEM()}}
+{\footnotesize\ttfamily MEMPA\+::\+BUF\+\_\+\+DEM\+::\texorpdfstring{$\sim$}{\string~}\+BUF\+\_\+\+DEM (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destroy the {\ttfamily MEMPA\+::\+DEM} object and sets the {\ttfamily dem\+\_\+dataset} to {\ttfamily nullptr} . 
+
+\begin{DoxyAuthor}{Author}
+Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2024-\/10-\/01 
+\end{DoxyDate}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classMEMPA_1_1BUF__DEM_aee397fbc85b34b66c6266867d9665e0e}\label{classMEMPA_1_1BUF__DEM_aee397fbc85b34b66c6266867d9665e0e} 
+\index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}!dem\_grab@{dem\_grab}}
+\index{dem\_grab@{dem\_grab}!MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
+\doxysubsubsection{\texorpdfstring{dem\_grab()}{dem\_grab()}}
+{\footnotesize\ttfamily GDALDataset \texorpdfstring{$\ast$}{*} MEMPA\+::\+BUF\+\_\+\+DEM\+::dem\+\_\+grab (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Getter for the {\ttfamily dem\+\_\+dataset} pointer to a \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} GDALDataset. 
+
+This function returns the pointer to the dataset loaded in \doxylink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load} function.
+
+\begin{DoxyReturn}{Returns}
+GDALDataset\texorpdfstring{$\ast$}{*} A pointer to the loaded GDAL dataset.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+If \doxylink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load} has not been run, this function should return a {\ttfamily nullptr} .
+\end{DoxyNote}
+\begin{DoxyAuthor}{Author}
+Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2024-\/10-\/01 
+\end{DoxyDate}
+\Hypertarget{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}\label{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0} 
+\index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}!dem\_load@{dem\_load}}
+\index{dem\_load@{dem\_load}!MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
+\doxysubsubsection{\texorpdfstring{dem\_load()}{dem\_load()}}
+{\footnotesize\ttfamily GDALDataset \texorpdfstring{$\ast$}{*} MEMPA\+::\+BUF\+\_\+\+DEM\+::dem\+\_\+load (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Loads the \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. 
+
+This function attempts to open the DEM dataset in read-\/only mode via the GDALOpen function.
+
+\begin{DoxyReturn}{Returns}
+GDALDataset\texorpdfstring{$\ast$}{*} A pointer to the loaded GDAL dataset.
+\begin{DoxyItemize}
+\item If successful, this pointer will point to the loaded dataset.
+\item If the loading fails, an exception is thrown.
+\end{DoxyItemize}
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::runtime\+\_\+error} & Thrown if the dataset cannot be opened using GDAL.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+This function updates the {\ttfamily dem\+\_\+dataset} member variable with the loaded dataset.
+\end{DoxyNote}
+\begin{DoxyAuthor}{Author}
+Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2024-\/10-\/01 
+\end{DoxyDate}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+mempa\+\_\+dem/buf\+\_\+dem.\+h\item 
+mempa\+\_\+dem/buf\+\_\+dem.\+cpp\end{DoxyCompactItemize}
