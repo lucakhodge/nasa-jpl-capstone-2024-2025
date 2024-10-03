@@ -1,6 +1,7 @@
 # NASA JPL Capstone 2024/2025
 
 ![NASA JPL LOGO](<https://pasadena-library.net/teens/wp-content/blogs.dir/18/files/sites/18/2017/12/jpl.gif> "NASA JPL Logo")
+<!-- <img src="https://pasadena-library.net/teens/wp-content/blogs.dir/18/files/sites/18/2017/12/jpl.gif" alt="NASA JPL Logo" width="600"/> -->
 
 ## Mars Elevation Model Pathfinding Algorithm (MEMPA)
 
