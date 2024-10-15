@@ -1,7 +1,7 @@
 #include "buf_rover.h"
 
 /**
- * @brief Construct a new mempa::buf rover::buf rover object
+ * @brief Construct a new mempa::buf_rover::buf rover object
  *
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
@@ -12,7 +12,7 @@ MEMPA::BUF_ROVER::BUF_ROVER()
 }
 
 /**
- * @brief Destroy the mempa::buf rover::buf rover object
+ * @brief Destroy the mempa::buf_rover::buf rover object
  *
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
