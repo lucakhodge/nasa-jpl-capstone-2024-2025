@@ -59,7 +59,7 @@ namespace MEMPA
     class BUF_DEM
     {
     public:
-        BUF_DEM(std::string_view ifp, std::string_view ofp);
+        BUF_DEM(std::string ifp, std::string ofp);
         ~BUF_DEM();
 
         GDALDataset *dem_load();
