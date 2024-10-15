@@ -1,3 +1,4 @@
+/* Capstone Project Libraries */
 #include "buf_dem.h"
 
 /**
@@ -97,6 +98,7 @@ GDALDataset *MEMPA::BUF_DEM::dem_grab()
 
 void MEMPA::BUF_DEM::dem_chunk()
 {
+    
 }
 
 void MEMPA::BUF_DEM::dem_mask()
@@ -117,57 +119,4 @@ void MEMPA::BUF_DEM::dem_infostream()
 
 void MEMPA::BUF_DEM::dem_getdata()
 {
-}
-/**
- * @brief Displays menu for user to select modifications for DEM file
- *
- * @details
- * This function returns the pointer to the dataset loaded in @ref dem_load function.
- *
- * @return 
- *
- * @note 
- *
- * @author Brock Hoos <brho7443@colorado.edu.
- * @date 2024-10-15
- */
-void MEMPA::BUF_DEM::dem_menu()
-{
-    char choice;
-    bool stop = False;
-
-    while(!stop)
-    {
-        cout << "==== DEM File Modification Menu ====" << endl;
-        cout << "'C' - Chunk DEM File" << endl;
-        cout << "'F' - Filter DEM File" << endl;
-        cout << "'M' - Mask DEM File" << endl;
-        cout << "'Q' - Continue" << endl;
-    
-
-    cin >> choice;
-
-    switch(choice){
-        case 'C':
-            cout << "Chunking DEM File..." << endl;
-            dem_chunk()
-            break;
-        case 'F':
-            cout << "Filtering DEM File..." << endl;
-            dem_filter()
-            break;
-        case 'M':
-            cout << "Masking DEM File..." << endl;
-            dem_mask()
-            break;
-        case 'Q':
-            cout << "Continuing..." << endl;
-            stop = true
-            break;
-        default:
-            cout << "Invalid Input. Try again" << endl;
-        }
-    
-    cout << endl;
-    }
 }

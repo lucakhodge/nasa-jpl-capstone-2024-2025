@@ -64,14 +64,12 @@ namespace MEMPA
 
         GDALDataset *dem_load();
         GDALDataset *dem_grab();
-
         void dem_chunk();
         void dem_mask();
         void dem_safeid();
         void dem_filter();
         void dem_infostream();
         void dem_getdata();
-        void dem_menu();
 
     private:
         std::filesystem::path dem_fp; // Original DEM filepath.
