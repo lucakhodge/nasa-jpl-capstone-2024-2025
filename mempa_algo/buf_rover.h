@@ -1,9 +1,6 @@
 #ifndef ROVER_H
 #define ROVER_H
 
-/* Capstone Project Libraries */
-#include "buf_dem.h"
-
 namespace MEMPA
 {
     /**
