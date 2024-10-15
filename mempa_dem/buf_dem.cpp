@@ -94,3 +94,31 @@ GDALDataset *MEMPA::BUF_DEM::dem_grab()
 {
     return dem_dataset;
 }
+
+void MEMPA::BUF_DEM::dem_chunk()
+{
+}
+
+void MEMPA::BUF_DEM::dem_mask()
+{
+}
+
+void MEMPA::BUF_DEM::dem_safeid()
+{
+}
+
+void MEMPA::BUF_DEM::dem_filter()
+{
+}
+
+void MEMPA::BUF_DEM::dem_infostream()
+{
+}
+
+void MEMPA::BUF_DEM::dem_getdata()
+{
+}
+
+void MEMPA::BUF_DEM::dem_menu()
+{
+}
