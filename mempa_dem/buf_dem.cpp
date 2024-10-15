@@ -51,7 +51,7 @@ MEMPA::BUF_DEM::~BUF_DEM()
 }
 
 /**
- * @brief Loads the @ref BUF_DEM dataset from the file path specified in @c dem_fp using GDAL.
+ * @brief Loads the @c BUF_DEM dataset from the file path specified in @c dem_fp using GDAL.
  *
  * @details
  * This function attempts to open the DEM dataset in read-only mode via the GDALOpen function.
@@ -78,14 +78,14 @@ GDALDataset *MEMPA::BUF_DEM::dem_load()
 }
 
 /**
- * @brief Getter for the @c dem_dataset pointer to a @ref BUF_DEM GDALDataset.
+ * @brief Getter for the @c dem_dataset pointer to a @c BUF_DEM GDALDataset.
  *
  * @details
  * This function returns the pointer to the dataset loaded in @ref dem_load function.
  *
  * @return GDALDataset* A pointer to the loaded GDAL dataset.
  *
- * @note If @ref dem_load has not been run, this function should return a @c nullptr .
+ * @note If @c dem_load has not been run, this function should return a @c nullptr .
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
  * @date 2024-10-01
