@@ -1,5 +1,6 @@
 /* C++ Standard Libraries */
 #include <iostream>
+#include <cctype>
 
 /* Capstone Project Libraries */
 #include "buf_dem.h"
@@ -25,7 +26,7 @@ void dem_menu(MEMPA::BUF_DEM dem_file)
                   << "'Q' - Continue" << std::endl;
 
         std::cin >> choice;
-        toupper(choice);
+        choice = static_cast<char>(std::toupper(choice));
 
         // todo: cin error checking
 
