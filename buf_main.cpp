@@ -1,6 +1,7 @@
 /* C++ Standard Libraries */
 #include <iostream>
 #include <cctype>
+#include <limits>
 
 /* Capstone Project Libraries */
 #include "buf_dem.h"
@@ -17,38 +18,37 @@ void dem_menu(MEMPA::BUF_DEM dem_file)
 {
     char choice = '\0';
 
-    while (TRUE)
+    while (true)
     {
         std::cout << "==== DEM File Modification Menu ====\n"
                   << "'C' - Chunk DEM Fil\n"
                   << "'F' - Filter DEM File\n"
                   << "'M' - Mask DEM File\n"
-                  << "'Q' - Continue" << std::endl;
+                  << "'Q' - Continue\n";
 
         std::cin >> choice;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         choice = static_cast<char>(std::toupper(choice));
-
-        // todo: cin error checking
 
         switch (choice)
         {
         case 'C':
-            std::cout << "Chunking DEM File..." << std::endl;
+            std::cout << "Chunking DEM File...\n";
             dem_file.dem_chunk();
             break;
         case 'F':
-            std::cout << "Filtering DEM File..." << std::endl;
+            std::cout << "Filtering DEM File...\n";
             dem_file.dem_filter();
             break;
         case 'M':
-            std::cout << "Masking DEM File..." << std::endl;
+            std::cout << "Masking DEM File...\n";
             dem_file.dem_mask();
             break;
         case 'Q':
-            std::cout << "Continuing..." << std::endl;
+            std::cout << "Continuing...\n";
             return;
         default:
-            std::cout << "Invalid Input. Try again" << std::endl;
+            std::cout << "Invalid Input. Try again.\n";
             break;
         }
     }
