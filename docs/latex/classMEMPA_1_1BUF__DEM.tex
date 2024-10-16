@@ -12,14 +12,32 @@ A class for managing Digital Elevation Model (DEM) data.
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2}{BUF\+\_\+\+DEM}} (std\+::string\+\_\+view ifp, std\+::string\+\_\+view ofp)
+\mbox{\hyperlink{classMEMPA_1_1BUF__DEM_affb52aa43c72f22ee3fa03368a54ab87}{BUF\+\_\+\+DEM}} (std\+::string ifp, std\+::string ofp)
 \begin{DoxyCompactList}\small\item\em Constructs a new {\ttfamily MEMPA\+::\+DEM} object for managing DEM data. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a78dc580e10032d6b7d2956047771eb29}{\texorpdfstring{$\sim$}{\string~}\+BUF\+\_\+\+DEM}} ()
 \begin{DoxyCompactList}\small\item\em Destroy the {\ttfamily MEMPA\+::\+DEM} object and sets the {\ttfamily dem\+\_\+dataset} to {\ttfamily nullptr} . \end{DoxyCompactList}\item 
 GDALDataset \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load}} ()
-\begin{DoxyCompactList}\small\item\em Loads the \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Loads the {\ttfamily \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM}} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. \end{DoxyCompactList}\item 
 GDALDataset \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classMEMPA_1_1BUF__DEM_aee397fbc85b34b66c6266867d9665e0e}{dem\+\_\+grab}} ()
-\begin{DoxyCompactList}\small\item\em Getter for the {\ttfamily dem\+\_\+dataset} pointer to a \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} GDALDataset. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Getter for the {\ttfamily dem\+\_\+dataset} pointer to a {\ttfamily \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM}} GDALDataset. \end{DoxyCompactList}\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_ae96ef37804ade254282f00db549308db}\label{classMEMPA_1_1BUF__DEM_ae96ef37804ade254282f00db549308db} 
+void {\bfseries dem\+\_\+chunk} ()
+\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_a05b97a97c2d50b672a9ff0cb752c61ce}\label{classMEMPA_1_1BUF__DEM_a05b97a97c2d50b672a9ff0cb752c61ce} 
+void {\bfseries dem\+\_\+mask} ()
+\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_a7c4dbdcb18ca87751139edccf69def43}\label{classMEMPA_1_1BUF__DEM_a7c4dbdcb18ca87751139edccf69def43} 
+void {\bfseries dem\+\_\+safeid} ()
+\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_af88bf823bc4a78dabb2764cf96150f47}\label{classMEMPA_1_1BUF__DEM_af88bf823bc4a78dabb2764cf96150f47} 
+void {\bfseries dem\+\_\+filter} ()
+\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_a67e5d2808918b6119ac8926937638cd1}\label{classMEMPA_1_1BUF__DEM_a67e5d2808918b6119ac8926937638cd1} 
+void {\bfseries dem\+\_\+infostream} ()
+\item 
+\Hypertarget{classMEMPA_1_1BUF__DEM_afee25befe6db416ab700fc7f2d1fc21c}\label{classMEMPA_1_1BUF__DEM_afee25befe6db416ab700fc7f2d1fc21c} 
+void {\bfseries dem\+\_\+getdata} ()
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -58,11 +76,11 @@ Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@col
 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\Hypertarget{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2}\label{classMEMPA_1_1BUF__DEM_a6d77b433864b4dd48dd5a2181e7877c2} 
+\Hypertarget{classMEMPA_1_1BUF__DEM_affb52aa43c72f22ee3fa03368a54ab87}\label{classMEMPA_1_1BUF__DEM_affb52aa43c72f22ee3fa03368a54ab87} 
 \index{MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}!BUF\_DEM@{BUF\_DEM}}
 \index{BUF\_DEM@{BUF\_DEM}!MEMPA::BUF\_DEM@{MEMPA::BUF\_DEM}}
 \doxysubsubsection{\texorpdfstring{BUF\_DEM()}{BUF\_DEM()}}
-{\footnotesize\ttfamily MEMPA\+::\+BUF\+\_\+\+DEM\+::\+BUF\+\_\+\+DEM (\begin{DoxyParamCaption}\item[{std\+::string\+\_\+view}]{ifp,  }\item[{std\+::string\+\_\+view}]{ofp }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily MEMPA\+::\+BUF\+\_\+\+DEM\+::\+BUF\+\_\+\+DEM (\begin{DoxyParamCaption}\item[{std\+::string}]{ifp,  }\item[{std\+::string}]{ofp }\end{DoxyParamCaption})}
 
 
 
@@ -117,7 +135,7 @@ Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@col
 
 
 
-Getter for the {\ttfamily dem\+\_\+dataset} pointer to a \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} GDALDataset. 
+Getter for the {\ttfamily dem\+\_\+dataset} pointer to a {\ttfamily \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM}} GDALDataset. 
 
 This function returns the pointer to the dataset loaded in \doxylink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load} function.
 
@@ -125,7 +143,7 @@ This function returns the pointer to the dataset loaded in \doxylink{classMEMPA_
 GDALDataset\texorpdfstring{$\ast$}{*} A pointer to the loaded GDAL dataset.
 \end{DoxyReturn}
 \begin{DoxyNote}{Note}
-If \doxylink{classMEMPA_1_1BUF__DEM_a51eae3da88ba868f62d4e725d7b769a0}{dem\+\_\+load} has not been run, this function should return a {\ttfamily nullptr} .
+If {\ttfamily dem\+\_\+load} has not been run, this function should return a {\ttfamily nullptr} .
 \end{DoxyNote}
 \begin{DoxyAuthor}{Author}
 Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@colorado.\+edu}} 
@@ -141,7 +159,7 @@ Ryan Wagster \href{mailto:ryan.wagster@colorado.edu}{\texttt{ ryan.\+wagster@col
 
 
 
-Loads the \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. 
+Loads the {\ttfamily \doxylink{classMEMPA_1_1BUF__DEM}{BUF\+\_\+\+DEM}} dataset from the file path specified in {\ttfamily dem\+\_\+fp} using GDAL. 
 
 This function attempts to open the DEM dataset in read-\/only mode via the GDALOpen function.
 
