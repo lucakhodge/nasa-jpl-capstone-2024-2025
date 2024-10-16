@@ -22,15 +22,15 @@
  */
 MEMPA::BUF_DEM::BUF_DEM(std::string ifp, std::string ofp) : dem_fp(ifp), out_fp(ofp), dem_dataset(nullptr)
 {
-    if (ofp.empty()) // Check if the filepath input is an empty string.
+    if (ofp.empty())
     {
         throw std::invalid_argument("Output file path is empty.");
     }
-    if (!std::filesystem::exists(out_fp)) // Check that the filepath input exists.
+    if (!std::filesystem::exists(out_fp))
     {
         throw std::filesystem::filesystem_error("Output path does not exist: " + std::string(ofp), std::make_error_code(std::errc::no_such_file_or_directory));
     }
-    if (!std::filesystem::is_directory(out_fp)) // Check that the filepath input is a directory.
+    if (!std::filesystem::is_directory(out_fp))
     {
         throw std::filesystem::filesystem_error("Output path is not a directory: " + std::string(ofp), std::make_error_code(std::errc::no_such_file_or_directory));
     }

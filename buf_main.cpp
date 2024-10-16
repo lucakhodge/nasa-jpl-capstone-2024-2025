@@ -11,7 +11,9 @@
  * @brief Displays menu for user to select modifications for DEM file
  *
  *
- * @author Brock Hoos <brho7443@colorado.edu.
+ * @authors
+ * Brock Hoos <brho7443@colorado.edu>
+ * Ryan Wagster <ryan.wagster@colorado.edu>
  * @date 2024-10-15
  */
 void dem_menu(MEMPA::BUF_DEM dem_file)
@@ -52,4 +54,21 @@ void dem_menu(MEMPA::BUF_DEM dem_file)
             break;
         }
     }
+}
+
+/**
+ * @brief Main function for terminal interface.
+ *
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
+ * @date 2024-10-16
+ */
+int main(int argc, char *argv[])
+{
+    // TODO
+    // 1. Instantiate DEM object using user inputs.
+    // Exit if catching errors.
+    // 2. Launch menu.
+    // 3. Destroy DEM object and return.
+
+    return 0;
 }
