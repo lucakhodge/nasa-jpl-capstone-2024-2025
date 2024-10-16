@@ -98,7 +98,7 @@ GDALDataset *MEMPA::BUF_DEM::dem_grab()
 
 void MEMPA::BUF_DEM::dem_chunk()
 {
-    
+
 }
 
 void MEMPA::BUF_DEM::dem_mask()
