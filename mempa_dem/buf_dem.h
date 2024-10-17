@@ -62,9 +62,7 @@ namespace MEMPA
     public:
         BUF_DEM(std::string_view ifp, std::string_view ofp);
         ~BUF_DEM();
-
-        GDALDataset *dem_load();
-        GDALDataset *dem_grab();
+        GDALDataset *dem_get();
         void dem_chunk();
         void dem_mask();
         void dem_safeid();

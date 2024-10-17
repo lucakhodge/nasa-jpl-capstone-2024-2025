@@ -67,10 +67,6 @@ MEMPA::BUF_DEM::BUF_DEM(const std::string_view ifp, const std::string_view ofp) 
                                                 std::make_error_code(std::errc::is_a_directory));
     }
 
-    /*
-    - Load the GDALDataset*.
-    - Get height and width.
-    */
     GDALAllRegister();
     dem_dataset = static_cast<GDALDataset *>(GDALOpen(dem_fp.c_str(), GA_ReadOnly));
     if (!dem_dataset)
@@ -81,8 +77,6 @@ MEMPA::BUF_DEM::BUF_DEM(const std::string_view ifp, const std::string_view ofp) 
 
     XSize = dem_dataset->GetRasterXSize();
     YSize = dem_dataset->GetRasterYSize();
-
-    
 }
 
 /**
@@ -108,7 +102,7 @@ MEMPA::BUF_DEM::~BUF_DEM()
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
  * @date 2024-10-01
  */
-GDALDataset *MEMPA::BUF_DEM::dem_grab()
+GDALDataset *MEMPA::BUF_DEM::dem_get()
 {
     return dem_dataset;
 }
