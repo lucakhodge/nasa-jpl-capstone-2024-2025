@@ -4,6 +4,7 @@
 /* C++ Standard Libraries */
 #include <string>
 #include <filesystem>
+#include <string_view>
 
 /* GDAL libraries. Check dependencies in README. */
 #include <gdal_priv.h>
@@ -59,11 +60,9 @@ namespace MEMPA
     class BUF_DEM
     {
     public:
-        BUF_DEM(std::string ifp, std::string ofp);
+        BUF_DEM(std::string_view ifp, std::string_view ofp);
         ~BUF_DEM();
-
-        GDALDataset *dem_load();
-        GDALDataset *dem_grab();
+        GDALDataset *dem_get();
         void dem_chunk();
         void dem_mask();
         void dem_safeid();
@@ -75,6 +74,8 @@ namespace MEMPA
         std::filesystem::path dem_fp; // Original DEM filepath.
         std::filesystem::path out_fp; // Output directory.
         GDALDataset *dem_dataset;     // Pointer to the GDAL dataset.
+        int XSize;                    // Width of the DEM.
+        int YSize;                    // Height of the DEM.
     };
 };
 
