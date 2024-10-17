@@ -74,8 +74,9 @@ namespace MEMPA
         std::filesystem::path dem_fp; // Original DEM filepath.
         std::filesystem::path out_fp; // Output directory.
         GDALDataset *dem_dataset;     // Pointer to the GDAL dataset.
-        int XSize;                    // Width of the DEM.
-        int YSize;                    // Height of the DEM.
+        int xSize;                    // Width of the DEM.
+        int ySize;                    // Height of the DEM.
+        int rasterCount;              // Number of raster bands in the DEM.
     };
 };
 

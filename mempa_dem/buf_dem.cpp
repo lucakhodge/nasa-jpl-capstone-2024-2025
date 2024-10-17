@@ -75,8 +75,9 @@ MEMPA::BUF_DEM::BUF_DEM(const std::string_view ifp, const std::string_view ofp) 
         throw std::runtime_error("Failed to open DEM file: " + dem_fp.string() + ". Error: " + (GDAL_errMsg ? GDAL_errMsg : "Unknown error"));
     }
 
-    XSize = dem_dataset->GetRasterXSize();
-    YSize = dem_dataset->GetRasterYSize();
+    xSize = dem_dataset->GetRasterXSize();
+    ySize = dem_dataset->GetRasterYSize();
+    rasterCount = dem_dataset->GetRasterCount();
 }
 
 /**
@@ -109,30 +110,34 @@ GDALDataset *MEMPA::BUF_DEM::dem_get()
 
 void MEMPA::BUF_DEM::dem_chunk()
 {
-    // NEED to implement some sort of data structure to 
+    // NEED to implement some sort of data structure to
     // have adjacent chunks point to another to allow rover to traverse
     // NEED to return pointer to starting tile in Chunk dataset
-    dem_dataset = dem_grab();
+    dem_dataset = dem_grab(); // dem_dataset is already the pointer to the dataset. getting itself unnecesary
 
-    if (dem_dataset == NULL) {
-           std::cerr << "Error opening dataset: " << inputFilename << std::endl;
-           return;
-       }
-    
+    if (dem_dataset == NULL)
+    {
+        std::cerr << "Error opening dataset: " << inputFilename << std::endl; // should be a throw
+        return;
+    }
+
     // Get dimensions of DEM
     // width
-    int cols = dem_dataset->GetRasterXSize(); 
+    int cols = dem_dataset->GetRasterXSize(); // obsolete gets here from new private variables
     // height
-    int rows = dem_dataset->GetRasterYSize(); 
+    int rows = dem_dataset->GetRasterYSize();
     // bands
     int bands = dem_dataset->GetRasterCount();
+    /
 
-    GDALDriver *Driver = GetGDALDriverManager()->GetDriverByName("GTiff");
+        GDALDriver *Driver = GetGDALDriverManager()->GetDriverByName("GTiff");
 
     int chunkCount = 1;
 
-    for (int i = 0; i < rows; i += chunkSize) {
-        for (int j = 0; j < cols; j += chunkSize) {
+    for (int i = 0; i < rows; i += chunkSize)
+    {
+        for (int j = 0; j < cols; j += chunkSize)
+        {
             int chunkWidth = std::min(chunkSize, cols - j);
             int chunkHeight = std::min(chunkSize, rows - i);
 
@@ -140,15 +145,17 @@ void MEMPA::BUF_DEM::dem_chunk()
             std::string chunkFilename = std::string(outputFolder) + "/chunk_" + std::to_string(chunkCount++) + ".tif";
             GDALDataset *ChunkDataset = Driver->Create(chunkFilename.c_str(), chunkWidth, chunkHeight, bands, GDT_Float32, nullptr);
 
-            if (ChunkDataset == nullptr) {
-                std::cerr << "Failed to make a chunk file for " << chunkCount << std::endl;
+            if (ChunkDataset == nullptr)
+            {
+                std::cerr << "Failed to make a chunk file for " << chunkCount << std::endl; // cerr is part of the iostream header, which we aren't including in buf_dem. throw errors instead, which get caught in buf_main.
                 continue;
             }
 
             // Loop through each band in the dataset
-            for (int b = 1; b <= bands; ++b) {
+            for (int b = 1; b <= bands; ++b)
+            {
                 // buffer for chunk data
-                float* buffer = new float[chunkWidth * chunkHeight];
+                float *buffer = new float[chunkWidth * chunkHeight];
 
                 // DEM data into buffer
                 dem_dataset->GetRasterBand(b)->RasterIO(GF_Read, j, i, chunkWidth, chunkHeight, buffer, chunkWidth, chunkHeight, GDT_Float32, 0, 0);
