@@ -21,13 +21,12 @@ void dem_menu(MEMPA::BUF_DEM dem_file)
     char choice = '\0';
     while (true)
     {
-        std::cout << R"=(
-        ==== DEM File Modification Menu ====
+        std::cout << R"(==== DEM File Modification Menu ====
         'C' - Chunk DEM File
         'F' - Filter DEM File
         'M' - Mask DEM File
         'Q' - Continue
-        )=";
+        )";
 
         std::cin >> choice;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
