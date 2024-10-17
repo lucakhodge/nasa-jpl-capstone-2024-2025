@@ -98,7 +98,59 @@ GDALDataset *MEMPA::BUF_DEM::dem_grab()
 
 void MEMPA::BUF_DEM::dem_chunk()
 {
+    // NEED to implement some sort of data structure to 
+    // have adjacent chunks point to another to allow rover to traverse
+    // NEED to return pointer to starting tile in Chunk dataset
+    dem_dataset = dem_grab();
+
+    if (dem_dataset == NULL) {
+           std::cerr << "Error opening dataset: " << inputFilename << std::endl;
+           return;
+       }
     
+    // Get dimensions of DEM
+    // width
+    int cols = dem_dataset->GetRasterXSize(); 
+    // height
+    int rows = dem_dataset->GetRasterYSize(); 
+    // bands
+    int bands = dem_dataset->GetRasterCount();
+
+    GDALDriver *Driver = GetGDALDriverManager()->GetDriverByName("GTiff");
+
+    int chunkCount = 1;
+
+    for (int i = 0; i < rows; i += chunkSize) {
+        for (int j = 0; j < cols; j += chunkSize) {
+            int chunkWidth = std::min(chunkSize, cols - j);
+            int chunkHeight = std::min(chunkSize, rows - i);
+
+            // Create chunk filename with chunk number
+            std::string chunkFilename = std::string(outputFolder) + "/chunk_" + std::to_string(chunkCount++) + ".tif";
+            GDALDataset *ChunkDataset = Driver->Create(chunkFilename.c_str(), chunkWidth, chunkHeight, bands, GDT_Float32, nullptr);
+
+            if (ChunkDataset == nullptr) {
+                std::cerr << "Failed to make a chunk file for " << chunkCount << std::endl;
+                continue;
+            }
+
+            // Loop through each band in the dataset
+            for (int b = 1; b <= bands; ++b) {
+                // buffer for chunk data
+                float* buffer = new float[chunkWidth * chunkHeight];
+
+                // DEM data into buffer
+                dem_dataset->GetRasterBand(b)->RasterIO(GF_Read, j, i, chunkWidth, chunkHeight, buffer, chunkWidth, chunkHeight, GDT_Float32, 0, 0);
+
+                // buffer into chunk
+                ChunkDataset->GetRasterBand(b)->RasterIO(GF_Write, 0, 0, chunkWidth, chunkHeight, buffer, chunkWidth, chunkHeight, GDT_Float32, 0, 0);
+
+                // free buffer memory
+                delete[] buffer;
+            }
+        }
+    }
+
 }
 
 void MEMPA::BUF_DEM::dem_mask()
