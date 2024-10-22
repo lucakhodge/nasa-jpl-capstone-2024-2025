@@ -64,7 +64,6 @@ namespace MEMPA
         ~BUF_DEM();
         GDALDataset *dem_get();
         void dem_chunk();
-        void dem_mask();
         void dem_safeid();
         void dem_filter();
         void dem_infostream();
