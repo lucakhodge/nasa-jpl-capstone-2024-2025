@@ -128,7 +128,6 @@ void MEMPA::BUF_DEM::dem_chunk()
     int rows = dem_dataset->GetRasterYSize();
     // bands
     int bands = dem_dataset->GetRasterCount();
-    /
 
         GDALDriver *Driver = GetGDALDriverManager()->GetDriverByName("GTiff");
 
@@ -168,10 +167,6 @@ void MEMPA::BUF_DEM::dem_chunk()
             }
         }
     }
-}
-
-void MEMPA::BUF_DEM::dem_mask()
-{
 }
 
 void MEMPA::BUF_DEM::dem_safeid()

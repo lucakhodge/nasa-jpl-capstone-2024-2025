@@ -25,7 +25,6 @@ void dem_menu(MEMPA::BUF_DEM dem_file)
         std::cout << R"(==== DEM File Processing ====
 C - Chunk DEM File
 F - Filter DEM File
-M - Mask DEM File
 Q - Continue
 )";
 
@@ -40,9 +39,6 @@ Q - Continue
             break;
         case 'F':
             dem_file.dem_filter();
-            break;
-        case 'M':
-            dem_file.dem_mask();
             break;
         case 'Q':
             std::cout << "Exiting.\n";
