@@ -17,3 +17,8 @@
 
 - **Windows Subsystem for Linux (WSL)**
 - **GDAL headers: ```sudo apt install libgdal-dev```**
+
+## How to run
+
+Command:
+- ```make run``` (still in progress)
