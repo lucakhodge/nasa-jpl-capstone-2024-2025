@@ -7,18 +7,21 @@
 
 ### Team Members
 
-  Adam Carlson |  Brock Hoos | Grace Harrel | Kevin Buhler | Luca Hodge | Oscar Mikus | Ryan Wagster
+  Adam Carlson, Brock Hoos, Grace Harrel, Kevin Buhler, Luca Hodge, Oscar Mikus, Ryan Wagster
 
 ### Staff
 
-  David Blaines (TA) |  Marcel Llopis (Sponsor)
+  David Blaines (TA),  Marcel Llopis (Sponsor)
+
+## Installation
+
+Command: (still in progress)
+
+```bash
+make run
+``` 
 
 ## Dependencies
 
 - **Windows Subsystem for Linux (WSL)**
 - **GDAL headers: ```sudo apt install libgdal-dev```**
-
-## How to run
-
-Command:
-- ```make run``` (still in progress)
