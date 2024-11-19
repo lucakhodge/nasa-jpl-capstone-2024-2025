@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import started from "electron-squirrel-startup";
 import path from 'path';
-import { REACT_LOADING_DONE } from './electronIPC';
+import { callCpp, REACT_LOADING_DONE } from './electronIPC';
 
 if (started) {
   app.quit();
@@ -27,7 +27,6 @@ const createWindow = () => {
   }
 
   ipcMain.on(REACT_LOADING_DONE, () => {
-    console.log("ipcMain.on")
     if (mainWindow) {
       // mainWindow.maximize();
       mainWindow.show();
@@ -64,3 +63,5 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+import "./callCpp.ts";

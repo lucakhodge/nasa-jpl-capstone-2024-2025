@@ -2,6 +2,6 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge } from "electron";
-import { setReactLoaded } from "./electronIPC";
+import { callCpp, setReactLoaded } from "./electronIPC";
 
-contextBridge.exposeInMainWorld("electronIPC", {setReactLoaded});
+contextBridge.exposeInMainWorld("electronIPC", {setReactLoaded, callCpp});
