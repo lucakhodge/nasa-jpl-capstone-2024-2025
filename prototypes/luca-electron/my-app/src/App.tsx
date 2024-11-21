@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
-import ReactReady from "./ReactReady";
-import RunCpp from "./RunCpp";
+import ReactReady from "./components/ReactReady";
+import RunCpp from "./components/RunCpp";
 
 const root = createRoot(document.body);
 root.render(
