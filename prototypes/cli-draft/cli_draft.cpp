@@ -2,6 +2,7 @@
 #include <getopt.h>
 #include <string>
 #include <fstream>
+#include <regex>
 
 // print out helper menu
 void print_helper() {
@@ -15,6 +16,35 @@ void print_helper() {
               << "  --iterations     Number of iterations\n"
               << "  --slope          Slope tolerances (e.g., 10,20,30)\n"
               << "  --help           Print help message\n";
+}
+
+// split a string into x and y coordinates (for specific coordinates)
+std::pair<float, float> parseCoordinates(std::string input) {
+    // find comma seperating points
+    size_t comma_pos = input.find(',');
+    // if comma was found
+    if (comma_pos != std::string::npos) {
+        // update x
+        int x = std::stoi(input.substr(0, comma_pos));
+        // update y
+        int y = std::stoi(input.substr(comma_pos + 1));
+        // return coordinates as integers
+        return {x, y};
+    }
+}
+
+// parse area ranges (e.g., "1,1:5,5")
+std::pair<std::pair<float, float>, std::pair<float, float>> parseArea(std::string input) {
+    // find : seperating coordinates
+    size_t colon_pos = input.find(':');
+    // if : found
+    if (colon_pos != std::string::npos) {
+        // use coordinate functions
+        std::pair start = parseCoordinates(input.substr(0, colon_pos));
+        std::pair end = parseCoordinates(input.substr(colon_pos + 1));
+        // return pairs of coordinates
+        return {start, end};
+    }
 }
 
 // check we have a start and end coordinate but not conflicting ones
@@ -129,6 +159,59 @@ int main(int argc, char *argv[]) {
     if(!coordinate_check(start_set,end_set,start_area_set,end_area_set)){
         std::cout << "Error: Check coordinate input" << std::endl;
         exit(1);
+    }
+   
+    // if start coordinates given
+    if (start_set) {
+        // get pair of coordinates
+        std::pair<float, float> start_coords = parseCoordinates(start); 
+        // x
+        float start_x = start_coords.first;   
+        // y
+        float start_y = start_coords.second;
+        // print out for debugging
+        std::cout << "Start X: " << start_x << ", Start Y: " << start_y << std::endl;
+        
+    }
+
+    // Parse and validate end coordinates
+    if (end_set) {
+        // get pair of coordinates
+        std::pair<float, float> end_coords = parseCoordinates(end);
+        // x
+        float end_x = end_coords.first;
+        // y
+        float end_y = end_coords.second;
+        // print out for debugging
+        std::cout << "End X: " << end_x << ", End Y: " << end_y << std::endl;
+    }
+
+    // Parse and validate start area
+    if (start_area_set) {
+        // get pair
+        std::pair<std::pair<float, float>, std::pair<float, float>> area = parseArea(start_area);
+    
+        // individual coordinates
+        float start_area_x1 = area.first.first;
+        float start_area_y1 = area.first.second;
+        float start_area_x2 = area.second.first;
+        float start_area_y2 = area.second.second;
+        // print out for debugging
+        std::cout << "Start area: From (" << start_area_x1 << ", " << start_area_y1 << ") " << "to (" << start_area_x2 << ", " << start_area_y2 << ")" << std::endl;
+    }
+
+    // Parse and validate end area
+    if (end_area_set) {
+        // get pairs
+        std::pair<std::pair<float, float>, std::pair<float, float>> area = parseArea(end_area);
+
+        // individual coordinates
+        float end_area_x1 = area.first.first;
+        float end_area_y1 = area.first.second;
+        float end_area_x2 = area.second.first;
+        float end_area_y2 = area.second.second;
+        // print out for debugging
+        std::cout << "End area: From (" << end_area_x1 << ", " << end_area_y1 << ") " << "to (" << end_area_x2 << ", " << end_area_y2 << ")" << std::endl;
     }
 
     // check input file
