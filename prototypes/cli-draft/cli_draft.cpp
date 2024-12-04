@@ -7,6 +7,9 @@ To Compile: g++ ./cli_draft.cpp -o cli
 ** Fill in inputs and flags with correct ones **
 To run: ./cli --flag INPUT
 
+** Example **
+./cli --start 44.43,55.55 --end 32.22,55.33 --input test.dem --output test.txt --iterations 4 --slope 12.3 
+
 Required flags:
     2 of the following (1 being start and 1 being end):
         --start
