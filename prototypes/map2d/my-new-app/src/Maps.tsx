@@ -1,5 +1,6 @@
 import React from "react";
 import KonvaHeightMapWithPath from "./KonvaHeightMapWithPath";
+import KonvaImage from "./KonvaImage";
 
 const generateHeightMap = (width: number, height: number): number[][] => {
   const heightMap: number[][] = [];
@@ -41,6 +42,7 @@ export default function Maps() {
         heightData={heightMap}
         path={path}
       ></KonvaHeightMapWithPath>
+      <KonvaImage heightData={heightMap} path={path}></KonvaImage>
     </div>
   );
 }
