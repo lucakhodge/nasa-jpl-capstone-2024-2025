@@ -19,7 +19,6 @@ export class DEMManager {
     const image = await this.geoTiff.getImage();
     this.demWidth = image.getWidth();
     this.demHeight = image.getHeight();
-    console.log("datatype", image.getBytesPerPixel())
   }
   closeDEM() {
     //

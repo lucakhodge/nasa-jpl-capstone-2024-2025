@@ -22,10 +22,13 @@ try {
   // try to open the file
   // if good, pass to DEM Manager class
   const filePath = result.filePaths[0]
-  myDEMManager.openDEM(filePath)
-  // send: on dem opened (send DEM Manger's info about the file )
-  const demInfo: DEMInfo = myDEMManager.getDEMInfo()
-  getRendererWindow().webContents.send(ON_DEM_OPENED, demInfo)
+  myDEMManager.openDEM(filePath).then(() => {
+    // send: on dem opened (send DEM Manger's info about the file )
+    const demInfo: DEMInfo = myDEMManager.getDEMInfo()
+    // console.log("DEMINFO:", demInfo)
+    getRendererWindow().webContents.send(ON_DEM_OPENED, demInfo)
+  })
+
 } catch (err) {
   // handel error
   console.error('Error opening file dialog:', err);
