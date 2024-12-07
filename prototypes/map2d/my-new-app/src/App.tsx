@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import DEMMap from "./components/DEMMap";
+import DEMListener from "./components/DEMListener";
+import LoadFileButton from "./components/LoadFileButton";
 import "./index.css";
 
 const root = createRoot(document.body);
@@ -11,6 +12,8 @@ root.render(
     </h1>
     {/* <Maps></Maps> */}
     {/* <MyGeoTIff></MyGeoTIff> */}
-    <DEMMap />
+    {/* <DEMMap /> */}
+    <DEMListener></DEMListener>
+    <LoadFileButton></LoadFileButton>
   </div>
 );

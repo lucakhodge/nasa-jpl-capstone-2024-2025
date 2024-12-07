@@ -2,11 +2,11 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge } from 'electron';
-import { loadDEM } from "./IPC/electronIPC";
+import { closeDEM, getChunk, onDEMClosed, onDEMOpened, openDEM } from './IPC/electronIPC';
 
 
 // contextBridge.exposeInMainWorld('electron', {
 //   loadDEM: (filePath: string) => ipcRenderer.invoke('load-dem', filePath),
 // });
 
-contextBridge.exposeInMainWorld("electronIPC", {loadDEM});
+contextBridge.exposeInMainWorld("electronIPC", {openDEM,closeDEM, getChunk, onDEMOpened, onDEMClosed });
