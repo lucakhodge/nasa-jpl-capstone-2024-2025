@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import DEMListener from "./components/DEMListener";
+import GetChunk from "./components/GetChunk";
 import LoadFileButton from "./components/LoadFileButton";
 import "./index.css";
 
@@ -15,5 +16,6 @@ root.render(
     {/* <DEMMap /> */}
     <DEMListener></DEMListener>
     <LoadFileButton></LoadFileButton>
+    <GetChunk></GetChunk>
   </div>
 );
