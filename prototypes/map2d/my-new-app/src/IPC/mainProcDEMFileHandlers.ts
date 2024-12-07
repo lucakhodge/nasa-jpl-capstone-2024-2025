@@ -3,7 +3,7 @@ import { getRendererWindow } from "../main";
 import { DEMManager } from "./DEMManager";
 import { ChunkMapTileCoordinate, CLOSE_DEM, DEMInfo, GET_CHUNK, ON_DEM_CLOSED, ON_DEM_OPENED, OPEN_DEM } from "./electronIPC";
 
-const myDEMManager: DEMManager = new DEMManager(50)
+const myDEMManager: DEMManager = new DEMManager(2000)
 
 ipcMain.on(OPEN_DEM, async () => {
 try {

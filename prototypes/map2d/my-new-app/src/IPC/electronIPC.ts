@@ -18,6 +18,8 @@ export interface ChunkMapTileCoordinate {
 
 export interface ChunkMapTile {
   coordinate: ChunkMapTileCoordinate;
+  width: number;
+  height: number;
   data: number[][];
 }
 

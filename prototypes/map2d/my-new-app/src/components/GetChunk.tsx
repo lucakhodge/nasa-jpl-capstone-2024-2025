@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ChunkMapTile, ChunkMapTileCoordinate } from "src/IPC/electronIPC";
+import DisplayHeight from "./DisplayHeight";
 
 export default function GetChunk() {
   const [coordX, setCoordX] = useState<number | string>("");
@@ -22,7 +23,7 @@ export default function GetChunk() {
         y: coordY,
       };
       const newChunk = window.electronIPC.getChunk(chunkCoordinate);
-      alert("Got chunk");
+      // alert("Got chunk");
       console.log(newChunk);
       setChunk(newChunk);
     } else {
@@ -55,7 +56,12 @@ export default function GetChunk() {
         </label>
       </div>
       <button onClick={handleGetChunk}>Get Chunk</button>
-      <div>{JSON.stringify(chunk)}</div>
+      {/* <div>{JSON.stringify(chunk)}</div> */}
+      {chunk !== null ? (
+        <DisplayHeight chunk={chunk}></DisplayHeight>
+      ) : (
+        <div>No chunk</div>
+      )}
     </div>
   );
 }

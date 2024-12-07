@@ -19,6 +19,7 @@ export class DEMManager {
     const image = await this.geoTiff.getImage();
     this.demWidth = image.getWidth();
     this.demHeight = image.getHeight();
+    console.log("datatype", image.getBytesPerPixel())
   }
   closeDEM() {
     //
@@ -73,7 +74,9 @@ export class DEMManager {
 
       const tile: ChunkMapTile = {
         coordinate: location,
-        data: chunkData
+        data: chunkData,
+        width: this.chunkSize,
+        height: this.chunkSize
       }
       return tile
     } catch (err) {
