@@ -1,4 +1,4 @@
-import { fromBlob, fromBlob, fromFile } from "geotiff";
+import { fromBlob, fromFile } from "geotiff";
 import { useRef, useState } from "react";
 
 const renderHeightMap = (raster: any, width: number, height: number) => {
@@ -44,13 +44,13 @@ const readDemFile = async (file: File) => {
   const width = image.getWidth();
   const height = image.getHeight();
 
-  // Instead of loading the entire raster, load in chunks
-  const chunkWidth = 256; // Example chunk size
-  const chunkHeight = 256;
+  // // Instead of loading the entire raster, load in chunks
+  // const chunkWidth = 256; // Example chunk size
+  // const chunkHeight = 256;
 
-  const chunk = await image.getData({
-    window: [0, 0, chunkWidth, chunkHeight], // Load a chunk of data
-  });
+  // const chunk = await image.getData({
+  //   window: [0, 0, chunkWidth, chunkHeight], // Load a chunk of data
+  // });
 
   return { raster: chunk, width, height };
 };

@@ -1,8 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import GeoTiffHeightMap from "./GeoTiffHeightMap";
+import DEMMap from "./components/DEMMap";
 import "./index.css";
-import Maps from "./Maps";
 
 const root = createRoot(document.body);
 root.render(
@@ -11,6 +10,7 @@ root.render(
       Hello world!
     </h1>
     {/* <Maps></Maps> */}
-    <GeoTiffHeightMap></GeoTiffHeightMap>
+    {/* <MyGeoTIff></MyGeoTIff> */}
+    <DEMMap />
   </div>
 );
