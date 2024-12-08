@@ -8,11 +8,15 @@ interface DisplayHeightPropsI {
 export default function DisplayHeight(props: DisplayHeightPropsI) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const heightToColor = (height: number) => {
+  const heightToColor = (
+    height: number,
+    maxHeight: number,
+    minHeight: number
+  ) => {
     // Map height to a color scale. This is a basic gradient.
     //TODO: dont hardcode minmax height, instead have it be part of the info
-    const minHeight = -65536; // Minimum possible height value
-    const maxHeight = 65536; // Maximum possible height value
+    // const minHeight = -65536; // Minimum possible height value
+    // const maxHeight = 65536; // Maximum possible height value
     // const minHeight = -5000; // Minimum possible height value
     // const maxHeight = 0; // Maximum possible height value
 
@@ -40,11 +44,26 @@ export default function DisplayHeight(props: DisplayHeightPropsI) {
     canvas.width = props.chunk.width;
     canvas.height = props.chunk.height;
 
+    let maxHeight = props.chunk.data[0][0];
+    let minHeight = props.chunk.data[0][0];
+
+    for (let row = 0; row < props.chunk.height; row++) {
+      for (let col = 0; col < props.chunk.width; col++) {
+        const heightValue = props.chunk.data[row][col];
+        if (heightValue > maxHeight) {
+          maxHeight = heightValue;
+        }
+        if (heightValue < minHeight) {
+          minHeight = heightValue;
+        }
+      }
+    }
+
     // Loop through the height data and draw each pixel
     for (let row = 0; row < props.chunk.height; row++) {
       for (let col = 0; col < props.chunk.width; col++) {
         const heightValue = props.chunk.data[row][col];
-        const color = heightToColor(heightValue);
+        const color = heightToColor(heightValue, maxHeight, minHeight);
 
         // Set the color and draw a single pixel
         ctx.fillStyle = color;

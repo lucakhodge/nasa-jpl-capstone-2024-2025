@@ -13,7 +13,7 @@ root.render(
   <Provider store={store}>
     <div>
       <h1 className="text-3xl font-bold underline text-emerald-500">
-        Hello world!
+        Work in progress GUI
       </h1>
       {/* <Maps></Maps> */}
       {/* <MyGeoTIff></MyGeoTIff> */}
