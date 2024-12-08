@@ -2,12 +2,13 @@
 #define DEM_H
 
 /* C++ Standard Libraries */
-#include <string>
 #include <filesystem>
 #include <string_view>
 
 /* GDAL libraries. Check dependencies in README. */
 #include <gdal_priv.h>
+#include <gdalwarper.h>
+#include <ogrsf_frmts.h>
 
 /**
  * @namespace MEMPA
@@ -57,25 +58,24 @@ namespace MEMPA
      * @author Ryan Wagster <ryan.wagster@colorado.edu>
      * @date 2024-10-01
      */
-    class BUF_DEM
+    class BUFFDEM
     {
     public:
-        BUF_DEM(std::string_view ifp, std::string_view ofp);
-        ~BUF_DEM();
-        GDALDataset *dem_get();
-        void dem_chunk();
-        void dem_safeid();
-        void dem_filter();
-        void dem_infostream();
-        void dem_getdata();
+        BUFFDEM(const std::string_view input_filepath, const std::string_view output_filepath);
+        ~BUFFDEM();
+        GDALDataset *demGet();
+        OGRGeometry *demArea(const std::vector<std::pair<double, double>> coordinates, const double radius, const double eccentricity);
+        OGRGeometry *demAreaGet();
+        void makeSHP(const std::string &shapefile_name, const bool overwrite);
+        GDALDataset* demClip(const std::string &chunkfile_name, const bool overwrite);
 
     private:
-        std::filesystem::path dem_fp; // Original DEM filepath.
-        std::filesystem::path out_fp; // Output directory.
-        GDALDataset *dem_dataset;     // Pointer to the GDAL dataset.
-        int xSize;                    // Width of the DEM.
-        int ySize;                    // Height of the DEM.
-        int rasterCount;              // Number of raster bands in the DEM.
+        std::filesystem::path dem_fp;  // Original DEM filepath.
+        std::filesystem::path out_fp;  // Output directory.
+        GDALDataset *dem_dataset;      // Pointer to the GDAL dataset.
+        GDALDataset *clip_dataset;     // Clipped dataset chunk for the algorithm.
+        OGRGeometry *clip_area;        // Polygon for defining the clip.
+        GDALWarpOptions *warp_options; // Warp options for clipping.
     };
 };
 
