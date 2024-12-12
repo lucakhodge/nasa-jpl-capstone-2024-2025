@@ -9,23 +9,26 @@
 #include "buf_dem.h"
 
 /**
- * @brief Constructs a new @c MEMPA::DEM object.
+ * @brief Constructs a new @c MEMPA::BUFFDEM object.
  *
  * @details
- * This constructor initializes a @ref BUF_DEM object by setting the input GeoTIFF file path and the output directory path.
- * It performs validation on the output directory to ensure that it exists and is a valid directory.
+ * Initializes the DEM object by setting input and output file paths and verifying their validity.
+ * Also registers GDAL to ensure raster files can be opened and processed.
  *
- * @param input_filepath The file path to the input DEM GeoTIFF image. This file contains the Digital Elevation Model data
- *            to be processed.
- * @param output_filepath The output directory where new files, generated from the DEM data (such as chunked DEM data),
- *            will be saved. If the directory does not exist or is invalid, an exception is thrown.
+ * @param input_filepath Path to the input DEM GeoTIFF file.
+ * @param output_filepath Directory path where generated files (e.g., shapefiles, clipped rasters) will be saved.
  *
- * @throws std::filesystem::filesystem_error Thrown if the the input file or output directory are inaccessible.
+ * @throws std::filesystem::filesystem_error If:
+ * - The input file does not exist or is not a file.
+ * - The output directory does not exist or is not a directory.
+ * - GDAL fails to open the input DEM file.
+ *
+ * @note Assumes that the provided DEM file uses a compatible coordinate system.
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
- * @date 2024-10-01
+ * @date 2024-12-8
  */
-MEMPA::BUFFDEM::BUFFDEM(const std::string_view input_filepath, const std::string_view output_filepath) : dem_fp(input_filepath), out_fp(output_filepath)
+MEMPA::BUFFDEM::BUFFDEM(const std::string_view input_filepath, const std::string_view output_filepath) : dem_fp(input_filepath), output_directory(output_filepath)
 {
     /*
     Output file path error checking:
@@ -34,14 +37,14 @@ MEMPA::BUFFDEM::BUFFDEM(const std::string_view input_filepath, const std::string
     - If the output file path is not a directory.
     */
 
-    if (output_filepath.empty() || !std::filesystem::exists(out_fp))
+    if (output_filepath.empty() || !std::filesystem::exists(output_directory))
     {
-        throw std::filesystem::filesystem_error(std::string(output_filepath), std::make_error_code(std::errc::no_such_file_or_directory));
+        throw std::filesystem::filesystem_error("[Error]: Output directory not found", std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
-    if (!std::filesystem::is_directory(out_fp))
+    if (!std::filesystem::is_directory(output_directory))
     {
-        throw std::filesystem::filesystem_error(std::string(output_filepath), std::make_error_code(std::errc::not_a_directory));
+        throw std::filesystem::filesystem_error("[Error]: Output path is not a directory", std::make_error_code(std::errc::not_a_directory));
     }
 
     /*
@@ -53,106 +56,105 @@ MEMPA::BUFFDEM::BUFFDEM(const std::string_view input_filepath, const std::string
 
     if (input_filepath.empty() || !std::filesystem::exists(dem_fp))
     {
-        throw std::filesystem::filesystem_error(std::string(input_filepath), std::make_error_code(std::errc::no_such_file_or_directory));
+        throw std::filesystem::filesystem_error("[Error]: Input file not found", std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
     if (std::filesystem::is_directory(dem_fp))
     {
-        throw std::filesystem::filesystem_error(std::string(input_filepath), std::make_error_code(std::errc::is_a_directory));
+        throw std::filesystem::filesystem_error("[Error]: Input path is a directory", std::make_error_code(std::errc::is_a_directory));
     }
 
     GDALAllRegister();
-    dem_dataset = static_cast<GDALDataset *>(GDALOpen(dem_fp.c_str(), GA_ReadOnly));
-    if (!dem_dataset)
+    source_dataset = static_cast<GDALDataset *>(GDALOpen(dem_fp.c_str(), GA_ReadOnly));
+    if (!source_dataset)
     {
-        const char *GDAL_errMsg = CPLGetLastErrorMsg();
-        throw std::filesystem::filesystem_error((GDAL_errMsg ? GDAL_errMsg : "unknown error"), std::make_error_code(std::errc::io_error));
+        throw std::filesystem::filesystem_error("[Error]: Failed to open input file with GDAL", std::make_error_code(std::errc::io_error));
     }
 
-    clip_area = nullptr;
-    clip_dataset = nullptr;
-    warp_options = nullptr;
+    clip_geometry = nullptr;
+    destination_dataset = nullptr;
 }
 
 /**
- * @brief Destroys the @c MEMPA::DEM object.
+ * @brief Destroys the @c MEMPA::BUFFDEM object and cleans up allocated resources.
+ *
+ * @details
+ * Ensures that GDAL datasets and OGR geometry objects are properly closed and deallocated.
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
- * @date 2024-10-01
+ * @date 2024-12-8
  */
 MEMPA::BUFFDEM::~BUFFDEM()
 {
-    if (dem_dataset)
+    if (source_dataset)
     {
-        GDALClose(dem_dataset);
-        dem_dataset = nullptr;
+        GDALClose(source_dataset);
+        source_dataset = nullptr;
     }
 
-    if (clip_dataset)
+    if (destination_dataset)
     {
-        GDALClose(clip_dataset);
-        clip_dataset = nullptr;
+        GDALClose(destination_dataset);
+        destination_dataset = nullptr;
     }
 
-    if (clip_area)
+    if (clip_geometry)
     {
-        OGRGeometryFactory::destroyGeometry(clip_area);
-        clip_area = nullptr;
-    }
-
-    if (warp_options)
-    {
-        if (warp_options->pTransformerArg)
-        {
-            GDALDestroyGenImgProjTransformer(warp_options->pTransformerArg);
-            warp_options->pTransformerArg = nullptr;
-        }
-        if (warp_options->panSrcBands)
-        {
-            CPLFree(warp_options->panSrcBands);
-            warp_options->panSrcBands = nullptr;
-        }
-        if (warp_options->panDstBands)
-        {
-            CPLFree(warp_options->panDstBands);
-            warp_options->panDstBands = nullptr;
-        }
-        GDALDestroyWarpOptions(warp_options);
-        warp_options = nullptr;
+        OGRGeometryFactory::destroyGeometry(clip_geometry);
+        clip_geometry = nullptr;
     }
 }
 
 /**
- * @brief Getter for the @c dem_dataset pointer to a @c BUF_DEM GDALDataset.
+ * @brief Retrieves the loaded DEM dataset.
  *
- * @return GDALDataset* pointer to the loaded GDAL dataset.
+ * @return GDALDataset* Pointer to the loaded DEM dataset, or @c nullptr if no dataset is loaded.
+ *
+ * @note The returned pointer should not be deallocated externally.
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
- * @date 2024-10-01
+ * @date 2024-12-8
  */
 GDALDataset *MEMPA::BUFFDEM::demGet()
 {
-    return dem_dataset;
+    return source_dataset;
 }
 
 /**
- * @brief Defines an area to be clipped out of the current raster. Input coordinates must be a vector of double pairs.
+ * @brief Defines a geometric clipping area (circle or ellipse) based on input coordinates.
  *
+ * @details
+ * Depending on the number of coordinates provided:
+ * - A single coordinate with a radius generates a circular clipping area.
+ * - Two coordinates with an eccentricity generate an elliptical area.
  *
- * @return OGRGeometry* pointer for the shape of the study area for clipping.
+ * @param coordinates Vector of (latitude, longitude) pairs:
+ *   - Length 1: Defines the center of a circular area.
+ *   - Length 2: Defines two foci of an ellipse.
+ * @param radius Radius for a circular area. Used only for a single coordinate.
+ * @param eccentricity Eccentricity for an elliptical area. Must be in the range [0, 1). Used only for two coordinates.
  *
+ * @return OGRGeometry* Pointer to the resulting geometry (circle or ellipse).
  *
- * @note Input coordinates must be using the Mars 2000 projection!
+ * @throws std::invalid_argument If:
+ * - Radius is negative.
+ * - Eccentricity is out of range [0, 1).
+ * - An unsupported number of coordinates is provided.
+ * @throws std::runtime_error If geometry creation fails.
+ *
+ * @note Input coordinates must use the Mars 2000 projection system, with valid ranges:
+ *   - Latitude: [-90.0, 90.0]
+ *   - Longitude: [-180.0, 180.0]
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
- * @date 2024-12-1
+ * @date 2024-12-8
  */
 OGRGeometry *MEMPA::BUFFDEM::demArea(const std::vector<std::pair<double, double>> coordinates, const double radius, const double eccentricity)
 {
-    if (clip_area)
+    if (clip_geometry)
     {
-        OGRGeometryFactory::destroyGeometry(clip_area);
-        clip_area = nullptr;
+        OGRGeometryFactory::destroyGeometry(clip_geometry);
+        clip_geometry = nullptr;
     }
     switch (coordinates.size())
     {
@@ -160,29 +162,25 @@ OGRGeometry *MEMPA::BUFFDEM::demArea(const std::vector<std::pair<double, double>
     {
         if (radius < 0.0)
         {
-            throw std::invalid_argument("the radius (" + std::to_string(radius) + ") cannot be negative");
+            throw std::invalid_argument("[Error]: Radius cannot be negative");
         }
         std::pair<double, double> center = coordinates[0];
         OGRPoint center_point(center.first, center.second);
-        clip_area = center_point.Buffer(radius);
-        if (clip_area == nullptr)
-        {
-            throw std::runtime_error("failed to create circle of radius " + std::to_string(radius) + " for point (" + std::to_string(center.first) + ", " + std::to_string(center.second) + ")");
-        }
+        clip_geometry = center_point.Buffer(radius);
         break;
     }
     case 2:
     {
         if (eccentricity < 0.0 || eccentricity >= 1.0)
         {
-            throw std::invalid_argument("the eccentricity (" + std::to_string(eccentricity) + ") must be in the range [0, 1)");
+            throw std::invalid_argument("[Error]: Eccentricity must be in range [0, 1)");
         }
         std::pair<double, double> focus1 = coordinates[0];
         std::pair<double, double> focus2 = coordinates[1];
         double foci_distance = std::sqrt(std::pow(focus2.first - focus1.first, 2.0) + std::pow(focus2.second - focus1.second, 2.0));
         double semimajor_axis = foci_distance / (2.0 * std::sqrt(1.0 - eccentricity * eccentricity));
         double semiminor_axis = semimajor_axis * std::sqrt(1.0 - eccentricity * eccentricity);
-        OGRPolygon *ellipse = new OGRPolygon(); // throws bad_alloc
+        OGRPolygon *ellipse = new OGRPolygon();
         OGRLinearRing ring;
         const int num_points = 360;
         for (int i = 0; i < num_points; i++)
@@ -194,68 +192,85 @@ OGRGeometry *MEMPA::BUFFDEM::demArea(const std::vector<std::pair<double, double>
         }
         ring.closeRings();
         ellipse->addRing(&ring);
-        clip_area = ellipse;
-        if (clip_area == nullptr)
-        {
-            throw std::runtime_error("failed to create ellipse of eccentricity " + std::to_string(eccentricity) + " for points (" + std::to_string(focus1.first) + ", " + std::to_string(focus1.second) + ") and (" + std::to_string(focus2.first) + ", " + std::to_string(focus2.second) + ")");
-        }
+        clip_geometry = ellipse;
         break;
     }
     default:
     {
-        throw std::invalid_argument("unsupported number of coordinates: " + std::to_string(coordinates.size()));
+        throw std::invalid_argument("[Error]: Unsupported number of coordinates");
         break;
     }
     }
-    return clip_area;
-}
-
-OGRGeometry *MEMPA::BUFFDEM::demAreaGet()
-{
-    return clip_area;
+    if (clip_geometry == nullptr)
+    {
+        throw std::runtime_error("[Error]: Failed to create geometry");
+    }
+    return clip_geometry;
 }
 
 /**
- * @brief Creates a new shapefile for the current study area.
+ * @brief Retrieves the current clipping geometry.
  *
- *
+ * @return OGRGeometry* Pointer to the existing geometry, or @c nullptr if no geometry is defined.
  *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
- * @date 2024-12-4
+ * @date 2024-12-8
+ */
+OGRGeometry *MEMPA::BUFFDEM::demAreaGet()
+{
+    return clip_geometry;
+}
+
+/**
+ * @brief Creates a shapefile representing the current clipping geometry.
+ *
+ * @details
+ * Saves the defined clipping geometry (e.g., circle or ellipse) to a shapefile for visualization or further processing.
+ *
+ * @param shapefile_name Base name for the output shapefile (without extension).
+ * The function appends a numeric suffix and ".shp" extension.
+ * @param overwrite Whether to overwrite an existing shapefile with the same name:
+ *   - @c true: Overwrites the existing file.
+ *   - @c false: Throws an exception if a file with the same name exists.
+ *
+ * @throws std::filesystem::filesystem_error If file creation fails.
+ * @throws std::runtime_error If GDAL fails to create the shapefile or write its contents.
+ *
+ * @note The output shapefile is saved in the specified output directory.
+ *
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
+ * @date 2024-12-8
  */
 void MEMPA::BUFFDEM::makeSHP(const std::string &shapefile_name, const bool overwrite)
 {
     static int filecounter = 1;
-    std::filesystem::path shapefile_path = out_fp / (shapefile_name + std::to_string(filecounter) + ".shp");
+    shp_fp = output_directory / (shapefile_name + std::to_string(filecounter) + ".shp");
 
     GDALDriver *driver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
 
-    if (std::filesystem::exists(shapefile_path))
+    if (std::filesystem::exists(shp_fp))
     {
-        if (overwrite)
+        if (!overwrite)
         {
-            std::filesystem::remove(shapefile_path);
+            throw std::filesystem::filesystem_error("[Error]: Shapefile already exists", std::make_error_code(std::errc::file_exists));
         }
-        else
-        {
-            throw std::filesystem::filesystem_error(std::string(shapefile_path), std::make_error_code(std::errc::file_exists));
-        }
+        std::filesystem::remove(shp_fp);
     }
 
-    GDALDataset *shapefile = driver->Create(shapefile_path.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
+    GDALDataset *shapefile = driver->Create(shp_fp.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
 
     OGRSpatialReference demSRS;
-    demSRS.importFromWkt(dem_dataset->GetProjectionRef());
+    demSRS.importFromWkt(source_dataset->GetProjectionRef());
 
-    OGRLayer *layer = shapefile->CreateLayer("clip_area", &demSRS, wkbUnknown, nullptr);
+    OGRLayer *layer = shapefile->CreateLayer("clip_geometry", &demSRS, wkbUnknown, nullptr);
 
     OGRFeature *feature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    feature->SetGeometry(clip_area);
+    feature->SetGeometry(clip_geometry);
     feature->GetGeometryRef()->assignSpatialReference(&demSRS);
     OGRErr err = layer->CreateFeature(feature);
     if (err != OGRERR_NONE)
     {
-        throw std::runtime_error("failed to create shapefile: " + err);
+        throw std::runtime_error("[Error]: Failed to write to shapefile");
     }
 
     filecounter++;
@@ -263,54 +278,56 @@ void MEMPA::BUFFDEM::makeSHP(const std::string &shapefile_name, const bool overw
     GDALClose(shapefile);
 }
 
+/**
+ * @brief Clips the DEM dataset to the current clipping geometry and generates a smaller raster file.
+ *
+ * @details
+ * Uses GDAL's @c gdalwarp tool to perform the clipping operation based on the shapefile created with @ref makeSHP().
+ *
+ * @param chunkfile_name Base name for the output clipped raster file (without extension).
+ * The function appends a numeric suffix and ".tif" extension.
+ * @param overwrite Whether to overwrite an existing raster file with the same name:
+ *   - @c true: Overwrites the existing file.
+ *   - @c false: Throws an exception if a file with the same name exists.
+ *
+ * @return GDALDataset* Pointer to the clipped raster dataset.
+ *
+ * @throws std::filesystem::filesystem_error If file creation fails.
+ * @throws std::runtime_error If GDAL or @c gdalwarp fails to execute.
+ *
+ * @note The output raster file is saved in the specified output directory.
+ *
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
+ * @date 2024-12-8
+ */
 GDALDataset *MEMPA::BUFFDEM::demClip(const std::string &chunkfile_name, const bool overwrite)
 {
     static int filecounter = 1;
-    std::filesystem::path clipfile_path = out_fp / (chunkfile_name + std::to_string(filecounter) + ".tif");
-
-    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName("GTiff");
+    std::filesystem::path clipfile_path = output_directory / (chunkfile_name + std::to_string(filecounter) + ".tif");
 
     if (std::filesystem::exists(clipfile_path))
     {
-        if (overwrite)
+        if (!overwrite)
         {
-            std::filesystem::remove(clipfile_path);
+            throw std::filesystem::filesystem_error("[Error]: Clipped file already exists", std::make_error_code(std::errc::file_exists));
         }
-        else
-        {
-            throw std::filesystem::filesystem_error(std::string(clipfile_path), std::make_error_code(std::errc::file_exists));
-        }
+        std::filesystem::remove(clipfile_path);
     }
 
-    if (clip_dataset)
+    std::string command = "(gdalwarp -cutline \"" + shp_fp.string() + "\" -crop_to_cutline -dstnodata -9999 \"" + dem_fp.string() + "\" \"" + clipfile_path.string() + "\")";
+
+    int result = std::system(command.c_str());
+    if (result != 0)
     {
-        GDALClose(clip_dataset);
-        clip_dataset = nullptr;
+        throw std::runtime_error("[Error]: gdalwarp command failed");
     }
 
-    clip_dataset = (GDALDataset *)driver->CreateCopy(clipfile_path.c_str(), dem_dataset, 0, nullptr, nullptr, nullptr);
-    CPLErr err = clip_dataset->GetRasterBand(1)->Fill(0);
+    destination_dataset = static_cast<GDALDataset *>(GDALOpen(clipfile_path.c_str(), GA_ReadOnly));
+    if (!destination_dataset)
+    {
+        throw std::filesystem::filesystem_error("[Error]: Failed to open clipped raster with GDAL", std::make_error_code(std::errc::io_error));
+    }
 
-    const char *src_srs = dem_dataset->GetProjectionRef();
-    const char *dst_srs = clip_dataset->GetProjectionRef();
-
-    warp_options = GDALCreateWarpOptions();
-    warp_options->hSrcDS = dem_dataset;
-    warp_options->hDstDS = clip_dataset;
-    warp_options->nBandCount = 1;
-    warp_options->panSrcBands = (int *)CPLMalloc(sizeof(int) * warp_options->nBandCount);
-    warp_options->panSrcBands[0] = 1;
-    warp_options->panDstBands = (int *)CPLMalloc(sizeof(int) * warp_options->nBandCount);
-    warp_options->panDstBands[0] = 1;
-    warp_options->pfnProgress = GDALTermProgress;
-    warp_options->hCutline = clip_area;
-
-    warp_options->pTransformerArg = GDALCreateGenImgProjTransformer(dem_dataset, src_srs, clip_dataset, dst_srs, true, 1000, 1);
-    warp_options->pfnTransformer = GDALGenImgProjTransform;
-
-    GDALWarpOperation oOperation;
-    oOperation.Initialize(warp_options);
-    oOperation.ChunkAndWarpImage(0, 0, GDALGetRasterXSize(dem_dataset), GDALGetRasterYSize(dem_dataset));
-
-    return clip_dataset;
+    filecounter++;
+    return destination_dataset;
 }
