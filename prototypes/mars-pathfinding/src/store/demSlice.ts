@@ -1,15 +1,16 @@
 // import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { DEMInfo } from '../IPC/electronIPC'
 import { RootState } from './store'
 
 // Define a type for the slice state
 interface DEMState {
-  demPath: string | null
+  demInfo: DEMInfo | null
 }
 
 // Define the initial state using that type
 const initialState: DEMState = {
-  demPath: null,
+  demInfo: null,
 }
 
 export const demSlice = createSlice({
@@ -17,16 +18,16 @@ export const demSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setDemPath: (state, action: PayloadAction<string | null>) => {
+    setDemInfo: (state, action: PayloadAction<DEMInfo | null>) => {
       //TODO: make this more robust
-      state.demPath = action.payload
+      state.demInfo = action.payload
     },
   },
 })
 
-export const { setDemPath } = demSlice.actions
+export const { setDemInfo } = demSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectDemPath = (state: RootState) => state.dem.demPath
+export const selectDemInfo = (state: RootState) => state.dem.demInfo
 
 export default demSlice.reducer

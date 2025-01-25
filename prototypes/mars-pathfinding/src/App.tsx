@@ -1,8 +1,10 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import DemPathDisplay from "./components/DemPathDisplay";
-import DemPathSelect from "./components/DemPathSelect";
+import DemListener from "./components/DemListener";
+import GetChunk from "./components/GetChunk";
+import HeightChunkDisplay from "./components/HeightChunkDisplay";
 import Hello from "./components/Hello";
+import LoadFileButton from "./components/LoadFileButton";
 import "./index.css";
 import { store } from "./store/store";
 
@@ -10,10 +12,11 @@ const root = createRoot(document.body);
 root.render(
   <div>
     <Provider store={store}>
+      <DemListener />
       <Hello />
       <div className="bg-red-700">in app</div>
-      <DemPathSelect />
-      <DemPathDisplay />
+      <LoadFileButton />
+      <GetChunk />
     </Provider>
   </div>
 );

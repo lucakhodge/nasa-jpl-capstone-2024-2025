@@ -1,6 +1,11 @@
 import { app, BrowserWindow } from 'electron';
-import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import path from 'node:path';
+import "./IPC/mainProcDEMFileHandlers";
+
+// I added browser window so I can have getRendererWindow
+let browserWindow: BrowserWindow | undefined = undefined;
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -26,6 +31,7 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+  browserWindow = mainWindow
 };
 
 // This method will be called when Electron has finished
@@ -52,3 +58,9 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+
+// THIS IS ADDED TO GET THE WINDOW
+export const getRendererWindow = () => {
+  return browserWindow;
+};
