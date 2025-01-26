@@ -6,11 +6,13 @@ import { useAppDispatch } from "../store/hooks";
 export default function DEMListener() {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    window.electronIPC.onDEMOpened((event: any, demInfo: DEMInfo) => {
-      // push data to redux store
-      console.log("demInfo", demInfo);
-      dispatch(setDemInfo(demInfo));
-    });
+    window.electronIPC.onDEMOpened(
+      (_event: Electron.IpcRendererEvent, demInfo: DEMInfo) => {
+        // push data to redux store
+        console.log("demInfo", demInfo);
+        dispatch(setDemInfo(demInfo));
+      }
+    );
     window.electronIPC.onDEMClosed(() => {
       // push data to redux store
       dispatch(null);

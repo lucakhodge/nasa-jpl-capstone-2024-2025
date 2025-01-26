@@ -7,8 +7,8 @@ export interface DEMData {
 }
 
 export interface DEMInfo {
-  numChunksX: number;
-  numChunksY: number;
+  width: number;
+  height: number;
 }
 
 export interface ChunkMapTileCoordinate {
@@ -16,10 +16,18 @@ export interface ChunkMapTileCoordinate {
   y: number;
 }
 
-export interface ChunkMapTile {
-  coordinate: ChunkMapTileCoordinate;
+export interface ChunkSize {
   width: number;
   height: number;
+}
+
+export interface ChunkDescription {
+  coordinate: ChunkMapTileCoordinate;
+  chunkSize: ChunkSize;
+}
+
+export interface ChunkMapTile {
+  chunkDescription: ChunkDescription;
   data: number[][];
 }
 
@@ -33,7 +41,7 @@ export const ON_DEM_CLOSED = "on-dem-closed"
 // render -> main 
 export const openDEM = () => ipcRenderer.send(OPEN_DEM)
 export const closeDEM = () => ipcRenderer.send(CLOSE_DEM)
-export const getChunk = (chunk: ChunkMapTileCoordinate): ChunkMapTile | null => ipcRenderer.sendSync(GET_CHUNK, chunk);
+export const getChunk = (chunk: ChunkDescription): ChunkMapTile | null => ipcRenderer.sendSync(GET_CHUNK, chunk);
 
 // main -> rendered
 export const onDEMOpened = (callback: (event: Electron.IpcRendererEvent, props: DEMInfo) => void) => ipcRenderer.on(ON_DEM_OPENED, callback);

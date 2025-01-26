@@ -5,6 +5,7 @@ interface HeightChunkDisplayPropsI {
   chunk: ChunkMapTile;
 }
 
+//TODO: currently always displays a square, need to make it display the actual chunk size
 export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -26,10 +27,39 @@ export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
         (maxHeight - minHeight)) *
       255;
 
-    // Simple gradient from blue (low) to red (high)
-    const red = Math.min(255, normalizedHeight);
-    const green = Math.min(255, 255 - normalizedHeight);
-    const blue = Math.min(255, 255 - normalizedHeight);
+    // Create rainbow gradient from black through colors to white
+    let red, green, blue;
+    if (normalizedHeight < 51) {
+      // First fifth - black to blue
+      const t = normalizedHeight / 51;
+      red = 0;
+      green = 0;
+      blue = Math.floor(t * 255);
+    } else if (normalizedHeight < 102) {
+      // Second fifth - blue to green
+      const t = (normalizedHeight - 51) / 51;
+      red = 0;
+      green = Math.floor(t * 255);
+      blue = Math.floor((1 - t) * 255);
+    } else if (normalizedHeight < 153) {
+      // Third fifth - green to yellow
+      const t = (normalizedHeight - 102) / 51;
+      red = Math.floor(t * 255);
+      green = 255;
+      blue = 0;
+    } else if (normalizedHeight < 204) {
+      // Fourth fifth - yellow to red
+      const t = (normalizedHeight - 153) / 51;
+      red = 255;
+      green = Math.floor((1 - t) * 255);
+      blue = 0;
+    } else {
+      // Final fifth - red to white
+      const t = (normalizedHeight - 204) / 51;
+      red = 255;
+      green = Math.floor(t * 255);
+      blue = Math.floor(t * 255);
+    }
     // const blue = Math.floor(Math.random() * 256);
     // console.log(normalizedHeight, red, green, blue);
 
@@ -41,27 +71,49 @@ export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
     if (!ctx) return;
 
     // Set canvas size based on the chunk dimensions
-    canvas.width = props.chunk.width;
-    canvas.height = props.chunk.height;
+    canvas.width = props.chunk.chunkDescription.chunkSize.width;
+    canvas.height = props.chunk.chunkDescription.chunkSize.height;
+    console.log("canvas", canvas.width, canvas.height);
 
-    let maxHeight = props.chunk.data[0][0];
-    let minHeight = props.chunk.data[0][0];
+    // const minHeight = -65536; // Minimum possible height value
+    // const maxHeight = 65536; // Maximum possible height value
 
-    for (let row = 0; row < props.chunk.height; row++) {
-      for (let col = 0; col < props.chunk.width; col++) {
-        const heightValue = props.chunk.data[row][col];
-        if (heightValue > maxHeight) {
-          maxHeight = heightValue;
-        }
-        if (heightValue < minHeight) {
-          minHeight = heightValue;
-        }
-      }
-    }
+    const minHeight = -5000;
+    const maxHeight = 5000;
+
+    // let maxHeight = props.chunk.data[0][0];
+    // let minHeight = props.chunk.data[0][0];
+    // for (
+    //   let row = 0;
+    //   row < props.chunk.chunkDescription.chunkSize.height;
+    //   row++
+    // ) {
+    //   for (
+    //     let col = 0;
+    //     col < props.chunk.chunkDescription.chunkSize.height;
+    //     col++
+    //   ) {
+    //     const heightValue = props.chunk.data[row][col];
+    //     if (heightValue > maxHeight) {
+    //       maxHeight = heightValue;
+    //     }
+    //     if (heightValue < minHeight) {
+    //       minHeight = heightValue;
+    //     }
+    //   }
+    // }
 
     // Loop through the height data and draw each pixel
-    for (let row = 0; row < props.chunk.height; row++) {
-      for (let col = 0; col < props.chunk.width; col++) {
+    for (
+      let row = 0;
+      row < props.chunk.chunkDescription.chunkSize.width;
+      row++
+    ) {
+      for (
+        let col = 0;
+        col < props.chunk.chunkDescription.chunkSize.height;
+        col++
+      ) {
         const heightValue = props.chunk.data[row][col];
         const color = heightToColor(heightValue, maxHeight, minHeight);
 

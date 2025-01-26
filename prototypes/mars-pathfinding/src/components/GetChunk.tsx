@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChunkMapTile, ChunkMapTileCoordinate } from "../IPC/electronIPC";
+import { ChunkDescription, ChunkMapTile } from "../IPC/electronIPC";
 import HeightChunkDisplay from "./HeightChunkDisplay";
 
 export default function GetChunk() {
@@ -18,11 +18,11 @@ export default function GetChunk() {
 
   const handleGetChunk = () => {
     if (typeof coordX === "number" && typeof coordY === "number") {
-      const chunkCoordinate: ChunkMapTileCoordinate = {
-        x: coordX,
-        y: coordY,
+      const chunkDescription: ChunkDescription = {
+        coordinate: { x: coordX, y: coordY },
+        chunkSize: { width: 2000, height: 2000 }, // TODO: make this dynamic, ALSO ERROR WHEN THEY ARE DIFFERENT
       };
-      const newChunk = window.electronIPC.getChunk(chunkCoordinate);
+      const newChunk = window.electronIPC.getChunk(chunkDescription);
       // alert("Got chunk");
       console.log(newChunk);
       setChunk(newChunk);

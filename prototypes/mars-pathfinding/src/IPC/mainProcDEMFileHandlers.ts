@@ -1,9 +1,9 @@
-import { dialog, ipcMain, ipcRenderer } from "electron";
+import { dialog, ipcMain } from "electron";
 import { getRendererWindow } from "../main";
 import { DEMManager } from "./DEMManager";
-import { ChunkMapTileCoordinate, CLOSE_DEM, DEMInfo, GET_CHUNK, ON_DEM_CLOSED, ON_DEM_OPENED, OPEN_DEM } from "./electronIPC";
+import { ChunkDescription, CLOSE_DEM, DEMInfo, GET_CHUNK, ON_DEM_CLOSED, ON_DEM_OPENED, OPEN_DEM } from "./electronIPC";
 
-const myDEMManager: DEMManager = new DEMManager(2000)
+const myDEMManager: DEMManager = new DEMManager()
 
 ipcMain.on(OPEN_DEM, async () => {
 try {
@@ -43,9 +43,10 @@ ipcMain.on(CLOSE_DEM, () => {
   getRendererWindow().webContents.send(ON_DEM_CLOSED)
 })
 
-ipcMain.on(GET_CHUNK, (event, props: ChunkMapTileCoordinate) => {
+ipcMain.on(GET_CHUNK, (event, props: ChunkDescription) => {
   // call DEM manger get chuck for that coordiante
   //set event.returnValue to that chunk (this is what the renderer will get back)
+  console.log("GETTING CHUNK", props)
    myDEMManager.getChunk(props).then((chunk) => {
     event.returnValue = chunk
   })
