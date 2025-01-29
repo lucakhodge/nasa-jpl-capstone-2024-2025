@@ -46,3 +46,10 @@ export const getChunk = (chunk: ChunkDescription): ChunkMapTile | null => ipcRen
 // main -> rendered
 export const onDEMOpened = (callback: (event: Electron.IpcRendererEvent, props: DEMInfo) => void) => ipcRenderer.on(ON_DEM_OPENED, callback);
 export const onDEMClosed = (callback: (event: Electron.IpcRendererEvent) => void) => ipcRenderer.on(ON_DEM_CLOSED, callback);
+
+
+export const REACT_LOADING_DONE = "react-loaded"
+export const CALL_CPP = "call-cpp"
+
+export const setReactLoaded = () => ipcRenderer.send(REACT_LOADING_DONE)
+export const callCpp = (message: string) => ipcRenderer.invoke(CALL_CPP, message)
