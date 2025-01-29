@@ -16,7 +16,7 @@ all: $(WINDOWS_OUT) darwin-universal $(LINUX_OUT)
 
 # Windows build (requires MinGW or similar)
 $(WINDOWS_OUT):
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(WINDOWS_OUT)
+	$(CXX) $(CXXFLAGS) -target x86_64-pc-windows-gnu $(SRC) -o $(WINDOWS_OUT)
 
 # macOS x86_64 (Intel) build
 $(DARWIN_X64_OUT):
@@ -32,7 +32,7 @@ darwin-universal: $(DARWIN_X64_OUT) $(DARWIN_ARM64_OUT)
 
 # Linux build
 $(LINUX_OUT):
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(LINUX_OUT)
+	$(CXX) $(CXXFLAGS) -target x86_64-linux-gnu $(SRC) -o $(LINUX_OUT)
 
 # Clean build files
 clean:
