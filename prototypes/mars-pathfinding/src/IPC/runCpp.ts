@@ -6,11 +6,20 @@ import { CALL_CPP } from "./electronIPC";
 
 const execPromise = promisify(exec)
 
-const getExecutablePath = () => { 
-  const basePath = app.isPackaged ? path.join(process.resourcesPath, 'assets') : path.join(__dirname, '../../assets'); 
-  // Adjust for Vite's structure 
-  return path.join(basePath, 'example'); 
-  };
+const getExecutablePath = () => {
+  const basePath = app.isPackaged ? path.join(process.resourcesPath, 'assets') : path.join(__dirname, '../../assets');
+  // Get executable name based on platform
+  let executableName = 'example';
+  if (process.platform === 'win32') {
+    executableName = 'example-win';
+  } else if (process.platform === 'darwin') {
+    executableName = 'example-darwin';
+  } else if (process.platform === 'linux') {
+    executableName = 'example-linux';
+  }
+  // Adjust for Vite's structure
+  return path.join(basePath, executableName);
+};
 
 ipcMain.handle(CALL_CPP, async () => {
   console.log("in call cpp handle")
