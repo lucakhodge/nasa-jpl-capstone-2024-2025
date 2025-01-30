@@ -1,23 +1,21 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import DemListener from "./components/DemListener";
-import GetChunk from "./components/GetChunk";
-import Hello from "./components/Hello";
 import LoadFileButton from "./components/LoadFileButton";
-import RunCpp from "./components/RunCpp";
+import Map from "./components/Map";
 import "./index.css";
 import { store } from "./store/store";
-
 const root = createRoot(document.body);
 root.render(
   <div>
     <Provider store={store}>
       <DemListener />
-      <Hello />
+      <LoadFileButton />
+      {/* <Hello />
       <RunCpp />
       <div className="bg-red-700">in app</div>
-      <LoadFileButton />
-      <GetChunk />
+      <GetChunk /> */}
+      <Map />
     </Provider>
   </div>
 );
