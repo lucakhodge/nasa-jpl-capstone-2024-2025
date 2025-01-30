@@ -2,12 +2,11 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import DemListener from "./components/DemListener";
 import GetChunk from "./components/GetChunk";
-import HeightChunkDisplay from "./components/HeightChunkDisplay";
 import Hello from "./components/Hello";
 import LoadFileButton from "./components/LoadFileButton";
+import RunCpp from "./components/RunCpp";
 import "./index.css";
 import { store } from "./store/store";
-import RunCpp from "./components/RunCpp";
 
 const root = createRoot(document.body);
 root.render(
