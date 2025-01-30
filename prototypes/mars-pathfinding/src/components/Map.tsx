@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { ChunkDescription } from "../IPC/electronIPC";
+import { selectDemInfo } from "../store/demSlice";
+import { useAppSelector } from "../store/hooks";
 import HeightChunkDisplay from "./HeightChunkDisplay";
 
 export default function Map() {
+  const demInfo = useAppSelector(selectDemInfo);
+
   const [coordX, setCoordX] = useState<number | string>("");
   const [coordY, setCoordY] = useState<number | string>("");
 
@@ -30,7 +34,7 @@ export default function Map() {
     }
   };
 
-  return (
+  return demInfo !== null ? (
     <div>
       <div>
         <label>
@@ -97,6 +101,7 @@ export default function Map() {
             console.log(`Scrolled to coordinates: (${coordX}, ${coordY})`);
           }}
         >
+          <div style={{ width: demInfo.width, height: demInfo.height }}></div>
           {chunks.map((chunk, index) => (
             <div
               key={index}
@@ -112,5 +117,7 @@ export default function Map() {
         </div>
       </div>
     </div>
+  ) : (
+    <div>first select a dem file</div>
   );
 }
