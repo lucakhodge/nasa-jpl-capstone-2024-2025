@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ChunkMapTile } from "../IPC/electronIPC";
 
 interface HeightChunkDisplayPropsI {
@@ -7,6 +7,8 @@ interface HeightChunkDisplayPropsI {
 
 //TODO: currently always displays a square, need to make it display the actual chunk size
 export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
+  console.log("HCD: props:", props);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const heightToColor = (
@@ -67,51 +69,27 @@ export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
   };
 
   const renderChunk = (canvas: HTMLCanvasElement) => {
+    console.log("HCD: chunk:", props.chunk);
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size based on the chunk dimensions
+    // Set canvas size to match chunk dimensions exactly
     canvas.width = props.chunk.chunkDescription.chunkSize.width;
     canvas.height = props.chunk.chunkDescription.chunkSize.height;
-    console.log("canvas", canvas.width, canvas.height);
-
-    // const minHeight = -65536; // Minimum possible height value
-    // const maxHeight = 65536; // Maximum possible height value
 
     const minHeight = -5000;
     const maxHeight = 5000;
 
-    // let maxHeight = props.chunk.data[0][0];
-    // let minHeight = props.chunk.data[0][0];
-    // for (
-    //   let row = 0;
-    //   row < props.chunk.chunkDescription.chunkSize.height;
-    //   row++
-    // ) {
-    //   for (
-    //     let col = 0;
-    //     col < props.chunk.chunkDescription.chunkSize.height;
-    //     col++
-    //   ) {
-    //     const heightValue = props.chunk.data[row][col];
-    //     if (heightValue > maxHeight) {
-    //       maxHeight = heightValue;
-    //     }
-    //     if (heightValue < minHeight) {
-    //       minHeight = heightValue;
-    //     }
-    //   }
-    // }
-
     // Loop through the height data and draw each pixel
     for (
       let row = 0;
-      row < props.chunk.chunkDescription.chunkSize.width;
+      row < props.chunk.chunkDescription.chunkSize.height;
       row++
     ) {
       for (
         let col = 0;
-        col < props.chunk.chunkDescription.chunkSize.height;
+        col < props.chunk.chunkDescription.chunkSize.width;
         col++
       ) {
         const heightValue = props.chunk.data[row][col];
@@ -130,5 +108,5 @@ export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
     }
   }, [props.chunk]);
 
-  return <canvas ref={canvasRef} />;
+  return <canvas className="border border-black" ref={canvasRef} />;
 }

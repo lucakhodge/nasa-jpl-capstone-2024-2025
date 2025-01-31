@@ -7,10 +7,15 @@ import HeightChunkDisplay from "./HeightChunkDisplay";
 export default function Map() {
   const demInfo = useAppSelector(selectDemInfo);
 
-  const numAdditionalChunks = 2;
+  const numAdditionalChunks = 0;
 
-  const chunkSize = 1000;
+  // const chunkSize = 1000;
+  const chunkWidth = 1000;
+  const chunkHeight = 600;
   const [chunks, setChunks] = useState([]);
+
+  const totalCoordinateWidth = Math.ceil(demInfo?.width / chunkWidth);
+  const totalCoordinateHeight = Math.ceil(demInfo?.height / chunkHeight);
 
   const [lowCoordX, setLowCoordX] = useState(0);
   const [highCoordX, setHighCoordX] = useState(0);
@@ -35,10 +40,10 @@ export default function Map() {
     const highY = container.scrollTop + container.clientHeight;
 
     // Calculate coordinates based on scroll position and chunk size
-    const lowCoordX = Math.floor(lowX / chunkSize);
-    const highCoordX = Math.floor(highX / chunkSize);
-    const lowCoordY = Math.floor(lowY / chunkSize);
-    const highCoordY = Math.floor(highY / chunkSize);
+    const lowCoordX = Math.floor(lowX / chunkWidth);
+    const highCoordX = Math.floor(highX / chunkWidth);
+    const lowCoordY = Math.floor(lowY / chunkHeight);
+    const highCoordY = Math.floor(highY / chunkHeight);
 
     setLowCoordX(lowCoordX);
     setHighCoordX(highCoordX);
@@ -51,7 +56,7 @@ export default function Map() {
   const getChunk = (coordX: number, coordY: number) => {
     const chunkDescription: ChunkDescription = {
       coordinate: { x: coordX, y: coordY },
-      chunkSize: { width: chunkSize, height: chunkSize }, // TODO: make this dynamic, ALSO ERROR WHEN THEY ARE DIFFERENT
+      chunkSize: { width: chunkWidth, height: chunkHeight }, // TODO: make this dynamic, ALSO ERROR WHEN THEY ARE DIFFERENT
     };
     const newChunk = window.electronIPC.getChunk(chunkDescription);
     return newChunk;
@@ -80,19 +85,19 @@ export default function Map() {
           if (newChunk !== null) {
             newChunks.push(newChunk);
           }
-        } else {
-          const existingChunk = chunks.find(
-            (chunk) =>
-              chunk.chunkDescription.coordinate.x === x &&
-              chunk.chunkDescription.coordinate.y === y
-          );
-          if (existingChunk) {
-            newChunks.push(existingChunk);
-          }
+          // } else {
+          //   const existingChunk = chunks.find(
+          //     (chunk) =>
+          //       chunk.chunkDescription.coordinate.x === x &&
+          //       chunk.chunkDescription.coordinate.y === y
+          //   );
+          //   if (existingChunk) {
+          //     newChunks.push(existingChunk);
+          //   }
         }
       }
     }
-    setChunks([...newChunks]);
+    setChunks([...chunks, ...newChunks]);
   };
 
   return demInfo !== null ? (
@@ -101,8 +106,8 @@ export default function Map() {
         <div
           style={{
             position: "relative",
-            width: "2500px", // Set a fixed width
-            height: "1500px", // Set a fixed height
+            width: "90vw", // Set a fixed width
+            height: "90vh", // Set a fixed height
             overflow: "auto", // Enable scrolling
             border: "1px solid #ccc", // Optional: adds a border to see the container bounds
           }}
@@ -114,8 +119,8 @@ export default function Map() {
               key={index}
               style={{
                 position: "absolute",
-                left: `${chunk.chunkDescription.coordinate.x * chunkSize}px`,
-                top: `${chunk.chunkDescription.coordinate.y * chunkSize}px`,
+                left: `${chunk.chunkDescription.coordinate.x * chunkWidth}px`,
+                top: `${chunk.chunkDescription.coordinate.y * chunkHeight}px`,
               }}
             >
               <HeightChunkDisplay chunk={chunk} />
