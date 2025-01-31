@@ -74,24 +74,19 @@ export default function HeightChunkDisplay(props: HeightChunkDisplayPropsI) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to match chunk dimensions exactly
-    canvas.width = props.chunk.chunkDescription.chunkSize.width;
-    canvas.height = props.chunk.chunkDescription.chunkSize.height;
+    const width = props.chunk.data[0].length;
+    const height = props.chunk.data.length;
 
-    const minHeight = -5000;
-    const maxHeight = 5000;
+    // Set canvas size to match chunk dimensions exactly
+    canvas.width = width;
+    canvas.height = height;
+
+    const minHeight = -10000;
+    const maxHeight = 10000;
 
     // Loop through the height data and draw each pixel
-    for (
-      let row = 0;
-      row < props.chunk.chunkDescription.chunkSize.height;
-      row++
-    ) {
-      for (
-        let col = 0;
-        col < props.chunk.chunkDescription.chunkSize.width;
-        col++
-      ) {
+    for (let row = 0; row < height; row++) {
+      for (let col = 0; col < width; col++) {
         const heightValue = props.chunk.data[row][col];
         const color = heightToColor(heightValue, maxHeight, minHeight);
 
