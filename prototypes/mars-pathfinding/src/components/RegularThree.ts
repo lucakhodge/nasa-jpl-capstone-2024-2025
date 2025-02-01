@@ -1,3 +1,4 @@
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ChunkMapTile } from "../IPC/electronIPC";
 import * as THREE from "three";
 export default class RegularThree {
@@ -49,8 +50,22 @@ export default class RegularThree {
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
 
-    const minVal = Math.min(...chunk.data.flat());
-    const maxVal = Math.max(...chunk.data.flat());
+    const minVal = chunk.data.reduce(
+      (min, row) =>
+        Math.min(
+          min,
+          row.reduce((rowMin, val) => Math.min(rowMin, val), Infinity)
+        ),
+      Infinity
+    );
+    const maxVal = chunk.data.reduce(
+      (max, row) =>
+        Math.max(
+          max,
+          row.reduce((rowMax, val) => Math.max(rowMax, val), -Infinity)
+        ),
+      -Infinity
+    );
     // Normalize data to range [-1, 1]
     const normalizedData = chunk.data.map((row) =>
       row.map((val) => 2 * ((val - minVal) / (maxVal - minVal)) - 1)
@@ -139,5 +154,20 @@ export default class RegularThree {
     // this.scene.add(cube);
 
     this.renderer.render(this.scene, this.camera);
+
+    const r = this.renderer;
+    const c = this.camera;
+    const s = this.scene;
+
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      // mesh.rotation.x += 0.01;
+      // mesh.rotation.y += 0.01;
+      controls.update();
+      r.render(s, c);
+    }
+    animate();
   }
 }
