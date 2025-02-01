@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChunkDescription, ChunkMapTile } from "../IPC/electronIPC";
 import HeightChunkDisplay from "./HeightChunkDisplay";
+import HeightChunkDisplay3D from "./HeightChunkDisplay3D";
 
 export default function GetChunk() {
   const [coordX, setCoordX] = useState<number | string>("");
@@ -58,7 +59,7 @@ export default function GetChunk() {
       <button onClick={handleGetChunk}>Get Chunk</button>
       {/* <div>{JSON.stringify(chunk)}</div> */}
       {chunk !== null ? (
-        <HeightChunkDisplay chunk={chunk}></HeightChunkDisplay>
+        <HeightChunkDisplay3D chunk={chunk}></HeightChunkDisplay3D>
       ) : (
         <div>No chunk</div>
       )}
