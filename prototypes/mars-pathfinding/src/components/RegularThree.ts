@@ -6,6 +6,10 @@ export default class RegularThree {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
 
+  unit = 10;
+  unitWidth = this.unit;
+  unitHeight = this.unit;
+
   constructor(canvas: HTMLCanvasElement) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -43,58 +47,43 @@ export default class RegularThree {
   }
 
   displayChunk(chunk: ChunkMapTile) {
-    while (this.scene.children.length > 0) {
-      this.scene.remove(this.scene.children[0]);
-    }
+    // while (this.scene.children.length > 0) {
+    //   this.scene.remove(this.scene.children[0]);
+    // }
     console.log(chunk);
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
 
-    const minVal = chunk.data.reduce(
-      (min, row) =>
-        Math.min(
-          min,
-          row.reduce((rowMin, val) => Math.min(rowMin, val), Infinity)
-        ),
-      Infinity
-    );
-    const maxVal = chunk.data.reduce(
-      (max, row) =>
-        Math.max(
-          max,
-          row.reduce((rowMax, val) => Math.max(rowMax, val), -Infinity)
-        ),
-      -Infinity
-    );
+    const minVal = -5000;
+    const maxVal = 5000;
     // Normalize data to range [-1, 1]
-    const normalizedData = chunk.data.map((row) =>
-      row.map((val) => 2 * ((val - minVal) / (maxVal - minVal)) - 1)
+    const normalizedData = chunk.data.map(
+      (row) =>
+        // row.map((val) => 2 * ((val - minVal) / (maxVal - minVal)) - 1)
+        row.map((val) => (val - minVal) / (maxVal - minVal) - 1) // -.5 to .5
     );
-
-    // 2. Create typed arrays
-    // Each vertex has (x, y, z) => 3 floats
     const positions = new Float32Array(rows * cols * 3);
 
-    // Each cell has two triangles = 6 indices
     const indices = new Uint32Array((rows - 1) * (cols - 1) * 6);
 
-    // 3. Fill the position buffer
     let idx3 = 0; // position index for the Float32Array
-    const scale = 0.1; // Adjust this value to make the mesh larger or smaller
-    const xOffset = -((cols - 1) * scale) / 2;
-    const zOffset = -((rows - 1) * scale) / 2;
+    // const scale = 0.1; // Adjust this value to make the mesh larger or smaller
+    // const xOffset = -((cols - 1) * scale) / 2;
+    // const zOffset = -((rows - 1) * scale) / 2;
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         // x = j, z = i, y = heightData[i][j]
-        positions[idx3 + 0] = j * scale + xOffset; // x
+        positions[idx3 + 0] =
+          chunk.chunkDescription.coordinate.x * this.unitWidth +
+          (j * this.unitWidth) / cols; // x
         positions[idx3 + 1] = normalizedData[i][j]; // y
-        positions[idx3 + 2] = i * scale + zOffset; // z
-
+        positions[idx3 + 2] =
+          chunk.chunkDescription.coordinate.y * this.unitHeight +
+          (i * this.unitHeight) / rows; // z
         idx3 += 3;
       }
     }
 
-    // 4. Fill the index buffer
     // We go through each cell (i, j) and create two triangles:
     //  - Triangle A: (i,j), (i+1,j), (i,j+1)
     //  - Triangle B: (i+1,j), (i+1,j+1), (i,j+1)
@@ -119,7 +108,6 @@ export default class RegularThree {
       }
     }
 
-    // 5. Build the BufferGeometry
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
@@ -127,7 +115,6 @@ export default class RegularThree {
     // (optional) compute normals for proper lighting
     geometry.computeVertexNormals();
 
-    // 6. Create the mesh
     const material = new THREE.MeshStandardMaterial({
       color: 0x88ee88,
       wireframe: false,
@@ -142,8 +129,16 @@ export default class RegularThree {
     this.scene.add(directionalLight);
 
     // Adjust camera position to better view the terrain
-    this.camera.position.set(5, 5, 5);
-    this.camera.lookAt(0, 0, 0);
+    // this.camera.position.set(
+    //   chunk.chunkDescription.coordinate.x * this.unitWidth + 1,
+    //   0 + 1,
+    //   chunk.chunkDescription.coordinate.y * this.unitHeight + 1
+    // );
+    // this.camera.lookAt(
+    //   chunk.chunkDescription.coordinate.x * this.unitWidth,
+    //   0,
+    //   chunk.chunkDescription.coordinate.y * this.unitHeight
+    // );
 
     const mesh = new THREE.Mesh(geometry, material);
     this.scene.add(mesh);
@@ -155,13 +150,41 @@ export default class RegularThree {
 
     this.renderer.render(this.scene, this.camera);
 
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    controls.target.set(
+      chunk.chunkDescription.coordinate.x * this.unitWidth +
+        0.5 * this.unitWidth,
+      0,
+      chunk.chunkDescription.coordinate.y * this.unitHeight +
+        0.5 * this.unitHeight
+    );
+    const offset = new THREE.Vector3(
+      this.unitHeight,
+      this.unit,
+      this.unitWidth
+    );
+    this.camera.position.copy(controls.target).add(offset);
+    controls.update();
+
+    // this.addPath();
+
+    const objectGeometry = new THREE.SphereGeometry(0.01);
+    const objectMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const movingObject = new THREE.Mesh(objectGeometry, objectMaterial);
+    movingObject.position.set(0, 0, 0); // Place at center of the mesh
+    this.scene.add(movingObject);
+
+    let t = 0; // Animation progress (0 to 1)
     const r = this.renderer;
     const c = this.camera;
     const s = this.scene;
-
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
-
     function animate() {
+      // t += 0.001; // Adjust speed
+      // if (t > 1) t = 0; // Loop animation
+
+      // const position = curve.getPointAt(t);
+      // movingObject.position.set(position.x, position.y, position.z);
+
       requestAnimationFrame(animate);
       // mesh.rotation.x += 0.01;
       // mesh.rotation.y += 0.01;
@@ -169,5 +192,20 @@ export default class RegularThree {
       r.render(s, c);
     }
     animate();
+  }
+
+  addPath() {
+    const pathPoints = [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(10, 10, 10),
+    ];
+
+    const curve = new THREE.CatmullRomCurve3(pathPoints);
+
+    const points = curve.getPoints(50);
+    const pathGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const pathLine = new THREE.Line(pathGeometry, pathMaterial);
+    this.scene.add(pathLine);
   }
 }

@@ -11,6 +11,9 @@ export class DEMManager {
 
     // Get the first image from the GeoTIFF file
     const image = await this.geoTiff.getImage();
+    const fileDirectory = image.getFileDirectory();
+    const modelPixelScale = fileDirectory.ModelPixelScale;
+    console.log("modelPixelScale", modelPixelScale);
     this.demInfo = {
       width: image.getWidth(),
       height: image.getHeight(),

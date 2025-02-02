@@ -9,15 +9,14 @@ export default function RawThree() {
   const [regularThree, setRegularThree] = useState<RegularThree | null>(null);
 
   const handleClick = () => {
-    console.log("yep");
     const chunk = window.electronIPC.getChunk({
       coordinate: {
         x: coordX,
         y: coordY,
       },
       chunkSize: {
-        width: 500,
-        height: 500,
+        width: 2000,
+        height: 2000,
       },
     });
     setChunk(chunk);
