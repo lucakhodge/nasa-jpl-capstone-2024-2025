@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RegularThree from "./RegularThree";
 import { ChunkMapTile } from "../IPC/electronIPC";
 export default function RawThree() {
@@ -15,8 +15,8 @@ export default function RawThree() {
         y: coordY,
       },
       chunkSize: {
-        width: 2000,
-        height: 2000,
+        width: 5000,
+        height: 5000,
       },
     });
     setChunk(chunk);

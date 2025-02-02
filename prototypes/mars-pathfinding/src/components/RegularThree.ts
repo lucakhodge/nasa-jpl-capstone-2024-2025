@@ -47,9 +47,10 @@ export default class RegularThree {
   }
 
   displayChunk(chunk: ChunkMapTile) {
-    // while (this.scene.children.length > 0) {
-    //   this.scene.remove(this.scene.children[0]);
-    // }
+    while (this.scene.children.length > 0) {
+      this.scene.remove(this.scene.children[0]);
+    }
+
     console.log(chunk);
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
@@ -115,8 +116,48 @@ export default class RegularThree {
     // (optional) compute normals for proper lighting
     geometry.computeVertexNormals();
 
+    geometry.computeBoundingBox();
+    const heatGradiant = new THREE.ShaderMaterial({
+      uniforms: {
+        color1: {
+          value: new THREE.Color("red")
+        },
+        color2: {
+          value: new THREE.Color("purple")
+        },
+        bboxMin: {
+          value: geometry.boundingBox.min
+        },
+        bboxMax: {
+          value: geometry.boundingBox.max
+        }
+      },
+      vertexShader: `
+    uniform vec3 bboxMin;
+    uniform vec3 bboxMax;
+  
+    varying vec2 vUv;
+
+    void main() {
+      vUv.y = (position.y - bboxMin.y) / (bboxMax.y - bboxMin.y);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+      fragmentShader: `
+    uniform vec3 color1;
+    uniform vec3 color2;
+  
+    varying vec2 vUv;
+    
+    void main() {
+      
+      gl_FragColor = vec4(mix(color1, color2, vUv.y), 1.0);
+    }
+  `,
+    })
+
     const material = new THREE.MeshStandardMaterial({
-      color: 0x88ee88,
+      color: 0xDB7030,
       wireframe: false,
     });
 
@@ -140,7 +181,7 @@ export default class RegularThree {
     //   chunk.chunkDescription.coordinate.y * this.unitHeight
     // );
 
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, heatGradiant);
     this.scene.add(mesh);
 
     // const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -153,10 +194,10 @@ export default class RegularThree {
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.target.set(
       chunk.chunkDescription.coordinate.x * this.unitWidth +
-        0.5 * this.unitWidth,
+      0.5 * this.unitWidth,
       0,
       chunk.chunkDescription.coordinate.y * this.unitHeight +
-        0.5 * this.unitHeight
+      0.5 * this.unitHeight
     );
     const offset = new THREE.Vector3(
       this.unitHeight,
