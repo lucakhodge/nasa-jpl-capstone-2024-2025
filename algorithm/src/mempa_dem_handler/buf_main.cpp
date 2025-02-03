@@ -31,7 +31,7 @@ int main(int argc, const char *argv[])
         mars_dem.demArea(coordinates, 0.0, 0.8);
         mars_dem.makeSHP("testshape", true);
         mars_dem.demClip("testclip", true);
-        mars_dem.demVector(*mars_dem.getOutput());
+        std::vector<std::vector<double>> myvec = mars_dem.demVector(*mars_dem.getOutput());
     }
     catch (const std::exception &e)
     {
