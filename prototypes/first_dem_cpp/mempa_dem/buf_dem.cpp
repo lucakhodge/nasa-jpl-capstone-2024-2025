@@ -1,9 +1,13 @@
 /* C++ Standard Libraries */
 #include <cmath>
 
-/* GDAL libraries. Check dependencies in README. */
+/* GDAL Libraries
+   Check dependencies in README */
 #include <ogrsf_frmts.h>
 #include <gdalwarper.h>
+
+/* GeoTIFF Libraries */
+#include <tiffio.h>
 
 /* Capstone Project Libraries */
 #include "buf_dem.h"
@@ -18,7 +22,7 @@
  * @param input_filepath Path to the input DEM GeoTIFF file.
  * @param output_filepath Directory path where generated files (e.g., shapefiles, clipped rasters) will be saved.
  *
- * @throws std::filesystem::filesystem_error If:
+ * @throws std::filesystem::filesystem_error if:
  * - The input file does not exist or is not a file.
  * - The output directory does not exist or is not a directory.
  * - GDAL fails to open the input DEM file.
@@ -178,8 +182,8 @@ OGRGeometry *MEMPA::BUFFDEM::demArea(const std::vector<std::pair<double, double>
         std::pair<double, double> focus1 = coordinates[0];
         std::pair<double, double> focus2 = coordinates[1];
         double foci_distance = std::sqrt(std::pow(focus2.first - focus1.first, 2.0) + std::pow(focus2.second - focus1.second, 2.0));
-        double semimajor_axis = foci_distance / (2.0 * std::sqrt(1.0 - eccentricity * eccentricity));
-        double semiminor_axis = semimajor_axis * std::sqrt(1.0 - eccentricity * eccentricity);
+        double semimajor_axis = foci_distance / (2.0 * std::sqrt(1.0 - std::pow(eccentricity, 2.0)));
+        double semiminor_axis = semimajor_axis * std::sqrt(1.0 - std::pow(eccentricity, 2.0));
         OGRPolygon *ellipse = new OGRPolygon();
         OGRLinearRing ring;
         const int num_points = 360;
@@ -284,7 +288,7 @@ void MEMPA::BUFFDEM::makeSHP(const std::string &shapefile_name, const bool overw
  * @details
  * Uses GDAL's @c gdalwarp tool to perform the clipping operation based on the shapefile created with @ref makeSHP().
  *
- * @param chunkfile_name Base name for the output clipped raster file (without extension).
+ * @param output_name Base name for the output clipped raster file (without extension).
  * The function appends a numeric suffix and ".tif" extension.
  * @param overwrite Whether to overwrite an existing raster file with the same name:
  *   - @c true: Overwrites the existing file.
@@ -300,21 +304,21 @@ void MEMPA::BUFFDEM::makeSHP(const std::string &shapefile_name, const bool overw
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
  * @date 2024-12-8
  */
-GDALDataset *MEMPA::BUFFDEM::demClip(const std::string &chunkfile_name, const bool overwrite)
+GDALDataset *MEMPA::BUFFDEM::demClip(const std::string &output_name, const bool overwrite)
 {
     static int filecounter = 1;
-    std::filesystem::path clipfile_path = output_directory / (chunkfile_name + std::to_string(filecounter) + ".tif");
+    output_raster = output_directory / (output_name + std::to_string(filecounter) + ".tif");
 
-    if (std::filesystem::exists(clipfile_path))
+    if (std::filesystem::exists(output_raster))
     {
         if (!overwrite)
         {
             throw std::filesystem::filesystem_error("[Error]: Clipped file already exists", std::make_error_code(std::errc::file_exists));
         }
-        std::filesystem::remove(clipfile_path);
+        std::filesystem::remove(output_raster);
     }
 
-    std::string command = "(gdalwarp -cutline \"" + shp_fp.string() + "\" -crop_to_cutline -dstnodata -9999 \"" + dem_fp.string() + "\" \"" + clipfile_path.string() + "\")";
+    std::string command = "(gdalwarp -cutline \"" + shp_fp.string() + "\" -crop_to_cutline -dstnodata -9999 \"" + dem_fp.string() + "\" \"" + output_raster.string() + "\")";
 
     int result = std::system(command.c_str());
     if (result != 0)
@@ -322,7 +326,7 @@ GDALDataset *MEMPA::BUFFDEM::demClip(const std::string &chunkfile_name, const bo
         throw std::runtime_error("[Error]: gdalwarp command failed");
     }
 
-    destination_dataset = static_cast<GDALDataset *>(GDALOpen(clipfile_path.c_str(), GA_ReadOnly));
+    destination_dataset = static_cast<GDALDataset *>(GDALOpen(output_raster.c_str(), GA_ReadOnly));
     if (!destination_dataset)
     {
         throw std::filesystem::filesystem_error("[Error]: Failed to open clipped raster with GDAL", std::make_error_code(std::errc::io_error));
@@ -330,4 +334,67 @@ GDALDataset *MEMPA::BUFFDEM::demClip(const std::string &chunkfile_name, const bo
 
     filecounter++;
     return destination_dataset;
+}
+
+/**
+ * @brief Creates a 2D vector map from an input raster (.tif) file.
+ * 
+ * @details Should return the vector to be directly passed to the pathfinding algorithm.
+ *          Currently untested.
+ * 
+ * @todo Test function incorporation into rover algorithm input.
+ *
+ * @param tif_filepath Filepath for a GeoTIFF raster to be read.
+ * 
+ * @throws std::bad_alloc If memory allocation fails.
+ * 
+ * @return std::vector<std::vector<double>> A 2D vector map of the input raster.
+ * 
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
+ * @date 2025-2-3
+ */
+std::vector<std::vector<double>> MEMPA::BUFFDEM::demVector(const std::filesystem::path &tif_filepath)
+{
+    std::vector<std::vector<double>> tif_map;
+
+    TIFF* geotiff = TIFFOpen(tif_filepath.c_str(), "r");
+
+    uint32_t width, length;
+    TIFFGetField(geotiff, TIFFTAG_IMAGEWIDTH, &width);
+    TIFFGetField(geotiff, TIFFTAG_IMAGELENGTH, &length);
+
+    uint32_t* buffer = (uint32_t*)_TIFFmalloc(sizeof(uint32_t) * width);
+    if (buffer == nullptr)
+    {
+        TIFFClose(geotiff);
+        throw std::bad_alloc();
+    }
+
+    for (uint32_t row = 0; row < width; row++)
+    {
+        TIFFReadScanline(geotiff, buffer, row);
+        std::vector<double> line_data;
+        for (uint32_t col = 0; col < length; col++)
+        {   
+            line_data.push_back(static_cast<double>(buffer[col]));
+        }
+        tif_map.push_back(line_data);
+    }
+
+    _TIFFfree(buffer);
+    TIFFClose(geotiff);
+    return tif_map;
+}
+
+/**
+ * @brief Returns a pointer to the output path of the clipped raster.
+ *
+ * @return std::filesystem::path* The path to the clipped raster created by the @c demClip function.
+ * 
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
+ * @date 2025-2-3
+ */
+std::filesystem::path *MEMPA::BUFFDEM::getOutput()
+{
+    return &output_raster;
 }

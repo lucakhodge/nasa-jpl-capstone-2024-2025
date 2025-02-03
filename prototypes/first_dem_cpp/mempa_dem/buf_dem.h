@@ -4,8 +4,10 @@
 /* C++ Standard Libraries */
 #include <filesystem>
 #include <string_view>
+#include <vector>
 
-/* GDAL libraries. Check dependencies in README. */
+/* GDAL Libraries
+   Check dependencies in README */
 #include <gdal_priv.h>
 #include <gdalwarper.h>
 #include <ogrsf_frmts.h>
@@ -64,11 +66,14 @@ namespace MEMPA
         OGRGeometry *demAreaGet();
         void makeSHP(const std::string &shapefile_name, const bool overwrite);
         GDALDataset *demClip(const std::string &chunkfile_name, const bool overwrite);
+        std::vector<std::vector<double>> demVector(const std::filesystem::path &tif_filepath);
+        std::filesystem::path *getOutput();
 
     private:
         std::filesystem::path dem_fp;           // Original DEM filepath.
         std::filesystem::path output_directory; // Output directory.
         std::filesystem::path shp_fp;           // Shape filepath.
+        std::filesystem::path output_raster;    // Output raster clipped from original raster.
         GDALDataset *source_dataset;            // Pointer to the GDAL dataset.
         GDALDataset *destination_dataset;       // Clipped dataset chunk for the algorithm.
         OGRGeometry *clip_geometry;             // Polygon for defining the clip.
