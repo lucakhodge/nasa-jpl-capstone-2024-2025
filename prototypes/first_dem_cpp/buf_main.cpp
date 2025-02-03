@@ -3,7 +3,6 @@
 
 /* Capstone Project Libraries */
 #include "buf_dem.h"
-#include "buf_rover.h"
 
 /**
  * @brief Main function for terminal interface testing.
@@ -32,6 +31,7 @@ int main(int argc, const char *argv[])
         mars_dem.demArea(coordinates, 0.0, 0.8);
         mars_dem.makeSHP("testshape", true);
         mars_dem.demClip("testclip", true);
+        mars_dem.demVector(*mars_dem.getOutput());
     }
     catch (const std::exception &e)
     {
