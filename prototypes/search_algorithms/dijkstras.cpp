@@ -146,6 +146,7 @@ vector<int> getNeighborIndexs(int rows, int cols, int row, int col)
     return out;
 }
 
+//searches though a heightmap to find the shortest route from startPoint to endPoint.  Returns a vector of cordinate pairs representing the path.
 vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPoint[2], int endPoint[2], double maxSlope, double pixelSize)
 {
     //get height and length of heightmap
@@ -237,6 +238,7 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
     return {};
 }
 
+//Does the same as dijkstras above but only returns the cordinates one by one.  Requires an external vecctor to store the entire path.  
 pair<int, int> dijkstrasStepByStep(vector<vector<double> > &heightmap, int startPoint[2], int endPoint[2], double maxSlope, double pixelSize, vector<pair<int, int>> *pathStorage)
 {
     pair<int, int> out;
@@ -264,6 +266,7 @@ pair<int, int> dijkstrasStepByStep(vector<vector<double> > &heightmap, int start
     }
 }
 
+//allows you to print the path inisde of the dijkstras algoritm.  
 void pathTrace(Node finalNode)
 {
     Node *workingNode = &finalNode;
@@ -276,6 +279,7 @@ void pathTrace(Node finalNode)
     cout << "(" << workingNode->x << "," << workingNode->y << ") , height: " << workingNode->height << " is the start Node" << endl;
 }
 
+//takes the linked list style Nodes from iside of dijkstras and returns the path as a list of cordinates.  
 vector<pair<int, int>> pathToList(Node finalNode)
 {
     Node *workingNode = &finalNode;
