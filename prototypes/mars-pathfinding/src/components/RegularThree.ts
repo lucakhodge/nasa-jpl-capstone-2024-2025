@@ -3,54 +3,34 @@ import { ChunkMapTile } from "../IPC/electronIPC";
 import * as THREE from "three";
 import { Vector3 } from "@react-three/fiber";
 export default class RegularThree {
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
+  canvas: HTMLCanvasElement;
+  // scene: THREE.Scene;
+  // camera: THREE.PerspectiveCamera;
+  // renderer: THREE.WebGLRenderer;
 
   unit = 10;
   unitWidth = this.unit;
   unitHeight = this.unit;
 
   constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+  }
+
+  displayChunk(chunk: ChunkMapTile) {
+    // while (this.scene.children.length > 0) {
+    //   this.scene.remove(this.scene.children[0]);
+    // }
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      // window.innerWidth / window.innerHeight,
-      canvas.clientWidth / canvas.clientHeight,
+      this.canvas.clientWidth / this.canvas.clientHeight,
       0.1,
       1000
     );
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-    // renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-    // document.body.appendChild(renderer.domElement);
-
-    // const geometry = new THREE.BoxGeometry(1, 1, 1);
-    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-
-    camera.position.z = 10;
-
-    // function animate() {
-    //   renderer.render(scene, camera);
-    //   cube.rotation.x += 0.01;
-    //   cube.rotation.y += 0.01;
-    // }
-    // renderer.setAnimationLoop(animate);
-
-    renderer.render(scene, camera);
-
-    this.scene = scene;
-    this.camera = camera;
-    this.renderer = renderer;
-  }
-
-  displayChunk(chunk: ChunkMapTile) {
-    while (this.scene.children.length > 0) {
-      this.scene.remove(this.scene.children[0]);
-    }
+    const renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+    renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
 
     console.log(chunk);
     const rows = chunk.data.length;
@@ -164,11 +144,11 @@ export default class RegularThree {
 
     // Add some light to see the mesh better
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    this.scene.add(ambientLight);
+    scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 5, 5);
-    this.scene.add(directionalLight);
+    scene.add(directionalLight);
 
     // Adjust camera position to better view the terrain
     // this.camera.position.set(
@@ -184,16 +164,16 @@ export default class RegularThree {
 
     // const mesh = new THREE.Mesh(geometry, heatGradiant);
     const mesh = new THREE.Mesh(geometry, material);
-    this.scene.add(mesh);
+    scene.add(mesh);
 
     // const geometry = new THREE.BoxGeometry(1, 1, 1);
     // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     // const cube = new THREE.Mesh(geometry, material);
     // this.scene.add(cube);
 
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
 
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(
       chunk.chunkDescription.coordinate.x * this.unitWidth +
       0.5 * this.unitWidth,
@@ -206,21 +186,21 @@ export default class RegularThree {
       this.unit,
       this.unitWidth
     );
-    this.camera.position.copy(controls.target).add(offset);
+    camera.position.copy(controls.target).add(offset);
     controls.update();
 
-    this.addPath(chunk.chunkDescription.coordinate.x, chunk.chunkDescription.coordinate.y, rows, cols, normalizedData);
+    this.addPath(chunk.chunkDescription.coordinate.x, chunk.chunkDescription.coordinate.y, rows, cols, normalizedData, scene);
 
     const objectGeometry = new THREE.SphereGeometry(0.01);
     const objectMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     const movingObject = new THREE.Mesh(objectGeometry, objectMaterial);
     movingObject.position.set(0, 0, 0); // Place at center of the mesh
-    this.scene.add(movingObject);
+    scene.add(movingObject);
 
     let t = 0; // Animation progress (0 to 1)
-    const r = this.renderer;
-    const c = this.camera;
-    const s = this.scene;
+    const r = renderer;
+    const c = camera;
+    const s = scene;
     function animate() {
       // t += 0.001; // Adjust speed
       // if (t > 1) t = 0; // Loop animation
@@ -237,7 +217,7 @@ export default class RegularThree {
     animate();
   }
 
-  addPath(startX: number, startY: number, width: number, height: number, data: number[][]) {
+  addPath(startX: number, startY: number, width: number, height: number, data: number[][], scene: THREE.Scene) {
     // const pathPoints = [
     //   new THREE.Vector3(startX * this.unitWidth, 0, startY * this.unitHeight),
     //   new THREE.Vector3((startX + 1) * this.unitWidth, 0, (startY + 1) * this.unitHeight),
@@ -256,6 +236,6 @@ export default class RegularThree {
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-    this.scene.add(pathLine);
+    scene.add(pathLine);
   }
 }
