@@ -15,8 +15,8 @@ export default function RawThree() {
         y: coordY,
       },
       chunkSize: {
-        width: 5000,
-        height: 5000,
+        width: 2000,
+        height: 2000,
       },
     });
     setChunk(chunk);
