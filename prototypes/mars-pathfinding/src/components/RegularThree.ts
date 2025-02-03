@@ -1,6 +1,7 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ChunkMapTile } from "../IPC/electronIPC";
 import * as THREE from "three";
+import { Vector3 } from "@react-three/fiber";
 export default class RegularThree {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -181,7 +182,8 @@ export default class RegularThree {
     //   chunk.chunkDescription.coordinate.y * this.unitHeight
     // );
 
-    const mesh = new THREE.Mesh(geometry, heatGradiant);
+    // const mesh = new THREE.Mesh(geometry, heatGradiant);
+    const mesh = new THREE.Mesh(geometry, material);
     this.scene.add(mesh);
 
     // const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -207,7 +209,7 @@ export default class RegularThree {
     this.camera.position.copy(controls.target).add(offset);
     controls.update();
 
-    // this.addPath();
+    this.addPath(chunk.chunkDescription.coordinate.x, chunk.chunkDescription.coordinate.y, rows, cols, normalizedData);
 
     const objectGeometry = new THREE.SphereGeometry(0.01);
     const objectMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
@@ -235,17 +237,24 @@ export default class RegularThree {
     animate();
   }
 
-  addPath() {
-    const pathPoints = [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(10, 10, 10),
-    ];
+  addPath(startX: number, startY: number, width: number, height: number, data: number[][]) {
+    // const pathPoints = [
+    //   new THREE.Vector3(startX * this.unitWidth, 0, startY * this.unitHeight),
+    //   new THREE.Vector3((startX + 1) * this.unitWidth, 0, (startY + 1) * this.unitHeight),
+    // ];
+    // const curve = new THREE.CatmullRomCurve3(pathPoints);
+    // const points = curve.getPoints(50);
+    // const pathGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    const curve = new THREE.CatmullRomCurve3(pathPoints);
+    const offset = 0.01
+    const positions = [];
+    for (let i = 0; i < width; i++) {
+      positions[i] = new THREE.Vector3(startX * this.unitWidth + i * this.unitWidth / width, data[i][i] + offset, startY * this.unitHeight + i * this.unitHeight / height);
+    }
 
-    const points = curve.getPoints(50);
-    const pathGeometry = new THREE.BufferGeometry().setFromPoints(points);
-    const pathMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+    const pathGeometry = new THREE.BufferGeometry().setFromPoints(positions);
+    const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     const pathLine = new THREE.Line(pathGeometry, pathMaterial);
     this.scene.add(pathLine);
   }
