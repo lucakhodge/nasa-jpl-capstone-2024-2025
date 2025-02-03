@@ -6,37 +6,50 @@ export class DEMManager {
   private geoTiff: GeoTIFF | null = null;
 
   async openDEM(filePath: string) {
-    //TODO handle can't open 
+    //TODO handle can't open
     this.geoTiff = await fromFile(filePath); // Load the GeoTIFF file
 
     // Get the first image from the GeoTIFF file
     const image = await this.geoTiff.getImage();
+    const fileDirectory = image.getFileDirectory();
+    const modelPixelScale = fileDirectory.ModelPixelScale;
+    console.log("modelPixelScale", modelPixelScale);
     this.demInfo = {
       width: image.getWidth(),
-      height: image.getHeight()
-    }
+      height: image.getHeight(),
+    };
   }
   closeDEM() {
     //
-    this.geoTiff = null
-    this.demInfo = null
+    this.geoTiff = null;
+    this.demInfo = null;
   }
   getDEMInfo() {
-
     return this.demInfo;
-
   }
   async getChunk(description: ChunkDescription) {
     if (!this.geoTiff) {
-      console.error('DEM data is not loaded');
+      console.error("DEM data is not loaded");
       return null;
     }
 
     // Calculate the area to read based on the chunk coordinates
     const startX = description.coordinate.x * description.chunkSize.width;
     const startY = description.coordinate.y * description.chunkSize.height;
-    const endX = Math.min(startX + description.chunkSize.width, this.demInfo.width);
-    const endY = Math.min(startY + description.chunkSize.height, this.demInfo.height);
+    const endX = Math.min(
+      startX + description.chunkSize.width,
+      this.demInfo.width
+    );
+    const endY = Math.min(
+      startY + description.chunkSize.height,
+      this.demInfo.height
+    );
+
+    console.log(
+      "width, height",
+      description.chunkSize.width,
+      description.chunkSize.height
+    );
 
     try {
       // Get the image and read the rasters for the specified region
@@ -49,13 +62,20 @@ export class DEMManager {
         throw new Error("Raster was a number");
       }
 
+      // Calculate dimensions of the chunk
+      const width = endX - startX;
+      const height = endY - startY;
+
+      console.log("elevationData", elevationData.length);
+
       // Convert the raw raster data into a 2D array
       const chunkData: number[][] = [];
-      let index = 0;
-      for (let x = startX; x < endX; x++) {
+      for (let y = 0; y < height; y++) {
         const row: number[] = [];
-        for (let y = startY; y < endY; y++) {
-          row.push(elevationData[index++]);
+        for (let x = 0; x < width; x++) {
+          // Calculate index in the flat array using row-major order
+          const index = y * width + x;
+          row.push(elevationData[index]);
         }
         chunkData.push(row);
       }
@@ -63,12 +83,12 @@ export class DEMManager {
       const tile: ChunkMapTile = {
         chunkDescription: description,
         data: chunkData,
-      }
-      return tile
+      };
+      console.log("dimensions", tile.data.length, tile.data[0].length);
+      return tile;
     } catch (err) {
-      console.error('Error reading chunk data:', err);
+      console.error("Error reading chunk data:", err);
       return null;
     }
-
   }
 }
