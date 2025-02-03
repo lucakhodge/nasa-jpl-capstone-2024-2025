@@ -45,9 +45,16 @@ namespace MEMPA
      * - @c dem_fp A pointer to a GDALDataset that represents the loaded DEM.
      * - @c output_directory A file path for the input DEM file.
      * - @c source_dataset An output directory for saving processed data and results.
+     * - @c desination_dataset Clipped dataset chunk for the algorithm.
+     * - @c shp_fp Shape filepath.
+     * - @c output_raster Output raster clipped from original raster.
+     * - @c clip_geometry Polygon for defining the clip.
+     * - @c psWarpOptions Warp options for clipping.
      *
      * The class provides functionality to:
      * - Load a DEM file from the specified file path.
+     * - Create a smaller clip of that DEM.
+     * - Create a 2D vector of a DEM for algorithmic analysis.
      *
      * This class is designed to facilitate easy integration
      * of DEM data into larger geospatial processing workflows
