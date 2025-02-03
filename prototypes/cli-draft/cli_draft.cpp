@@ -44,11 +44,12 @@ void print_helper() {
               << "  --output         Output results file\n"
               << "  --iterations     Number of iterations\n"
               << "  --slope          Slope tolerances (e.g., 10,20,30)\n"
+              << "  --radius         Visibility Radius of Rover (in meters)\n"
               << "  --help           Print help message\n";
 }
 
 // split a string into x and y coordinates (for specific coordinates)
-std::pair<float, float> parseCoordinates(std::string input) {
+std::pair<double, double> parseCoordinates(std::string input) {
     // finding comma in string
     size_t comma_pos = input.find(',');
 
@@ -60,8 +61,8 @@ std::pair<float, float> parseCoordinates(std::string input) {
     // use try catch to handle any unexpected errors when parsing string
     try {
         // assign x and y
-        float x = std::stof(input.substr(0, comma_pos));
-        float y = std::stof(input.substr(comma_pos + 1));
+        double x = std::stof(input.substr(0, comma_pos));
+        double y = std::stof(input.substr(comma_pos + 1));
         // return x and y as pair
         return std::make_pair(x, y);
     } catch (const std::exception& e) {
@@ -72,7 +73,7 @@ std::pair<float, float> parseCoordinates(std::string input) {
 
 
 // parse area ranges (e.g., "1,1:5,5")
-std::pair<std::pair<float, float>, std::pair<float, float> > parseArea(std::string input) {
+std::pair<std::pair<double, double>, std::pair<double, double> > parseArea(std::string input) {
     // find colon
     size_t colon_pos = input.find(':');
     // if colon not found
@@ -82,8 +83,8 @@ std::pair<std::pair<float, float>, std::pair<float, float> > parseArea(std::stri
     }
 
     // Parse start and end coordinates using parseCoordinates func
-    std::pair<float, float> start = parseCoordinates(input.substr(0, colon_pos));
-    std::pair<float, float> end = parseCoordinates(input.substr(colon_pos + 1));
+    std::pair<double, double> start = parseCoordinates(input.substr(0, colon_pos));
+    std::pair<double, double> end = parseCoordinates(input.substr(colon_pos + 1));
     return std::make_pair(start, end);
 }
 
@@ -137,6 +138,7 @@ int main(int argc, char *argv[]) {
     {"output", required_argument, nullptr, 'o'},
     {"iterations", required_argument, nullptr, 'n'},
     {"slope", required_argument, nullptr, 'p'},
+    {"radius", required_argument, nullptr, 'r'},
     {"help", no_argument, nullptr, 'h'},
     {nullptr, 0, nullptr, 0}
     };
@@ -145,8 +147,9 @@ int main(int argc, char *argv[]) {
     int opt;
 
     std::string start, end, input_file, output_file;
-    int iterations = 0;
-    float slope_tolerance = 0.0;
+    int iterations = -1;
+    double slope_tolerance = -1;
+    double radius = -1;
     std::string start_area, end_area;
 
     // for coordinate check func
@@ -160,14 +163,8 @@ int main(int argc, char *argv[]) {
         // switch cases
         switch (opt) {
             case 's': 
-                if (optarg) {
-                    start = optarg; 
-                    start_set = true;
-                } 
-                else {
-                    std::cerr << "Error: Missing argument for --start." << std::endl;
-                    exit(1);
-                }
+                start = optarg; 
+                start_set = true; 
                 break;
             case 'e': 
                 end = optarg; 
@@ -191,13 +188,10 @@ int main(int argc, char *argv[]) {
                 iterations = std::stoi(optarg);
                 break;
             case 'p': 
-                if (optarg) {
-                    slope_tolerance = std::stof(optarg);
-                } 
-                else {
-                    std::cerr << "Error: Missing argument for --slope." << std::endl;
-                    exit(1);
-                }
+                slope_tolerance = std::stof(optarg);
+                break;
+            case 'r':
+                radius = std::stof(optarg);
                 break;
             case 'h': 
                 print_helper();
@@ -218,11 +212,11 @@ int main(int argc, char *argv[]) {
     // if start coordinates given
     if (start_set) {
         // get pair of coordinates
-        std::pair<float, float> start_coords = parseCoordinates(start); 
+        std::pair<double, double> start_coords = parseCoordinates(start); 
         // x
-        float start_x = start_coords.first;   
+        double start_x = start_coords.first;   
         // y
-        float start_y = start_coords.second;
+        double start_y = start_coords.second;
         // print out for debugging
         std::cout << "Start X: " << start_x << ", Start Y: " << start_y << std::endl;
         
@@ -231,11 +225,11 @@ int main(int argc, char *argv[]) {
     // Parse and validate end coordinates
     if (end_set) {
         // get pair of coordinates
-        std::pair<float, float> end_coords = parseCoordinates(end);
+        std::pair<double, double> end_coords = parseCoordinates(end);
         // x
-        float end_x = end_coords.first;
+        double end_x = end_coords.first;
         // y
-        float end_y = end_coords.second;
+        double end_y = end_coords.second;
         // print out for debugging
         std::cout << "End X: " << end_x << ", End Y: " << end_y << std::endl;
     }
@@ -243,13 +237,13 @@ int main(int argc, char *argv[]) {
     // Parse and validate start area
     if (start_area_set) {
         // get pair
-        std::pair<std::pair<float, float>, std::pair<float, float> > area = parseArea(start_area);
+        std::pair<std::pair<double, double>, std::pair<double, double> > area = parseArea(start_area);
     
         // individual coordinates
-        float start_area_x1 = area.first.first;
-        float start_area_y1 = area.first.second;
-        float start_area_x2 = area.second.first;
-        float start_area_y2 = area.second.second;
+        double start_area_x1 = area.first.first;
+        double start_area_y1 = area.first.second;
+        double start_area_x2 = area.second.first;
+        double start_area_y2 = area.second.second;
         // print out for debugging
         std::cout << "Start area: From (" << start_area_x1 << ", " << start_area_y1 << ") " << "to (" << start_area_x2 << ", " << start_area_y2 << ")" << std::endl;
     }
@@ -257,13 +251,13 @@ int main(int argc, char *argv[]) {
     // Parse and validate end area
     if (end_area_set) {
         // get pairs
-        std::pair<std::pair<float, float>, std::pair<float, float> > area = parseArea(end_area);
+        std::pair<std::pair<double, double>, std::pair<double, double> > area = parseArea(end_area);
 
         // individual coordinates
-        float end_area_x1 = area.first.first;
-        float end_area_y1 = area.first.second;
-        float end_area_x2 = area.second.first;
-        float end_area_y2 = area.second.second;
+        double end_area_x1 = area.first.first;
+        double end_area_y1 = area.first.second;
+        double end_area_x2 = area.second.first;
+        double end_area_y2 = area.second.second;
         // print out for debugging
         std::cout << "End area: From (" << end_area_x1 << ", " << end_area_y1 << ") " << "to (" << end_area_x2 << ", " << end_area_y2 << ")" << std::endl;
     }
@@ -286,17 +280,35 @@ int main(int argc, char *argv[]) {
         std::cout << "Output file found! -> " << output_file  << std::endl;
     }
 
-    // check iterations is positive int
+    // check iterations is positive int and initialized
     if(iterations <= 0){
-        std::cout << "Error: Iterations is less than or equal to 0" << std::endl;
+        std::cout << "Error: Iterations is less than or equal to 0 or not initialized" << std::endl;
         exit(1);
     }
     else{
         std::cout<< "Number of Iterations: " << iterations << std::endl; 
     }
 
-    // slope errors handled internally
-    std::cout << "Slope Tolerance (in degrees): " << slope_tolerance << std::endl;
+    if(slope_tolerance == -1)
+    {
+        std::cout << "Error: No slope tolerance initialized" << std::endl;
+        exit(1);
+    }
+    else{
+        std::cout << "Slope Tolerance (in degrees): " << slope_tolerance << std::endl;
+    }
+    
 
-    std::cout << "Program has successfully intialized all necessary inputs. Ready to find path..." << std::endl;
+    if(radius == -1){
+        std::cout << "Error: No radius initialized" << std::endl;
+        exit(1);
+    }
+    else{
+        std::cout << "Visibility radius around the rover (in meters): " << radius << std::endl;
+    }
+    
+
+    std::cout << "Program has successfully intialized all necessary inputs. Passing DEM file, coordinates, and radius to DEM Handler..." << std::endl;
+    // how do pass the needed variables to BUFFDEM
+    
 }
