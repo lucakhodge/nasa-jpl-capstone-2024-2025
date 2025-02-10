@@ -32,6 +32,7 @@ Required flags:
 #include <string>
 #include <fstream>
 #include <regex>
+#include "buf_dem.h"
 
 // print out helper menu
 void print_helper() {
@@ -128,6 +129,9 @@ bool file_exist_check(const std::string& filename) {
 
 
 int main(int argc, char *argv[]) {
+    // for passing to DEM
+    std::vector<std::pair<double, double>> coords;
+
     // convert long_options into characters for switch case
     struct option long_options[] = {
     {"start", required_argument, nullptr, 's'},
@@ -203,12 +207,32 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // check input file first to pass to DEM handler
+    if(!file_exist_check(input_file)){
+        std::cout << "Error: Input file does not exist or cannot be read" << std::endl;
+        exit(1);
+    }
+    else{
+        std::cout << "Input file found! -> " << input_file << std::endl;
+    }
+
+    // check output file
+    if(!file_exist_check(output_file)){
+        std::cout << "Error: Output file path is empty" << std::endl;
+        exit(1);
+    }
+    else{
+        std::cout << "Output file found! -> " << output_file  << std::endl;
+    }
+    // initialize DEM handler
+    MEMPA::BUFFDEM demHandler(input_file, output_file);
+
     // check coordinates
     if(!coordinate_check(start_set,end_set,start_area_set,end_area_set)){
         std::cout << "Error: Check coordinate input" << std::endl;
         exit(1);
     }
-   
+
     // if start coordinates given
     if (start_set) {
         // get pair of coordinates
@@ -262,24 +286,6 @@ int main(int argc, char *argv[]) {
         std::cout << "End area: From (" << end_area_x1 << ", " << end_area_y1 << ") " << "to (" << end_area_x2 << ", " << end_area_y2 << ")" << std::endl;
     }
 
-    // check input file
-    if(!file_exist_check(input_file)){
-        std::cout << "Error: Input file does not exist or cannot be read" << std::endl;
-        exit(1);
-    }
-    else{
-        std::cout << "Input file found! -> " << input_file << std::endl;
-    }
-
-    // check output file
-    if(!file_exist_check(output_file)){
-        std::cout << "Error: Output file path is empty" << std::endl;
-        exit(1);
-    }
-    else{
-        std::cout << "Output file found! -> " << output_file  << std::endl;
-    }
-
     // check iterations is positive int and initialized
     if(iterations <= 0){
         std::cout << "Error: Iterations is less than or equal to 0 or not initialized" << std::endl;
@@ -309,6 +315,6 @@ int main(int argc, char *argv[]) {
     
 
     std::cout << "Program has successfully intialized all necessary inputs. Passing DEM file, coordinates, and radius to DEM Handler..." << std::endl;
-    // how do pass the needed variables to BUFFDEM
-    
+
 }
+
