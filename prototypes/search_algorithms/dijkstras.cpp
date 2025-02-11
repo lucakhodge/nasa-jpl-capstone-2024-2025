@@ -1,7 +1,8 @@
-#include "dijkstra.h"
+#include "dijkstras.h"
 
 using namespace std;
 
+//this is just an example of one way to use, feel free to comment out to run a main somewhere else
 int main() 
 {
     
@@ -44,9 +45,13 @@ int main()
         {13.99, 6.91, 93.83, 92.77, 89.40, 81.76, 42.83, 54.16, 88.39, 28.85}
     };
 
-    int startPoint[2] = {0,0};
-    int endPoint[2] = {4,4};
-    int endPoint1[2] = {9,9};
+    Dijkstras my_dijkstras;
+
+    pair<int, int> startPoint = {0,0};
+    pair<int, int> startPoint1 = {9,9};
+    pair<int, int> endPoint = {4,4};
+    pair<int, int> endPoint1 = {9,9};
+    pair<int, int> endPoint2 = {0,0};
 
     // dijkstras(heightmap1, startPoint, endPoint, 45.0, 1.0);
     // cout << endl;
@@ -54,100 +59,39 @@ int main()
     // cout << endl;
     // dijkstras(heightmap3, startPoint, endPoint, 45.0, 1.0);
     // cout << endl;
-    vector<pair<int, int>> heightmap4Path = dijkstras(heightmap4, startPoint, endPoint1, 45.0, 2.0);
+    vector<pair<int, int>> heightmap4Path = my_dijkstras.dijkstras(heightmap4, startPoint, endPoint1, 45.0, 2.0);
 
-    vector<pair<int, int>> pathStorage = {};
-    for(int i = 0; i < heightmap4Path.size(); i++)
+
+    pair<int, int> cordinate;
+    //vector<pair<int, int>> pathStorage = {};
+    while(my_dijkstras.can_get_next_step())
     {
-        pair<int, int> cordinate = dijkstrasStepByStep(heightmap4, startPoint, endPoint1, 45.0, 2.0, &pathStorage);
+        cordinate = my_dijkstras.get_step(heightmap4, startPoint, endPoint1, 45.0, 2.0);//, &pathStorage);
         cout << cordinate.first << "," << cordinate.second << endl;
     }
 
-    
+    cout << endl;
+
+    cout << "The path is now traced, this next call will return -1, -1" << endl;
+    cordinate = my_dijkstras.get_step(heightmap4, startPoint, endPoint1, 45.0, 2.0);
+    cout << cordinate.first << "," << cordinate.second << endl;
+
+    cout << endl;
+
+    //this resets the step by step and you can call it again with a different path
+    my_dijkstras.reset_dijkstras();
+
+    while(my_dijkstras.can_get_next_step())
+    {
+        cordinate = my_dijkstras.get_step(heightmap4, startPoint1, endPoint2, 45.0, 2.0);//, &pathStorage);
+        cout << cordinate.first << "," << cordinate.second << endl;
+    }
 
 }
 
-class Node {
-    public:
-        int height;
-        Node *previous;
-        double distFromPrevious;
-        double distFromNeighbor;
-        bool visited;
-        vector<int> neighborIndex;
-        int selfIndex;
-        int x;
-        int y;
-};
-
-bool compareNodesByHeight(Node* node1, Node* node2) {
-    return node1->height < node2->height;
-}
-
-bool compareNodesByDistFromNeighbor(Node* node1, Node* node2){
-    return node1->distFromNeighbor < node2->distFromNeighbor;
-}
-
-int calcFlatIndex(int cols, int row, int col)
-{
-    return row * cols + col;
-}
-
-double calculateDistanceBetweenNeighbors(Node* node1, Node* node2, double rise, double pixelSize)
-{
-    if(node1->x == node2->x || node1->y == node2->y)
-    {
-        return (sqrt(pow(rise,2) + pow(pixelSize,2)));
-    }
-    else
-    {
-        double diagonalHorizontalDistance = (sqrt(pow(pixelSize,2) + pow(pixelSize,2)));
-        return(sqrt(pow(rise,2) + pow(diagonalHorizontalDistance,2)));
-    }
-}
-
-vector<int> getNeighborIndexs(int rows, int cols, int row, int col)
-{
-    vector<int> out;
-
-    if (row > 0) //if not in top row add above
-    {
-        out.push_back(calcFlatIndex(cols, row-1, col));
-    }
-    if(row < rows-1) //if not in botom row add below
-    {
-        out.push_back(calcFlatIndex(cols, row+1, col));
-    }
-    if(col > 0) //if not far left col then add left
-    {
-        out.push_back(calcFlatIndex(cols, row, col-1));
-    }
-    if(col < cols-1) //if not far right col then add right
-    {
-        out.push_back(calcFlatIndex(cols, row, col+1));
-    }
-    if (row > 0 && col > 0) 
-    {
-        out.push_back(calcFlatIndex(cols, row-1, col-1)); // top-left
-    }
-    if (row > 0 && col < cols - 1) 
-    {
-        out.push_back(calcFlatIndex(cols, row-1, col+1)); // top-right
-    }
-    if (row < rows - 1 && col > 0) 
-    {
-        out.push_back(calcFlatIndex(cols, row+1, col-1)); // bottom-left
-    }
-    if (row < rows - 1 && col < cols - 1) 
-    {
-        out.push_back(calcFlatIndex(cols, row+1, col+1)); // bottom-right
-    }
-
-    return out;
-}
 
 //searches though a heightmap to find the shortest route from startPoint to endPoint.  Returns a vector of cordinate pairs representing the path.
-vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPoint[2], int endPoint[2], double maxSlope, double pixelSize)
+vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int,int> endPoint, double maxSlope, double pixelSize)
 {
     //get height and length of heightmap
     int rows = heightmap.size();
@@ -163,10 +107,10 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
     {
         for (int b = 0; b < cols; b++)
         {
-            int index = calcFlatIndex(cols, a, b);
+            int index = calc_flat_index(cols, a, b);
             graph[index].height = heightmap[a][b];
             graph[index].visited = false;
-            graph[index].neighborIndex = getNeighborIndexs(rows, cols, a, b);
+            graph[index].neighborIndex = get_neighbor_indexs(rows, cols, a, b);
             graph[index].selfIndex = index;
             graph[index].distFromPrevious = DBL_MAX;
             graph[index].x = b;
@@ -174,7 +118,7 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
         }
     }
 
-    int startNodeIndex = calcFlatIndex(cols, startPoint[0], startPoint[1]);
+    int startNodeIndex = calc_flat_index(cols, startPoint.first, startPoint.second);
     graph[startNodeIndex].distFromPrevious = 0;
     Q.push(&graph[startNodeIndex]);
 
@@ -185,10 +129,10 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
         Q.pop();
         currentNode->visited = true;
 
-        if(currentNode->x == endPoint[1] && currentNode->y == endPoint[0])
+        if(currentNode->x == endPoint.second && currentNode->y == endPoint.first)
         {
             //pathTrace(graph[calcFlatIndex(cols, endPoint[1], endPoint[0])]);
-            return pathToList(graph[calcFlatIndex(cols, endPoint[1], endPoint[0])]);
+            return path_to_list(graph[calc_flat_index(cols, endPoint.second, endPoint.first)]);
         }
 
         //add unvisited neighbors of that node "shortests/closeest/easiest to drive to" to Q and upate their distance from source and their previous nodes
@@ -204,7 +148,7 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
             double rise = abs(currentNode->height - currentNeighbor->height);
             double slope = rise/pixelSize;
             //This is going to need to be changed to incorperated
-            double distanceBetweenNodeAndNeighbor = calculateDistanceBetweenNeighbors(currentNode, currentNeighbor, rise, pixelSize);
+            double distanceBetweenNodeAndNeighbor = calculate_distance_between_nodes(currentNode, currentNeighbor, rise, pixelSize);
             currentNeighbor->distFromNeighbor = distanceBetweenNodeAndNeighbor;
             
 
@@ -224,7 +168,7 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
         }
         
         //sort neighbors by desried value here so that the first in the list is the "closests" and the last is "farthest"
-        sort(neighbors.begin(), neighbors.end(), compareNodesByDistFromNeighbor);
+        sort(neighbors.begin(), neighbors.end(), compare_nodes_by_dist_from_neighbor);
 
         for (Node* node : neighbors){
             if(node->visited != true)
@@ -238,36 +182,139 @@ vector<pair<int, int>> dijkstras(vector<vector<double> > &heightmap, int startPo
     return {};
 }
 
-//Does the same as dijkstras above but only returns the cordinates one by one.  Requires an external vecctor to store the entire path.  
-pair<int, int> dijkstrasStepByStep(vector<vector<double> > &heightmap, int startPoint[2], int endPoint[2], double maxSlope, double pixelSize, vector<pair<int, int>> *pathStorage)
+//Does the same as dijkstras above but only returns the cordinates one by one.  There are no protections from changing inputs while stepping through the algorithm.  Plz dont.
+pair<int, int> Dijkstras::get_step(vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int, int> endPoint, double maxSlope, double pixelSize)//, vector<pair<int, int>> *pathStorage)
 {
     pair<int, int> out;
 
-    if(pathStorage->empty())
+    if(pathStoredThanDisplayed)
+    {
+        out = {-1,-1};
+        cout << "You have completed the path, if you want to start over please call reset_dijkstras(), returning -1, -1" << endl;
+        return out;
+    }
+
+    if(pathStorage.empty() && pathStoredThanDisplayed == false)
     {
         vector<pair<int, int>> realPath = dijkstras(heightmap, startPoint, endPoint, maxSlope, pixelSize);
 
         for(int i = 0; i < realPath.size(); i++)
         {
-            pathStorage->push_back(realPath.at(i));
+            pathStorage.push_back(realPath.at(i));
         }
 
-        out = pathStorage->back();
-        pathStorage->pop_back();
+        out = pathStorage.back();
+        pathStorage.pop_back();
 
         return out;
     }
     else
     {
-        out = pathStorage->back();
-        pathStorage->pop_back();
+        out = pathStorage.back();
+        pathStorage.pop_back();
+
+        if(pathStorage.empty())
+        {
+            pathStoredThanDisplayed = true;
+        }
 
         return out;
     }
 }
 
+void Dijkstras::reset_dijkstras()
+{
+    //clear path storage
+    while(!pathStorage.empty())
+    {
+        pathStorage.pop_back();
+    }
+    pathStoredThanDisplayed = false;
+}
+
+bool Dijkstras::can_get_next_step()
+{
+    if(pathStoredThanDisplayed)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Dijkstras::is_path_storage_empty()
+{
+    return pathStorage.empty();
+}
+
+bool Dijkstras::compare_nodes_by_height(Node* node1, Node* node2) {
+    return node1->height < node2->height;
+}
+
+bool Dijkstras::compare_nodes_by_dist_from_neighbor(Node* node1, Node* node2){
+    return node1->distFromNeighbor < node2->distFromNeighbor;
+}
+
+int Dijkstras::calc_flat_index(int cols, int row, int col)
+{
+    return row * cols + col;
+}
+
+double Dijkstras::calculate_distance_between_nodes(Node* node1, Node* node2, double rise, double pixelSize)
+{
+    if(node1->x == node2->x || node1->y == node2->y)
+    {
+        return (sqrt(pow(rise,2) + pow(pixelSize,2)));
+    }
+    else
+    {
+        double diagonalHorizontalDistance = (sqrt(pow(pixelSize,2) + pow(pixelSize,2)));
+        return(sqrt(pow(rise,2) + pow(diagonalHorizontalDistance,2)));
+    }
+}
+
+vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col)
+{
+    vector<int> out;
+
+    if (row > 0) //if not in top row add above
+    {
+        out.push_back(calc_flat_index(cols, row-1, col));
+    }
+    if(row < rows-1) //if not in botom row add below
+    {
+        out.push_back(calc_flat_index(cols, row+1, col));
+    }
+    if(col > 0) //if not far left col then add left
+    {
+        out.push_back(calc_flat_index(cols, row, col-1));
+    }
+    if(col < cols-1) //if not far right col then add right
+    {
+        out.push_back(calc_flat_index(cols, row, col+1));
+    }
+    if (row > 0 && col > 0) 
+    {
+        out.push_back(calc_flat_index(cols, row-1, col-1)); // top-left
+    }
+    if (row > 0 && col < cols - 1) 
+    {
+        out.push_back(calc_flat_index(cols, row-1, col+1)); // top-right
+    }
+    if (row < rows - 1 && col > 0) 
+    {
+        out.push_back(calc_flat_index(cols, row+1, col-1)); // bottom-left
+    }
+    if (row < rows - 1 && col < cols - 1) 
+    {
+        out.push_back(calc_flat_index(cols, row+1, col+1)); // bottom-right
+    }
+
+    return out;
+}
+
 //allows you to print the path inisde of the dijkstras algoritm.  
-void pathTrace(Node finalNode)
+void Dijkstras::path_trace(Node finalNode)
 {
     Node *workingNode = &finalNode;
 
@@ -280,7 +327,7 @@ void pathTrace(Node finalNode)
 }
 
 //takes the linked list style Nodes from iside of dijkstras and returns the path as a list of cordinates.  
-vector<pair<int, int>> pathToList(Node finalNode)
+vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode)
 {
     Node *workingNode = &finalNode;
     vector<pair<int, int>> out;
