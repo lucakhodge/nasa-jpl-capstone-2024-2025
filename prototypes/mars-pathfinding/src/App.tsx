@@ -1,23 +1,23 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import DemListener from "./components/DemListener";
-import GetChunk from "./components/GetChunk";
 import LoadFileButton from "./components/LoadFileButton";
+import RawThree from "./components/RawThree";
+import { FigmaPage } from "./components/FigmaPage";
 import "./index.css";
 import { store } from "./store/store";
-import SampleThree from "./components/SampleThree";
-import RawThree from "./components/RawThree";
 const root = createRoot(document.body);
 root.render(
   <div>
     <Provider store={store}>
       <DemListener />
-      <LoadFileButton />
+      {/* <LoadFileButton /> */}
       {/* <RunCpp /> */}
       {/* <GetChunk /> */}
       {/* <SampleThree /> */}
-      <RawThree />
+      {/* <RawThree /> */}
       {/* <Map /> */}
+      <FigmaPage />
     </Provider>
   </div>
 );
