@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import demReducer from './demSlice'
+import paramaterReducer from './paramatersSlice'
 
 
 export const store = configureStore({
   reducer: {
-    dem: demReducer
+    dem: demReducer,
+    paramaters: paramaterReducer
   }
 })
 
