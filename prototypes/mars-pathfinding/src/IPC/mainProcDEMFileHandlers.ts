@@ -46,11 +46,12 @@ ipcMain.on(CLOSE_DEM, () => {
   getRendererWindow().webContents.send(ON_DEM_CLOSED);
 });
 
-ipcMain.on(GET_CHUNK, (event, props: ChunkDescription) => {
+ipcMain.on(GET_CHUNK, (event, chunkDesscription: ChunkDescription) => {
   // call DEM manger get chuck for that coordiante
   //set event.returnValue to that chunk (this is what the renderer will get back)
-  console.log("GETTING CHUNK", props);
-  myDEMManager.getChunk(props).then((chunk) => {
+
+  // console.log("GETTING CHUNK:", chunkDesscription);
+  myDEMManager.getChunk(chunkDesscription).then((chunk) => {
     event.returnValue = chunk;
   });
 });

@@ -1,17 +1,11 @@
 import { ipcRenderer } from "electron";
 
-export interface DEMData {
-  width: number;
-  height: number;
-  data: number[]; // Array of height values, or whatever format the data comes in
-}
-
 export interface DEMInfo {
   width: number;
   height: number;
 }
 
-export interface ChunkMapTileCoordinate {
+export interface ChunkCoordinate {
   x: number;
   y: number;
 }
@@ -22,11 +16,11 @@ export interface ChunkSize {
 }
 
 export interface ChunkDescription {
-  coordinate: ChunkMapTileCoordinate;
-  chunkSize: ChunkSize;
+  coordinate: ChunkCoordinate;
+  size: ChunkSize;
 }
 
-export interface ChunkMapTile {
+export interface Chunk {
   chunkDescription: ChunkDescription;
   data: number[][];
 }
@@ -41,7 +35,7 @@ export const ON_DEM_CLOSED = "on-dem-closed";
 // render -> main
 export const openDEM = () => ipcRenderer.send(OPEN_DEM);
 export const closeDEM = () => ipcRenderer.send(CLOSE_DEM);
-export const getChunk = (chunk: ChunkDescription): ChunkMapTile | null =>
+export const getChunk = (chunk: ChunkDescription): Chunk | null =>
   ipcRenderer.sendSync(GET_CHUNK, chunk);
 
 // main -> rendered

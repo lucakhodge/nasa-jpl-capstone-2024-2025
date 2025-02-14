@@ -1,19 +1,17 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { ChunkMapTile } from "../IPC/electronIPC";
+import { Chunk } from "../IPC/electronIPC";
 import * as THREE from "three";
 import { Vector3 } from "@react-three/fiber";
 export default class RegularThree {
   canvas: HTMLCanvasElement;
 
-  unit = 10;
-  unitWidth = this.unit;
-  unitHeight = this.unit;
+  scale = 0.005
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
 
-  displayChunk(chunk: ChunkMapTile) {
+  displayChunk(chunk: Chunk) {
     // // Uncomment below to clear scene (not needed in current setup)
     // while (this.scene.children.length > 0) {
     //   this.scene.remove(this.scene.children[0]);
@@ -49,12 +47,10 @@ export default class RegularThree {
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         positions[idx3 + 0] =
-          chunk.chunkDescription.coordinate.x * this.unitWidth +
-          (j * this.unitWidth) / cols; // x
-        positions[idx3 + 1] = normalizedData[i][j]; // y
+          (chunk.chunkDescription.coordinate.x + j) * this.scale;
+        positions[idx3 + 1] = normalizedData[i][j];
         positions[idx3 + 2] =
-          chunk.chunkDescription.coordinate.y * this.unitHeight +
-          (i * this.unitHeight) / rows; // z
+          (chunk.chunkDescription.coordinate.y + i) * this.scale;
         idx3 += 3;
       }
     }
@@ -147,22 +143,17 @@ export default class RegularThree {
     //add controls for obiting
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(
-      chunk.chunkDescription.coordinate.x * this.unitWidth +
-      0.5 * this.unitWidth,
+      (chunk.chunkDescription.coordinate.x + chunk.chunkDescription.size.width / 2) * this.scale,
       0,
-      chunk.chunkDescription.coordinate.y * this.unitHeight +
-      0.5 * this.unitHeight
+      (chunk.chunkDescription.coordinate.y + chunk.chunkDescription.size.height / 2) * this.scale,
     );
     const offset = new THREE.Vector3(
-      this.unitHeight,
-      this.unit,
-      this.unitWidth
+      chunk.chunkDescription.size.width * this.scale,
+      chunk.chunkDescription.size.width * this.scale,
+      chunk.chunkDescription.size.width * this.scale,
     );
     camera.position.copy(controls.target).add(offset);
     controls.update();
-
-    // // ignore next line, now doing it all in this method
-    // this.addPath(chunk.chunkDescription.coordinate.x, chunk.chunkDescription.coordinate.y, rows, cols, normalizedData, scene);
 
     // create path
     const path_offset = 0.01
@@ -171,8 +162,8 @@ export default class RegularThree {
     const width = rows;
     const height = cols;
     const path_positions = [];
-    for (let i = 0; i < width; i++) {
-      path_positions[i] = new THREE.Vector3(startX * this.unitWidth + i * this.unitWidth / width, normalizedData[i][i] + path_offset, startY * this.unitHeight + i * this.unitHeight / height);
+    for (let i = 0; i < Math.min(width, height); i++) {
+      path_positions[i] = new THREE.Vector3((startX + i) * this.scale, normalizedData[i][i] + path_offset, (startY + i) * this.scale);
     }
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(path_positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
@@ -181,10 +172,10 @@ export default class RegularThree {
     scene.add(pathLine);
 
     //object to foolow path
-    const objectGeometry = new THREE.SphereGeometry(0.03);
+    const objectGeometry = new THREE.SphereGeometry(10 * this.scale);
     const objectMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const movingObject = new THREE.Mesh(objectGeometry, objectMaterial);
-    movingObject.position.set(startX * this.unitWidth, 0, startY * this.unitHeight); // Place at center of the mesh
+    movingObject.position.set(chunk.chunkDescription.coordinate.x * this.scale, 0, chunk.chunkDescription.coordinate.y * this.scale); // Place at center of the mesh
     scene.add(movingObject);
 
     let t = 0; // Animation progress (0 to 1)
@@ -206,26 +197,4 @@ export default class RegularThree {
     animate();
   }
 
-  // ignore this method more now
-  addPath(startX: number, startY: number, width: number, height: number, data: number[][], scene: THREE.Scene) {
-    // const pathPoints = [
-    //   new THREE.Vector3(startX * this.unitWidth, 0, startY * this.unitHeight),
-    //   new THREE.Vector3((startX + 1) * this.unitWidth, 0, (startY + 1) * this.unitHeight),
-    // ];
-    // const curve = new THREE.CatmullRomCurve3(pathPoints);
-    // const points = curve.getPoints(50);
-    // const pathGeometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    const offset = 0.01
-    const positions = [];
-    for (let i = 0; i < width; i++) {
-      positions[i] = new THREE.Vector3(startX * this.unitWidth + i * this.unitWidth / width, data[i][i] + offset, startY * this.unitHeight + i * this.unitHeight / height);
-    }
-
-
-    const pathGeometry = new THREE.BufferGeometry().setFromPoints(positions);
-    const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-    const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-    scene.add(pathLine);
-  }
 }

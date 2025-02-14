@@ -5,7 +5,7 @@ import LoadFileButton from './LoadFileButton';
 import { useSelector } from 'react-redux';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordinate, setSlope, setStartCoordinate } from '../store/paramatersSlice';
-import RawThree from './RawThree';
+import Map3d from './Map3d';
 
 
 
@@ -16,6 +16,22 @@ export const FigmaPage = (props: {}) => {
   const startCoordinate = useAppSelector(selectStartCoordinate);
   const endCoordinate = useAppSelector(selectEndCoordinate);
   const slope = useAppSelector(selectSlope);
+
+  const [chunk, setChunk] = useState(null);
+
+  const handleRetrieveChunk = () => {
+    const chunk = window.electronIPC.getChunk({
+      coordinate: {
+        x: startCoordinate.x,
+        y: startCoordinate.y,
+      },
+      size: {
+        width: endCoordinate.x - startCoordinate.x,
+        height: endCoordinate.y - startCoordinate.y,
+      },
+    });
+    setChunk(chunk);
+  };
 
   return (
     <div className="grid grid-cols-[1fr_2fr] w-full h-full border-dashed bg-blue-200 absolute">
@@ -55,11 +71,11 @@ export const FigmaPage = (props: {}) => {
         <div className='flex-1' />
         <div className='grid grid-cols-2 gap-5'>
           <LoadFileButton />
-          <MyButton >Display Optimum Path</MyButton>
+          <MyButton onClick={handleRetrieveChunk}>Display Optimum Path</MyButton>
         </div>
       </div>
       <div style={{ width: "100%", height: "100%" }} className='bg-slate-500'>
-        <RawThree></RawThree>
+        <Map3d chunk={chunk}></Map3d>
       </div>
     </div>
   )
