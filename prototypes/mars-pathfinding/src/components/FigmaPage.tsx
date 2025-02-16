@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { MyButton } from './MyButton'
 import { MyNumberInput } from './MyNumberInput'
 import LoadFileButton from './LoadFileButton';
-import { useSelector } from 'react-redux';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordinate, setSlope, setStartCoordinate } from '../store/paramatersSlice';
 import Map3d from './Map3d';
+import FileStatus from './FileStatus';
+import RunCpp from './RunCpp';
 
 
 
@@ -68,6 +69,8 @@ export const FigmaPage = (props: {}) => {
             dispatch(setSlope(val))
           }}></MyNumberInput>
         </div>
+        <FileStatus />
+        <RunCpp />
         <div className='flex-1' />
         <div className='grid grid-cols-2 gap-5'>
           <LoadFileButton />
