@@ -1,344 +1,279 @@
 #include "dijkstras.h"
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <limits>
+#include <cmath>
+#include <sstream>
+#include <iomanip>
+#include <unordered_set>
+#include <algorithm>
 
 using namespace std;
 
-//this is just an example of one way to use, feel free to comment out to run a main somewhere else
-int main() 
-{
-    
-    //given a heighmap, start, and end cordinates, find a path wiht dijkstras algo
-    vector<vector<double>> heightmap0 = {  {0,0,0,0,0}, 
-                                        {0,0,0,0,0}, 
-                                        {0,0,0,0,0}, 
-                                        {0,0,0,0,0}, 
-                                        {0,0,0,0,0}};
+// Constants for Mars terrain analysis
+const double MIN_ELEVATION = -8500.0;    // Hellas Basin (meters)
+const double MAX_ELEVATION = 22500.0;    // Olympus Mons (meters)
+const double MM_TO_M = 0.001;           // Millimeter to meter conversion
+const double NO_DATA_VALUE = -32768.0;   // Common no-data value for DEMs
+const double MAX_SLOPE = 45.0;          // Maximum slope in degrees
+const double MAX_ELEVATION_CHANGE = 5.0; // Maximum elevation change per pixel (meters)
+const double ELEVATION_EPSILON = 0.01;   // Small elevation difference threshold (meters)
+const double PIXEL_SIZE = 200.0;        // Mars DEM resolution (meters)
 
-    vector<vector<double>> heightmap1 = {  {0,1,2,3,4}, 
-                                        {5,6,7,8,9}, 
-                                        {10,11,12,13,14}, 
-                                        {15,16,17,18,19}, 
-                                        {20,21,22,23,24},
-                                        {25, 26, 27, 28, 29}};
-    
-    vector<vector<double>> heightmap2 = {  {0,0,45,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}};
+// Elevation tracking structure
+struct ElevationTracker {
+    double baseElevation;
+    vector<vector<double>> relativeHeights;
+    int rows;
+    int cols;
+    int warningCount;
 
-    vector<vector<double>> heightmap3 = {  {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}};
-                                    
-    vector<vector<double>> heightmap4 = {
-        {29.88, 58.45, 85.44, 39.52, 13.17, 76.88, 72.87, 35.43, 4.13, 2.28},
-        {88.60, 2.53, 61.67, 63.92, 47.15, 87.80, 37.40, 77.93, 66.13, 94.16},
-        {12.29, 58.13, 60.67, 75.29, 13.88, 51.75, 98.61, 41.15, 74.55, 73.52},
-        {65.25, 83.14, 3.58, 94.01, 33.84, 5.39, 97.50, 95.89, 75.48, 4.45},
-        {23.82, 42.12, 84.21, 54.86, 58.99, 11.71, 5.30, 17.88, 80.06, 65.96},
-        {41.52, 61.60, 35.88, 82.56, 80.39, 18.18, 8.29, 47.61, 88.11, 84.85},
-        {56.58, 12.50, 4.84, 78.87, 70.72, 6.37, 97.30, 94.68, 37.45, 10.42},
-        {70.94, 97.25, 15.16, 15.39, 57.27, 25.72, 81.94, 83.33, 85.91, 92.12},
-        {47.62, 93.10, 29.13, 15.45, 6.88, 28.32, 35.61, 95.39, 79.68, 16.85},
-        {13.99, 6.91, 93.83, 92.77, 89.40, 81.76, 42.83, 54.16, 88.39, 28.85}
-    };
+    ElevationTracker() : baseElevation(std::numeric_limits<double>::quiet_NaN()),
+                        warningCount(0), rows(0), cols(0) {}
 
-    Dijkstras my_dijkstras;
-
-    pair<int, int> startPoint = {0,0};
-    pair<int, int> startPoint1 = {9,9};
-    pair<int, int> endPoint = {4,4};
-    pair<int, int> endPoint1 = {9,9};
-    pair<int, int> endPoint2 = {0,0};
-
-    // dijkstras(heightmap1, startPoint, endPoint, 45.0, 1.0);
-    // cout << endl;
-    // dijkstras(heightmap2, startPoint, endPoint, 45.0, 1.0);
-    // cout << endl;
-    // dijkstras(heightmap3, startPoint, endPoint, 45.0, 1.0);
-    // cout << endl;
-    vector<pair<int, int>> heightmap4Path = my_dijkstras.dijkstras(heightmap4, startPoint, endPoint1, 45.0, 2.0);
-
-
-    pair<int, int> cordinate;
-    //vector<pair<int, int>> pathStorage = {};
-    while(my_dijkstras.can_get_next_step())
-    {
-        cordinate = my_dijkstras.get_step(heightmap4, startPoint, endPoint1, 45.0, 2.0);//, &pathStorage);
-        cout << cordinate.first << "," << cordinate.second << endl;
+    void initialize(int r, int c) {
+        rows = r;
+        cols = c;
+        relativeHeights.resize(rows, vector<double>(cols, 0.0));
     }
 
-    cout << endl;
-
-    cout << "The path is now traced, this next call will return -1, -1" << endl;
-    cordinate = my_dijkstras.get_step(heightmap4, startPoint, endPoint1, 45.0, 2.0);
-    cout << cordinate.first << "," << cordinate.second << endl;
-
-    cout << endl;
-
-    //this resets the step by step and you can call it again with a different path
-    my_dijkstras.reset_dijkstras();
-
-    while(my_dijkstras.can_get_next_step())
-    {
-        cordinate = my_dijkstras.get_step(heightmap4, startPoint1, endPoint2, 45.0, 2.0);//, &pathStorage);
-        cout << cordinate.first << "," << cordinate.second << endl;
+    void reset() {
+        baseElevation = std::numeric_limits<double>::quiet_NaN();
+        warningCount = 0;
+        relativeHeights.clear();
     }
 
-}
+    double processElevation(double rawElevation, int row, int col) {
+        if (rawElevation == NO_DATA_VALUE || std::isnan(rawElevation)) {
+            return 0.0;
+        }
 
+        double absoluteElevation = rawElevation * MM_TO_M;
 
-//searches though a heightmap to find the shortest route from startPoint to endPoint.  Returns a vector of cordinate pairs representing the path.
-vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int,int> endPoint, double maxSlope, double pixelSize)
+        if (std::isnan(baseElevation)) {
+            baseElevation = absoluteElevation;
+            if (warningCount++ < 5) {
+                cout << "Base elevation: " << fixed << setprecision(2) 
+                     << baseElevation << "m" << endl;
+            }
+            return 0.0;
+        }
+
+        double relativeElevation = absoluteElevation - baseElevation;
+        relativeHeights[row][col] = relativeElevation;
+
+        if (warningCount++ < 5) {
+            cout << fixed << setprecision(2)
+                 << "At (" << row << "," << col << "): "
+                 << "Raw=" << rawElevation << "mm, "
+                 << "Abs=" << absoluteElevation << "m, "
+                 << "Rel=" << relativeElevation << "m" << endl;
+        }
+
+        return relativeElevation;
+    }
+};
+
+static ElevationTracker elevTracker;
+
+struct CompareNodes {
+    bool operator()(pair<double, Node*> const& p1, pair<double, Node*> const& p2) {
+        return p1.first > p2.first;
+    }
+};
+
+vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap, 
+                                           pair<int, int> startPoint, 
+                                           pair<int, int> endPoint, 
+                                           double maxSlope, 
+                                           double pixelSize)
 {
-    //get height and length of heightmap
+    elevTracker.reset();
+    
+    if (heightmap.empty() || heightmap[0].empty()) {
+        cout << "Error: Empty heightmap provided" << endl;
+        return {};
+    }
+
     int rows = heightmap.size();
     int cols = heightmap[0].size();
+    elevTracker.initialize(rows, cols);
 
-    int numVertices = rows * cols;
+    // Validate coordinates
+    if (startPoint.first < 0 || startPoint.first >= rows ||
+        startPoint.second < 0 || startPoint.second >= cols ||
+        endPoint.first < 0 || endPoint.first >= rows ||
+        endPoint.second < 0 || endPoint.second >= cols) {
+        cout << "Error: Start or end point out of bounds" << endl;
+        return {};
+    }
 
-    Node graph[numVertices];
+    vector<Node> graph(rows * cols);
+    vector<bool> visited(rows * cols, false);
+    priority_queue<pair<double, Node*>, vector<pair<double, Node*>>, CompareNodes> pq;
 
-    queue<Node*> Q;
-
-    for (int a = 0; a < rows; a++)
-    {
-        for (int b = 0; b < cols; b++)
-        {
-            int index = calc_flat_index(cols, a, b);
-            graph[index].height = heightmap[a][b];
-            graph[index].visited = false;
-            graph[index].neighborIndex = get_neighbor_indexs(rows, cols, a, b);
+    // Initialize graph
+    cout << "Initializing graph with " << rows << "x" << cols << " nodes..." << endl;
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++) {
+            int index = calc_flat_index(cols, row, col);
+            graph[index].height = elevTracker.processElevation(heightmap[row][col], row, col);
+            graph[index].neighborIndex = get_neighbor_indexs(rows, cols, row, col);
             graph[index].selfIndex = index;
             graph[index].distFromPrevious = DBL_MAX;
-            graph[index].x = b;
-            graph[index].y = a;
+            graph[index].x = col;
+            graph[index].y = row;
         }
     }
 
-    int startNodeIndex = calc_flat_index(cols, startPoint.first, startPoint.second);
-    graph[startNodeIndex].distFromPrevious = 0;
-    Q.push(&graph[startNodeIndex]);
+    // Set start node
+    int startIndex = calc_flat_index(cols, startPoint.first, startPoint.second);
+    graph[startIndex].distFromPrevious = 0;
+    pq.push({0, &graph[startIndex]});
 
-    while(!Q.empty())
-    {
-        //pop node with min distance and set viseted to true
-        Node *currentNode = Q.front();
-        Q.pop();
-        currentNode->visited = true;
+    cout << "Starting pathfinding from (" << startPoint.first << "," << startPoint.second 
+         << ") to (" << endPoint.first << "," << endPoint.second << ")" << endl;
 
-        if(currentNode->x == endPoint.second && currentNode->y == endPoint.first)
-        {
-            //pathTrace(graph[calcFlatIndex(cols, endPoint[1], endPoint[0])]);
-            return path_to_list(graph[calc_flat_index(cols, endPoint.second, endPoint.first)]);
+    int iteration = 0;
+    while (!pq.empty()) {
+        Node* current = pq.top().second;
+        pq.pop();
+
+        if (visited[current->selfIndex]) continue;
+        visited[current->selfIndex] = true;
+
+        // Check destination
+        if (current->x == endPoint.second && current->y == endPoint.first) {
+            cout << "Path found after " << iteration << " iterations" << endl;
+            return path_to_list(graph[calc_flat_index(cols, endPoint.first, endPoint.second)]);
         }
 
-        //add unvisited neighbors of that node "shortests/closeest/easiest to drive to" to Q and upate their distance from source and their previous nodes
-        //for each neighbor of current_node alt ← dist[u] + Graph.Edges(u, v)
+        // Process neighbors
+        for (int neighborIndex : current->neighborIndex) {
+            Node* neighbor = &graph[neighborIndex];
+            if (visited[neighbor->selfIndex]) continue;
 
-        vector<Node*> neighbors;
-        for(int i = 0; i < currentNode->neighborIndex.size(); i++)
-        {
-            Node *currentNeighbor;
-            currentNeighbor = &graph[currentNode->neighborIndex[i]];
-            currentNeighbor->distFromNeighbor = DBL_MAX;
-
-            double rise = abs(currentNode->height - currentNeighbor->height);
-            double slope = rise/pixelSize;
-            //This is going to need to be changed to incorperated
-            double distanceBetweenNodeAndNeighbor = calculate_distance_between_nodes(currentNode, currentNeighbor, rise, pixelSize);
-            currentNeighbor->distFromNeighbor = distanceBetweenNodeAndNeighbor;
+            double elevChange = neighbor->height - current->height;
+            bool isDiagonal = (current->x != neighbor->x && current->y != neighbor->y);
+            double horizontalDist = isDiagonal ? PIXEL_SIZE * M_SQRT2 : PIXEL_SIZE;
             
+            // Cap elevation change
+            elevChange = std::min(std::abs(elevChange), MAX_ELEVATION_CHANGE);
+            if (std::abs(elevChange) < ELEVATION_EPSILON) {
+                elevChange = 0.0;
+            }
 
-            if (slope <= maxSlope)
-            {
-                double alt = currentNode->distFromPrevious + distanceBetweenNodeAndNeighbor;
-                neighbors.push_back(currentNeighbor);
+            double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
 
-                //cout << currentNeighbor->height << endl;
+            if (slope <= maxSlope) {
+                double distance = calculate_distance_between_nodes(current, neighbor, 
+                                                                elevChange, PIXEL_SIZE);
+                double newDist = current->distFromPrevious + distance;
 
-                if (alt < currentNeighbor->distFromPrevious)
-                {
-                    currentNeighbor->distFromPrevious = alt;
-                    currentNeighbor->previous = currentNode;
+                if (newDist < neighbor->distFromPrevious) {
+                    neighbor->distFromPrevious = newDist;
+                    neighbor->previous = current;
+                    pq.push({newDist, neighbor});
                 }
             }
         }
-        
-        //sort neighbors by desried value here so that the first in the list is the "closests" and the last is "farthest"
-        sort(neighbors.begin(), neighbors.end(), compare_nodes_by_dist_from_neighbor);
 
-        for (Node* node : neighbors){
-            if(node->visited != true)
-            {
-                Q.push(node);
+        if (++iteration % 1000 == 0) {
+            double progress = (double)visited.size() / (rows * cols) * 100.0;
+            cout << "Iteration: " << iteration 
+                 << ", At: (" << current->x << "," << current->y << ")"
+                 << ", Height: " << fixed << setprecision(2) << current->height << "m"
+                 << ", Progress: " << progress << "%" << endl;
+        }
+    }
+
+    cout << "No valid path found after " << iteration << " iterations" << endl;
+    return {};
+}
+
+vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col) {
+    vector<int> neighbors;
+    neighbors.reserve(8);
+
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            if (i == 0 && j == 0) continue;
+            
+            int newRow = row + i;
+            int newCol = col + j;
+            
+            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                neighbors.push_back(calc_flat_index(cols, newRow, newCol));
             }
         }
     }
 
-    cout << "No route found " << endl;
-    return {};
+    return neighbors;
 }
 
-//Does the same as dijkstras above but only returns the cordinates one by one.  There are no protections from changing inputs while stepping through the algorithm.  Plz dont.
-pair<int, int> Dijkstras::get_step(vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int, int> endPoint, double maxSlope, double pixelSize)//, vector<pair<int, int>> *pathStorage)
-{
-    pair<int, int> out;
-
-    if(pathStoredThanDisplayed)
-    {
-        out = {-1,-1};
-        cout << "You have completed the path, if you want to start over please call reset_dijkstras(), returning -1, -1" << endl;
-        return out;
-    }
-
-    if(pathStorage.empty() && pathStoredThanDisplayed == false)
-    {
-        vector<pair<int, int>> realPath = dijkstras(heightmap, startPoint, endPoint, maxSlope, pixelSize);
-
-        for(int i = 0; i < realPath.size(); i++)
-        {
-            pathStorage.push_back(realPath.at(i));
-        }
-
-        out = pathStorage.back();
-        pathStorage.pop_back();
-
-        return out;
-    }
-    else
-    {
-        out = pathStorage.back();
-        pathStorage.pop_back();
-
-        if(pathStorage.empty())
-        {
-            pathStoredThanDisplayed = true;
-        }
-
-        return out;
-    }
+double Dijkstras::calculate_distance_between_nodes(Node* node1, Node* node2, 
+                                                 double rise, double pixelSize) {
+    bool isDiagonal = (node1->x != node2->x && node1->y != node2->y);
+    double run = isDiagonal ? (pixelSize * M_SQRT2) : pixelSize;
+    return sqrt(pow(run, 2) + pow(rise, 2));
 }
 
-void Dijkstras::reset_dijkstras()
-{
-    //clear path storage
-    while(!pathStorage.empty())
-    {
-        pathStorage.pop_back();
-    }
-    pathStoredThanDisplayed = false;
-}
-
-bool Dijkstras::can_get_next_step()
-{
-    if(pathStoredThanDisplayed)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool Dijkstras::is_path_storage_empty()
-{
-    return pathStorage.empty();
-}
-
-bool Dijkstras::compare_nodes_by_height(Node* node1, Node* node2) {
-    return node1->height < node2->height;
-}
-
-bool Dijkstras::compare_nodes_by_dist_from_neighbor(Node* node1, Node* node2){
-    return node1->distFromNeighbor < node2->distFromNeighbor;
-}
-
-int Dijkstras::calc_flat_index(int cols, int row, int col)
-{
+int Dijkstras::calc_flat_index(int cols, int row, int col) {
     return row * cols + col;
 }
 
-double Dijkstras::calculate_distance_between_nodes(Node* node1, Node* node2, double rise, double pixelSize)
-{
-    if(node1->x == node2->x || node1->y == node2->y)
-    {
-        return (sqrt(pow(rise,2) + pow(pixelSize,2)));
+vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
+    vector<pair<int, int>> path;
+    const Node* current = &finalNode;
+
+    while (current->distFromPrevious != 0) {
+        path.push_back({current->y, current->x});
+        current = current->previous;
     }
-    else
-    {
-        double diagonalHorizontalDistance = (sqrt(pow(pixelSize,2) + pow(pixelSize,2)));
-        return(sqrt(pow(rise,2) + pow(diagonalHorizontalDistance,2)));
+    path.push_back({current->y, current->x});
+
+    reverse(path.begin(), path.end());
+    
+    // Calculate path metrics
+    double totalDistance = 0.0;
+    double maxSlope = 0.0;
+    double totalSlope = 0.0;
+    int steps = path.size() - 1;
+    
+    for (size_t i = 0; i < path.size() - 1; i++) {
+        const auto& p1 = path[i];
+        const auto& p2 = path[i + 1];
+        bool isDiagonal = (p1.first != p2.first && p1.second != p2.second);
+        double horizontalDist = isDiagonal ? PIXEL_SIZE * M_SQRT2 : PIXEL_SIZE;
+        double elevChange = std::abs(elevTracker.relativeHeights[p2.first][p2.second] - 
+                                   elevTracker.relativeHeights[p1.first][p1.second]);
+        double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
+        
+        totalDistance += sqrt(pow(horizontalDist, 2) + pow(elevChange, 2));
+        maxSlope = std::max(maxSlope, slope);
+        totalSlope += slope;
     }
+
+    cout << "Path metrics:" << endl
+         << "- Length: " << fixed << setprecision(2) << totalDistance << "m" << endl
+         << "- Steps: " << path.size() << endl
+         << "- Max slope: " << maxSlope << "°" << endl
+         << "- Avg slope: " << (totalSlope / steps) << "°" << endl;
+    
+    return path;
 }
 
-vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col)
-{
-    vector<int> out;
-
-    if (row > 0) //if not in top row add above
-    {
-        out.push_back(calc_flat_index(cols, row-1, col));
-    }
-    if(row < rows-1) //if not in botom row add below
-    {
-        out.push_back(calc_flat_index(cols, row+1, col));
-    }
-    if(col > 0) //if not far left col then add left
-    {
-        out.push_back(calc_flat_index(cols, row, col-1));
-    }
-    if(col < cols-1) //if not far right col then add right
-    {
-        out.push_back(calc_flat_index(cols, row, col+1));
-    }
-    if (row > 0 && col > 0) 
-    {
-        out.push_back(calc_flat_index(cols, row-1, col-1)); // top-left
-    }
-    if (row > 0 && col < cols - 1) 
-    {
-        out.push_back(calc_flat_index(cols, row-1, col+1)); // top-right
-    }
-    if (row < rows - 1 && col > 0) 
-    {
-        out.push_back(calc_flat_index(cols, row+1, col-1)); // bottom-left
-    }
-    if (row < rows - 1 && col < cols - 1) 
-    {
-        out.push_back(calc_flat_index(cols, row+1, col+1)); // bottom-right
-    }
-
-    return out;
+void Dijkstras::reset_dijkstras() {
+    pathStorage.clear();
+    pathStoredThanDisplayed = false;
+    elevTracker.reset();
 }
 
-//allows you to print the path inisde of the dijkstras algoritm.  
-void Dijkstras::path_trace(Node finalNode)
-{
-    Node *workingNode = &finalNode;
-
-    while(workingNode->distFromPrevious != 0)
-    {
-        cout << "(" << workingNode->x << "," << workingNode->y << ") , height: " << workingNode->height << endl;
-        workingNode = workingNode->previous;
-    }
-    cout << "(" << workingNode->x << "," << workingNode->y << ") , height: " << workingNode->height << " is the start Node" << endl;
+bool Dijkstras::can_get_next_step() {
+    return !pathStoredThanDisplayed;
 }
 
-//takes the linked list style Nodes from iside of dijkstras and returns the path as a list of cordinates.  
-vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode)
-{
-    Node *workingNode = &finalNode;
-    vector<pair<int, int>> out;
-
-    while(workingNode->distFromPrevious != 0)
-    {
-        out.push_back({workingNode->x, workingNode->y});
-        workingNode = workingNode->previous;
-    }
-    out.push_back({workingNode->x, workingNode->y});
-
-    //reverse(out.begin(), out.end());
-    return out;
+bool Dijkstras::is_path_storage_empty() {
+    return pathStorage.empty();
 }
