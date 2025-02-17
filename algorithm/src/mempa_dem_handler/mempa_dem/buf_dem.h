@@ -63,29 +63,28 @@ namespace MEMPA
      * @author Ryan Wagster <ryan.wagster@colorado.edu>
      * @date 2024-10-01
      */
-    class BUFFDEM
-    {
+class BUFFDEM {
     public:
         BUFFDEM(const std::string_view input_filepath, const std::string_view output_filepath);
         ~BUFFDEM();
+        std::vector<std::vector<double>> demVector(const std::filesystem::path &tif_filepath, uint32_t startRow, uint32_t endRow, uint32_t startCol, uint32_t endCol);
         GDALDataset *demGet();
         OGRGeometry *demArea(const std::vector<std::pair<double, double>> coordinates, const double radius, const double eccentricity);
         OGRGeometry *demAreaGet();
         void makeSHP(const std::string &shapefile_name, const bool overwrite);
-        GDALDataset *demClip(const std::string &chunkfile_name, const bool overwrite);
-        std::vector<std::vector<double>> demVector(const std::filesystem::path &tif_filepath);
+        GDALDataset *demClip(const std::string &output_name, const bool overwrite);
         std::filesystem::path *getOutput();
-
+    
     private:
-        std::filesystem::path dem_fp;           // Original DEM filepath.
-        std::filesystem::path output_directory; // Output directory.
-        std::filesystem::path shp_fp;           // Shape filepath.
-        std::filesystem::path output_raster;    // Output raster clipped from original raster.
-        GDALDataset *source_dataset;            // Pointer to the GDAL dataset.
-        GDALDataset *destination_dataset;       // Clipped dataset chunk for the algorithm.
-        OGRGeometry *clip_geometry;             // Polygon for defining the clip.
-        GDALWarpOptions *psWarpOptions;         // Warp options for clipping.
+        std::filesystem::path dem_fp;
+        std::filesystem::path output_directory;
+        std::filesystem::path shp_fp;
+        std::filesystem::path output_raster;
+        GDALDataset *source_dataset;
+        GDALDataset *destination_dataset;
+        OGRGeometry *clip_geometry;
     };
-};
+    
+} // namespace MEMPA
 
 #endif // DEM_H
