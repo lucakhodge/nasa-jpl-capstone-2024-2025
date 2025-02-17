@@ -67,14 +67,15 @@ class BUFFDEM {
     public:
         BUFFDEM(const std::string_view input_filepath, const std::string_view output_filepath);
         ~BUFFDEM();
-        std::vector<std::vector<double>> demVector(const std::filesystem::path &tif_filepath, uint32_t startRow, uint32_t endRow, uint32_t startCol, uint32_t endCol);
         GDALDataset *demGet();
         OGRGeometry *demArea(const std::vector<std::pair<double, double>> coordinates, const double radius, const double eccentricity);
         OGRGeometry *demAreaGet();
         void makeSHP(const std::string &shapefile_name, const bool overwrite);
         GDALDataset *demClip(const std::string &output_name, const bool overwrite);
+        std::vector<std::vector<double>> demVector(const std::filesystem::path &tif_filepath);
         std::filesystem::path *getOutput();
-    
+        std::vector<std::vector<double>> makeRequest(const std::vector<std::pair<double, double>> coordinates, const double radius_eccentricity, const std::string_view input_filepath, const std::string_view output_filepath, const std::string output_filename);
+
     private:
         std::filesystem::path dem_fp;
         std::filesystem::path output_directory;
