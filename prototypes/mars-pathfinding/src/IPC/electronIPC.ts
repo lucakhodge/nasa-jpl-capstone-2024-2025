@@ -21,7 +21,7 @@ export interface ChunkDescription {
 }
 
 export interface Chunk {
-  chunkDescription: ChunkDescription;
+  description: ChunkDescription;
   data: number[][];
 }
 

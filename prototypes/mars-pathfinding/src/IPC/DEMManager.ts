@@ -69,7 +69,7 @@ export class DEMManager {
       }
 
       const chunk: Chunk = {
-        chunkDescription: chunkDescription,
+        description: chunkDescription,
         data: chunkData,
       };
       console.log("dimensions", chunk.data.length, chunk.data[0].length);

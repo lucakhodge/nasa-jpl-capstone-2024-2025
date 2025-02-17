@@ -47,10 +47,10 @@ export default class RegularThree {
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         positions[idx3 + 0] =
-          (chunk.chunkDescription.coordinate.x + j) * this.scale;
+          (chunk.description.coordinate.x + j) * this.scale;
         positions[idx3 + 1] = normalizedData[i][j];
         positions[idx3 + 2] =
-          (chunk.chunkDescription.coordinate.y + i) * this.scale;
+          (chunk.description.coordinate.y + i) * this.scale;
         idx3 += 3;
       }
     }
@@ -143,22 +143,22 @@ export default class RegularThree {
     //add controls for obiting
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(
-      (chunk.chunkDescription.coordinate.x + chunk.chunkDescription.size.width / 2) * this.scale,
+      (chunk.description.coordinate.x + chunk.description.size.width / 2) * this.scale,
       0,
-      (chunk.chunkDescription.coordinate.y + chunk.chunkDescription.size.height / 2) * this.scale,
+      (chunk.description.coordinate.y + chunk.description.size.height / 2) * this.scale,
     );
     const offset = new THREE.Vector3(
-      chunk.chunkDescription.size.width * this.scale,
-      chunk.chunkDescription.size.width * this.scale,
-      chunk.chunkDescription.size.width * this.scale,
+      chunk.description.size.width * this.scale,
+      chunk.description.size.width * this.scale,
+      chunk.description.size.width * this.scale,
     );
     camera.position.copy(controls.target).add(offset);
     controls.update();
 
     // create path
     const path_offset = 0.01
-    const startX = chunk.chunkDescription.coordinate.x;
-    const startY = chunk.chunkDescription.coordinate.y;
+    const startX = chunk.description.coordinate.x;
+    const startY = chunk.description.coordinate.y;
     const width = rows;
     const height = cols;
     const path_positions = [];
@@ -175,7 +175,7 @@ export default class RegularThree {
     const objectGeometry = new THREE.SphereGeometry(10 * this.scale);
     const objectMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const movingObject = new THREE.Mesh(objectGeometry, objectMaterial);
-    movingObject.position.set(chunk.chunkDescription.coordinate.x * this.scale, 0, chunk.chunkDescription.coordinate.y * this.scale); // Place at center of the mesh
+    movingObject.position.set(chunk.description.coordinate.x * this.scale, 0, chunk.description.coordinate.y * this.scale); // Place at center of the mesh
     scene.add(movingObject);
 
     let t = 0; // Animation progress (0 to 1)
