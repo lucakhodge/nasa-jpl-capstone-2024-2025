@@ -23,8 +23,6 @@ Required flags:
     --slope
 
 ** Use --help for printing out input formats with each flag **
-
-
 */
 
 #include <iostream>

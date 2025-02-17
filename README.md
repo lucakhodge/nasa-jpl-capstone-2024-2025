@@ -16,13 +16,54 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
   
   David Blaines (TA),  Marcel Llopis (Sponsor)
 
-## Installation
+## How to Run (still in progress)
 
-Command: (still in progress)
+### CLI:
+To compile: ```g++ ./cli_draft.cpp -o cli```
 
-```bash
-make run
-``` 
+To run: ```./cli --flag INPUT```
+
+Example: ```./cli --start 44.43,55.55 --end 32.22,55.33 --input test.dem --output test.txt --iterations 4 --slope 12.3```
+
+### DEM: ?
+### SIM: ?
+### ELECTRON: ?
+### map2d: ?
+### mars-pathfinding: ?
+### search_algorithms: ?
+
+## File Structure
+
+```
+root/
+├── assets/
+├── docs/                          # how to see?
+│   ├── docs/
+│   └── latex/
+├── prototypes/
+│   ├── cli-draft/                 
+│   ├── example-cpp/               # necessary?
+│   ├── first_dem_cpp/             # undocumented
+│   │   ├── mempa_algo/
+│   │   ├── mempa_dem/
+│   │   ├── buf_main.cpp
+│   │   ├── C++.gitignore
+│   │   └── dem_preprocessor.py
+│   ├── luca-electron/             # how to run?
+│   │   ├── cpp-program/
+│   │   ├── my-app/
+│   │   └── my-vite-app/
+│   ├── map2d/                     # necessary?
+│   │   └── my-new-app/
+│   ├── mars-pathfinding/          # necessary?
+│   ├── search_algorithms/         # how to run?
+│   │   ├── dijkstra.h
+│   │   └── dijkstra.cpp
+│   └── sim/                       # undocumented
+│       └── simulator.cpp
+└── src/                        
+    └── README.md
+```
 
 ## Dependencies
 
