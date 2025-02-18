@@ -441,7 +441,7 @@ std::vector<std::vector<double>> MEMPA::BUFFDEM::makeRequest(const std::vector<s
 {
     try
     {
-        MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
+        static MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
         mars_dem.demArea(coordinates, radius_eccentricity, radius_eccentricity);
         mars_dem.makeSHP(output_filename + " shape", true);
         mars_dem.demClip(output_filename + " clip", true);
