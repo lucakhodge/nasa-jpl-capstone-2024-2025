@@ -426,11 +426,11 @@ std::filesystem::path *MEMPA::BUFFDEM::getOutput()
 /**
  * @brief Single use function for running the entirety of the DEM handler in one call. Simulator should be calling this each time.
  *
- * @param coordinates Vector of coordinate pairs. For circles, should contain one pair of coordinates.
- * @param radius_eccentricity Value for eccentricity of radius. Should be using the radius for circles.
+ * @param coordinates Vector of coordinate pairs. For circles, should contain one pair of coordinates. Ellipse, use two. Square, use four.
+ * @param radius_eccentricity Value for eccentricity of radius. Should be using the radius for circles. Enter 0 for a square.
  * @param input_filepath The filepath for the .tif file to be accessed.
  * @param output_filepath The directory location to save new files to.
- * @param output_filename The general name for new files to be identified with. Do not include any file extentions or directory characters/
+ * @param output_filename The general name for new files to be identified with. Do not include any file extentions or directory characters.
  *
  * @return std::vector<std::vector<double>> A 2D vector of the values in the DEM.
  *
