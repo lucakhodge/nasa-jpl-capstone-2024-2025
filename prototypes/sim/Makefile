@@ -4,7 +4,6 @@ INCLUDES = -I/usr/local/include
 LDFLAGS = -L/usr/local/lib
 LIBS = -lgdal -ltiff
 
-SRCDIR = .
 OBJDIR = build
 
 SOURCES = simulator.cpp \
