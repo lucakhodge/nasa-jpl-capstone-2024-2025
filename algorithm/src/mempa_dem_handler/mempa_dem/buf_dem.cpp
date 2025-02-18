@@ -186,18 +186,41 @@ OGRGeometry *MEMPA::BUFFDEM::demArea(const std::vector<std::pair<double, double>
         double semimajor_axis = foci_distance / (2.0 * std::sqrt(1.0 - std::pow(eccentricity, 2.0)));
         double semiminor_axis = semimajor_axis * std::sqrt(1.0 - std::pow(eccentricity, 2.0));
         OGRPolygon *ellipse = new OGRPolygon();
-        OGRLinearRing ring;
+        OGRLinearRing outline;
         const int num_points = 360;
         for (int i = 0; i < num_points; i++)
         {
             double theta = 2.0 * M_PI * (double)i / (double)num_points;
             double x = focus1.first + semimajor_axis * std::cos(theta);
             double y = focus1.second + semiminor_axis * std::sin(theta);
-            ring.addPoint(x, y);
+            outline.addPoint(x, y);
         }
-        ring.closeRings();
-        ellipse->addRing(&ring);
+        outline.closeRings();
+        ellipse->addRing(&outline);
         clip_geometry = ellipse;
+        break;
+    }
+    case 4:
+    {
+        std::pair<double, double> corner1 = coordinates[0];
+        std::pair<double, double> corner2 = coordinates[1];
+        std::pair<double, double> corner3 = coordinates[2];
+        std::pair<double, double> corner4 = coordinates[3];
+
+        OGRLinearRing square;
+        OGRPoint point_1(corner1.first, corner1.second);
+        square.addPoint(&point_1);
+        OGRPoint point_2(corner2.first, corner2.second);
+        square.addPoint(&point_2);
+        OGRPoint point_3(corner3.first, corner3.second);
+        square.addPoint(&point_3);
+        OGRPoint point_4(corner4.first, corner4.second);
+        square.addPoint(&point_4);
+        square.closeRings();
+
+        OGRPolygon *square_area = new OGRPolygon();
+        square_area->addRing(&square);
+        clip_geometry = square_area;
         break;
     }
     default:
@@ -408,9 +431,9 @@ std::filesystem::path *MEMPA::BUFFDEM::getOutput()
  * @param input_filepath The filepath for the .tif file to be accessed.
  * @param output_filepath The directory location to save new files to.
  * @param output_filename The general name for new files to be identified with. Do not include any file extentions or directory characters/
+ *
  * @return std::vector<std::vector<double>> A 2D vector of the values in the DEM.
- * 
- * 
+ *
  * @author Ryan Wagster <ryan.wagster@colorado.edu>
  * @date 2025-2-17
  */
