@@ -52,4 +52,4 @@ if ls "${TEST_DIR}"/test_*.log 1> /dev/null 2>&1; then
     grep "Maximum Slope:" "${TEST_DIR}"/test_*.log
 else
     echo "No test results found"
-fi
+fin
