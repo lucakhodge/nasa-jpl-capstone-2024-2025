@@ -1,0 +1,19 @@
+{
+    "test_cases": [
+        {
+            "name": "Base Case",
+            "start": {"x": 1254, "y": 1265},
+            "end": {"x": 1340, "y": 1338}
+        },
+        {
+            "name": "Long Distance",
+            "start": {"x": 1200, "y": 1200},
+            "end": {"x": 1400, "y": 1400}
+        },
+        {
+            "name": "Short Distance",
+            "start": {"x": 1300, "y": 1300},
+            "end": {"x": 1310, "y": 1310}
+        }
+    ]
+}
