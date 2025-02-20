@@ -29,3 +29,11 @@ Use the following command to run the simulator with specific coordinates:
 example:
 ./simulator 1254 1265 1340 1338
 ```
+
+### Running Multiple Tests
+```
+# First build the simulator then:
+cd /sim/tests
+./run_tests.sh
+# Output will be saved in /sim/test_results
+```
