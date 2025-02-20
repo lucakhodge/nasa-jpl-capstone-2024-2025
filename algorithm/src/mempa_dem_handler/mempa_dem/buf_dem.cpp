@@ -74,18 +74,51 @@ BUFFDEM::BUFFDEM(const std::string_view input_filepath, const std::string_view o
 BUFFDEM::~BUFFDEM() {
     if (source_dataset) {
         GDALClose(source_dataset);
-        source_dataset = nullptr;
     }
-
     if (destination_dataset) {
         GDALClose(destination_dataset);
-        destination_dataset = nullptr;
+    }
+    if (clip_geometry) {
+        OGRGeometryFactory::destroyGeometry(clip_geometry);
+    }
+}
+
+OGRGeometry* BUFFDEM::demAreaSquare(
+    const std::pair<double, double>& center, 
+    double sideLength) 
+{
+    if (sideLength < 0.0) {
+        throw std::invalid_argument("[Error]: Side length cannot be negative");
     }
 
     if (clip_geometry) {
         OGRGeometryFactory::destroyGeometry(clip_geometry);
         clip_geometry = nullptr;
     }
+
+    // Calculate square corners
+    double halfSide = sideLength / 2.0;
+    double x = center.first;
+    double y = center.second;
+
+    OGRPolygon* square = new OGRPolygon();
+    OGRLinearRing ring;
+
+    // Add corners in clockwise order
+    ring.addPoint(x - halfSide, y - halfSide); // Bottom left
+    ring.addPoint(x + halfSide, y - halfSide); // Bottom right
+    ring.addPoint(x + halfSide, y + halfSide); // Top right
+    ring.addPoint(x - halfSide, y + halfSide); // Top left
+    ring.closeRings();
+
+    square->addRing(&ring);
+    clip_geometry = square;
+
+    if (!clip_geometry) {
+        throw std::runtime_error("[Error]: Failed to create square geometry");
+    }
+
+    return clip_geometry;
 }
 
 std::vector<std::vector<double>> BUFFDEM::demVector(
@@ -95,7 +128,6 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
 {
     std::cout << "Generating DEM vector from file path: " << tif_filepath << std::endl;
 
-    // Open TIFF file with smart pointer for automatic cleanup
     struct TIFFDeleter {
         void operator()(TIFF* p) { if (p) TIFFClose(p); }
     };
@@ -105,7 +137,6 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
         throw std::runtime_error(formatError("Failed to open TIFF file", tif_filepath));
     }
 
-    // Get image dimensions
     uint32_t width, length;
     if (!TIFFGetField(geotiff.get(), TIFFTAG_IMAGEWIDTH, &width) ||
         !TIFFGetField(geotiff.get(), TIFFTAG_IMAGELENGTH, &length)) {
@@ -115,17 +146,14 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
     std::cout << "TIFF file dimensions: width = " << width << ", length = " << length 
               << std::endl;
 
-    // Validate ROI boundaries
     if (startRow >= length || endRow >= length || startCol >= width || endCol >= width ||
         startRow > endRow || startCol > endCol) {
         throw std::out_of_range("Specified ROI is out of range or invalid");
     }
 
-    // Calculate ROI dimensions
     uint32_t roi_width = endCol - startCol + 1;
     uint32_t roi_height = endRow - startRow + 1;
 
-    // Allocate buffer with smart pointer
     std::vector<std::vector<double>> tif_map;
     tif_map.reserve(roi_height);
 
@@ -134,7 +162,6 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
         throw std::bad_alloc();
     }
 
-    // Read scanlines
     for (uint32_t row = startRow; row <= endRow; row++) {
         if (TIFFReadScanline(geotiff.get(), buffer.get(), row) == -1) {
             std::cerr << "Error reading row " << row << " from TIFF file." << std::endl;
@@ -145,12 +172,11 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
         line_data.reserve(roi_width);
         
         for (uint32_t col = startCol; col <= endCol; col++) {
-            // Convert elevation data to double and validate
             double elevation = static_cast<double>(buffer[col]);
             if (std::isnan(elevation) || std::isinf(elevation)) {
                 std::cerr << "Warning: Invalid elevation at row " << row 
                          << ", col " << col << std::endl;
-                elevation = 0.0;  // Use default value for invalid data
+                elevation = 0.0;
             }
             line_data.push_back(elevation);
         }
@@ -158,7 +184,6 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
         tif_map.push_back(std::move(line_data));
     }
 
-    // Validate output
     if (tif_map.empty() || tif_map[0].empty()) {
         throw std::runtime_error("Failed to generate valid DEM data");
     }
@@ -166,6 +191,178 @@ std::vector<std::vector<double>> BUFFDEM::demVector(
     std::cout << "DEM vector generated successfully: " 
               << tif_map.size() << "x" << tif_map[0].size() << std::endl;
     return tif_map;
+}
+
+GDALDataset* BUFFDEM::demGet() {
+    return source_dataset;
+}
+
+OGRGeometry* BUFFDEM::demArea(
+    const std::vector<std::pair<double, double>>& coordinates,
+    double radius,
+    double eccentricity)
+{
+    if (clip_geometry) {
+        OGRGeometryFactory::destroyGeometry(clip_geometry);
+        clip_geometry = nullptr;
+    }
+
+    switch (coordinates.size()) {
+        case 1: {
+            if (radius < 0.0) {
+                throw std::invalid_argument("[Error]: Radius cannot be negative");
+            }
+            OGRPoint center(coordinates[0].first, coordinates[0].second);
+            clip_geometry = center.Buffer(radius);
+            break;
+        }
+        case 2: {
+            if (eccentricity < 0.0 || eccentricity >= 1.0) {
+                throw std::invalid_argument("[Error]: Eccentricity must be in range [0, 1)");
+            }
+            auto& focus1 = coordinates[0];
+            auto& focus2 = coordinates[1];
+            double foci_distance = std::sqrt(
+                std::pow(focus2.first - focus1.first, 2.0) + 
+                std::pow(focus2.second - focus1.second, 2.0));
+            double semimajor_axis = foci_distance / (2.0 * std::sqrt(1.0 - std::pow(eccentricity, 2.0)));
+            double semiminor_axis = semimajor_axis * std::sqrt(1.0 - std::pow(eccentricity, 2.0));
+
+            OGRPolygon* ellipse = new OGRPolygon();
+            OGRLinearRing ring;
+            const int num_points = 360;
+            
+            for (int i = 0; i < num_points; i++) {
+                double theta = 2.0 * M_PI * static_cast<double>(i) / num_points;
+                double x = focus1.first + semimajor_axis * std::cos(theta);
+                double y = focus1.second + semiminor_axis * std::sin(theta);
+                ring.addPoint(x, y);
+            }
+            
+            ring.closeRings();
+            ellipse->addRing(&ring);
+            clip_geometry = ellipse;
+            break;
+        }
+        default:
+            throw std::invalid_argument("[Error]: Unsupported number of coordinates");
+    }
+
+    if (!clip_geometry) {
+        throw std::runtime_error("[Error]: Failed to create geometry");
+    }
+
+    return clip_geometry;
+}
+
+OGRGeometry* BUFFDEM::demAreaGet() {
+    return clip_geometry;
+}
+
+void BUFFDEM::makeSHP(const std::string& shapefile_name, bool overwrite) {
+    static int filecounter = 1;
+    shp_fp = output_directory / (shapefile_name + std::to_string(filecounter) + ".shp");
+
+    if (std::filesystem::exists(shp_fp) && !overwrite) {
+        throw std::filesystem::filesystem_error(
+            "[Error]: Shapefile already exists",
+            std::make_error_code(std::errc::file_exists));
+    }
+
+    GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
+    if (std::filesystem::exists(shp_fp)) {
+        std::filesystem::remove(shp_fp);
+    }
+
+    GDALDataset* shapefile = driver->Create(shp_fp.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
+    OGRSpatialReference demSRS;
+    demSRS.importFromWkt(source_dataset->GetProjectionRef());
+
+    OGRLayer* layer = shapefile->CreateLayer("clip_geometry", &demSRS, wkbUnknown, nullptr);
+    OGRFeature* feature = OGRFeature::CreateFeature(layer->GetLayerDefn());
+    
+    feature->SetGeometry(clip_geometry);
+    feature->GetGeometryRef()->assignSpatialReference(&demSRS);
+    
+    if (layer->CreateFeature(feature) != OGRERR_NONE) {
+        OGRFeature::DestroyFeature(feature);
+        GDALClose(shapefile);
+        throw std::runtime_error("[Error]: Failed to write to shapefile");
+    }
+
+    filecounter++;
+    OGRFeature::DestroyFeature(feature);
+    GDALClose(shapefile);
+}
+
+GDALDataset* BUFFDEM::demClip(const std::string& output_name, bool overwrite) {
+    static int filecounter = 1;
+    output_raster = output_directory / (output_name + std::to_string(filecounter) + ".tif");
+
+    if (std::filesystem::exists(output_raster) && !overwrite) {
+        throw std::filesystem::filesystem_error(
+            "[Error]: Clipped file already exists",
+            std::make_error_code(std::errc::file_exists));
+    }
+
+    if (std::filesystem::exists(output_raster)) {
+        std::filesystem::remove(output_raster);
+    }
+
+    std::string command = "gdalwarp -cutline \"" + shp_fp.string() + 
+                         "\" -crop_to_cutline -dstnodata -9999 \"" + 
+                         dem_fp.string() + "\" \"" + output_raster.string() + "\"";
+
+    if (std::system(command.c_str()) != 0) {
+        throw std::runtime_error("[Error]: gdalwarp command failed");
+    }
+
+    destination_dataset = static_cast<GDALDataset*>(GDALOpen(output_raster.c_str(), GA_ReadOnly));
+    if (!destination_dataset) {
+        throw std::filesystem::filesystem_error(
+            "[Error]: Failed to open clipped raster with GDAL",
+            std::make_error_code(std::errc::io_error));
+    }
+
+    filecounter++;
+    return destination_dataset;
+}
+
+std::filesystem::path* BUFFDEM::getOutput() {
+    return &output_raster;
+}
+
+std::vector<std::vector<double>> BUFFDEM::makeRequest(
+    const std::vector<std::pair<double, double>>& coordinates,
+    double radius_eccentricity,
+    const std::string_view input_filepath,
+    const std::string_view output_filepath,
+    const std::string& output_filename,
+    bool useSquareClipping)
+{
+    try {
+        MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
+        
+        if (useSquareClipping) {
+            if (coordinates.size() != 1) {
+                throw std::invalid_argument("[Error]: Square clipping requires exactly one coordinate pair");
+            }
+            mars_dem.demAreaSquare(coordinates[0], radius_eccentricity * 2.0);
+        } else {
+            mars_dem.demArea(coordinates, radius_eccentricity, radius_eccentricity);
+        }
+
+        mars_dem.makeSHP(output_filename + "_shape", true);
+        mars_dem.demClip(output_filename + "_clip", true);
+        GDALDataset* dataset = mars_dem.demGet();
+        int xSize = dataset->GetRasterXSize();
+        int ySize = dataset->GetRasterYSize();
+        return mars_dem.demVector(*mars_dem.getOutput(), 0, ySize - 1, 0, xSize - 1);
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return std::vector<std::vector<double>>();
+    }
 }
 
 } // namespace MEMPA

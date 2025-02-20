@@ -84,10 +84,10 @@ struct CompareNodes {
 };
 
 vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap, 
-                                           pair<int, int> startPoint, 
-                                           pair<int, int> endPoint, 
-                                           double maxSlope, 
-                                           double pixelSize)
+    pair<int, int> startPoint, 
+    pair<int, int> endPoint, 
+    double maxSlope, 
+    double pixelSize)
 {
     elevTracker.reset();
     

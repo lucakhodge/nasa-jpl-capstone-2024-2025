@@ -1,0 +1,133 @@
+NASA JPL Rover Proxy
+Input coordinates: (1200,1200) to (1400,1400)
+
+=================================
+NASA JPL Mars Rover Standin
+=================================
+
+Configuration:
+- Start: (1200, 1200)
+- End:   (1400, 1400)
+- Resolution: 200 m/pixel
+- Max slope: 25°
+
+[DEBUG:0ms] Initializing simulation
+Initializing BUFFDEM with file path: /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/sim/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif and output path: /Users/adamcarlson/Dropbox/Mac/Downloads
+GDAL dataset opened successfully.
+[DEBUG:3ms] Loading heightmap for region: (1185,1185) to (1415,1415)
+Generating DEM vector from file path: "/Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/sim/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif"
+TIFF file dimensions: width = 106694, length = 53347
+DEM vector generated successfully: 231x231
+[DEBUG:113ms] Heightmap loaded: 231x231
+[DEBUG:113ms] Converting global (1200,1200) to local (15,15)
+[DEBUG:113ms] Converting global (1400,1400) to local (215,215)
+Initializing graph with 231x231 nodes...
+Base elevation: 4076401.40m
+At (0,1): Raw=4076335863.00mm, Abs=4076335.86m, Rel=-65.54m
+At (0,2): Raw=4076270327.00mm, Abs=4076270.33m, Rel=-131.07m
+At (0,3): Raw=4076401399.00mm, Abs=4076401.40m, Rel=-0.00m
+At (0,4): Raw=4076466936.00mm, Abs=4076466.94m, Rel=65.54m
+Starting pathfinding from (15,15) to (215,215)
+Iteration: 1000, At: (21,32), Height: 8781m, Progress: 100.00%
+Iteration: 2000, At: (17,48), Height: 8716m, Progress: 100.00%
+Iteration: 3000, At: (7,57), Height: 8650m, Progress: 100.00%
+Iteration: 4000, At: (66,5), Height: 1572m, Progress: 100.00%
+Iteration: 5000, At: (78,17), Height: 5898m, Progress: 100.00%
+Iteration: 6000, At: (65,66), Height: 8781m, Progress: 100.00%
+Iteration: 7000, At: (27,89), Height: 6815m, Progress: 100.00%
+Iteration: 8000, At: (41,90), Height: 6815m, Progress: 100.00%
+Iteration: 9000, At: (103,25), Height: 7864m, Progress: 100.00%
+Iteration: 10000, At: (102,42), Height: 9109m, Progress: 100.00%
+Iteration: 11000, At: (92,80), Height: 7995m, Progress: 100.00%
+Iteration: 12000, At: (124,16), Height: 5767m, Progress: 100.00%
+Iteration: 13000, At: (36,121), Height: 5242m, Progress: 100.00%
+Iteration: 14000, At: (99,100), Height: 6553m, Progress: 100.00%
+Iteration: 15000, At: (77,114), Height: 5505m, Progress: 100.00%
+Iteration: 16000, At: (144,14), Height: 5374m, Progress: 100.00%
+Iteration: 17000, At: (113,102), Height: 6619m, Progress: 100.00%
+Iteration: 18000, At: (151,9), Height: 3473m, Progress: 100.00%
+Iteration: 19000, At: (133,75), Height: 8650m, Progress: 100.00%
+Iteration: 20000, At: (49,148), Height: 5308m, Progress: 100.00%
+Iteration: 21000, At: (59,148), Height: 5242m, Progress: 100.00%
+Iteration: 22000, At: (169,12), Height: 4653m, Progress: 100.00%
+Iteration: 23000, At: (156,59), Height: 9699m, Progress: 100.00%
+Iteration: 24000, At: (119,135), Height: 5177m, Progress: 100.00%
+Iteration: 25000, At: (181,13), Height: 5177m, Progress: 100.00%
+Iteration: 26000, At: (125,140), Height: 5242m, Progress: 100.00%
+Iteration: 27000, At: (183,30), Height: 8847m, Progress: 100.00%
+Iteration: 28000, At: (41,182), Height: -786m, Progress: 100.00%
+Iteration: 29000, At: (176,64), Height: 9765m, Progress: 100.00%
+Iteration: 30000, At: (196,6), Height: 2228m, Progress: 100.00%
+Iteration: 31000, At: (66,182), Height: 2097m, Progress: 100.00%
+Iteration: 32000, At: (33,199), Height: -87164m, Progress: 100.00%
+Iteration: 33000, At: (170,111), Height: 6881m, Progress: 100.00%
+Iteration: 34000, At: (85,184), Height: -917m, Progress: 100.00%
+Iteration: 35000, At: (141,164), Height: 4980m, Progress: 100.00%
+Iteration: 36000, At: (7,216), Height: -83231m, Progress: 100.00%
+Iteration: 37000, At: (16,222), Height: -81134m, Progress: 100.00%
+Iteration: 38000, At: (170,149), Height: 5505m, Progress: 100.00%
+Iteration: 39000, At: (79,202), Height: -87426m, Progress: 100.00%
+Iteration: 40000, At: (108,193), Height: -72352m, Progress: 100.00%
+Iteration: 41000, At: (202,94), Height: 8126m, Progress: 100.00%
+Iteration: 42000, At: (215,71), Height: 9830m, Progress: 100.00%
+Iteration: 43000, At: (46,229), Height: -78251m, Progress: 100.00%
+Iteration: 44000, At: (135,196), Height: -79561m, Progress: 100.00%
+Iteration: 45000, At: (111,210), Height: -86312m, Progress: 100.00%
+Iteration: 46000, At: (148,199), Height: -86902m, Progress: 100.00%
+Iteration: 47000, At: (197,164), Height: 5046m, Progress: 100.00%
+Iteration: 48000, At: (202,164), Height: 5046m, Progress: 100.00%
+Iteration: 49000, At: (222,129), Height: 6553m, Progress: 100.00%
+Iteration: 50000, At: (200,197), Height: -80217m, Progress: 100.00%
+Iteration: 51000, At: (225,154), Height: 5636m, Progress: 100.00%
+Iteration: 52000, At: (207,212), Height: -86574m, Progress: 100.00%
+Path found after 52541 iterations
+Path metrics:
+- Length: 145887.60m
+- Steps: 201
+- Max slope: 88.86°
+- Avg slope: 20.05°
+[DEBUG:221ms] Scaled large elevation from 4081251.139000m to 4081.251139m
+[DEBUG:221ms] Base elevation set to: 4081.251139m
+[DEBUG:221ms] Scaled large elevation from 3989302.726000m to 3989.302726m
+[DEBUG:221ms] Raw=3989302726.00mm, Abs=3989.30m, Rel=-91.95m
+[DEBUG:221ms] Step 10/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=2828.43
+[DEBUG:221ms] Step 20/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=5656.85
+[DEBUG:221ms] Step 30/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=8485.28
+[DEBUG:221ms] Step 40/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=11313.71
+[DEBUG:221ms] Step 50/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=14142.14
+[DEBUG:221ms] Step 60/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=16970.56
+[DEBUG:221ms] Step 70/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=19798.99
+[DEBUG:221ms] Step 80/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=22627.42
+[DEBUG:221ms] Step 90/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=25455.84
+[DEBUG:221ms] Step 100/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=28284.27
+[DEBUG:221ms] Step 110/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=31112.70
+[DEBUG:221ms] Step 120/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=33941.13
+[DEBUG:221ms] Step 130/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=36769.55
+[DEBUG:221ms] Step 140/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=39597.98
+[DEBUG:221ms] Step 150/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=42426.41
+[DEBUG:221ms] Step 160/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=45254.83
+[DEBUG:221ms] Step 170/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=48083.26
+[DEBUG:221ms] Step 180/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=50911.69
+[DEBUG:221ms] Step 190/200: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=53740.12
+[DEBUG:221ms] Step 200/200: dist=297.41m, horiz=282.84m, elev=91.95m, slope=10.02°, energy=56814.83
+[DEBUG:222ms] Path optimized from 201 to 41 waypoints
+[DEBUG:222ms] Path data written to rover_path.txt
+
+Path Summary:
+------------
+3D Distance: 56583.11 m
+2D Distance: 56568.54 m
+Total Elevation Change: 91.95 m
+Net Elevation Change: -91.95 m
+Maximum Slope: 10.02°
+Average Slope: 0.05°
+Energy Cost: 56814.83
+Base Elevation: 4081.25 m
+Waypoints: 201
+Execution Time: 222ms
+
+Detailed Analysis:
+----------------
+Path Efficiency: 100.0%
+Processing Rate: 254878.9 m/s
+Energy per Meter: 1.0

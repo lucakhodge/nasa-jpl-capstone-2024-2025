@@ -1,0 +1,64 @@
+NASA JPL Rover Proxy
+Input coordinates: (1300,1300) to (1320,1320)
+
+=================================
+NASA JPL Mars Rover Standin
+=================================
+
+Configuration:
+- Start: (1300, 1300)
+- End:   (1320, 1320)
+- Resolution: 200 m/pixel
+- Max slope: 25°
+
+[DEBUG:0ms] Initializing simulation
+Initializing BUFFDEM with file path: /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/sim/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif and output path: /Users/adamcarlson/Dropbox/Mac/Downloads
+GDAL dataset opened successfully.
+[DEBUG:3ms] Loading heightmap for region: (1285,1285) to (1335,1335)
+Generating DEM vector from file path: "/Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/sim/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif"
+TIFF file dimensions: width = 106694, length = 53347
+DEM vector generated successfully: 51x51
+[DEBUG:9ms] Heightmap loaded: 51x51
+[DEBUG:9ms] Converting global (1300,1300) to local (15,15)
+[DEBUG:9ms] Converting global (1320,1320) to local (35,35)
+Initializing graph with 51x51 nodes...
+Base elevation: 4082955.10m
+At (0,1): Raw=4082955100.00mm, Abs=4082955.10m, Rel=0.00m
+At (0,2): Raw=4082955100.00mm, Abs=4082955.10m, Rel=0.00m
+At (0,3): Raw=4082955100.00mm, Abs=4082955.10m, Rel=0.00m
+At (0,4): Raw=4082955100.00mm, Abs=4082955.10m, Rel=0.00m
+Starting pathfinding from (15,15) to (35,35)
+Iteration: 1000, At: (21,32), Height: -1310m, Progress: 100.00%
+Path found after 1583 iterations
+Path metrics:
+- Length: 5731.79m
+- Steps: 21
+- Max slope: 13.05°
+- Avg slope: 6.52°
+[DEBUG:14ms] Scaled large elevation from 4082234.193000m to 4082.234193m
+[DEBUG:14ms] Base elevation set to: 4082.234193m
+[DEBUG:14ms] Scaled large elevation from 4081709.897000m to 4081.709897m
+[DEBUG:14ms] Raw=4081709897.00mm, Abs=4081.71m, Rel=-0.52m
+[DEBUG:14ms] Step 10/20: dist=282.84m, horiz=282.84m, elev=0.00m, slope=0.00°, energy=2828.43
+[DEBUG:14ms] Step 20/20: dist=282.84m, horiz=282.84m, elev=0.52m, slope=0.11°, energy=5657.91
+[DEBUG:14ms] Path optimized from 21 to 5 waypoints
+[DEBUG:14ms] Path data written to rover_path.txt
+
+Path Summary:
+------------
+3D Distance: 5656.85 m
+2D Distance: 5656.85 m
+Total Elevation Change: 0.52 m
+Net Elevation Change: -0.52 m
+Maximum Slope: 0.11°
+Average Slope: 0.01°
+Energy Cost: 5657.91
+Base Elevation: 4082.23 m
+Waypoints: 21
+Execution Time: 14ms
+
+Detailed Analysis:
+----------------
+Path Efficiency: 100.0%
+Processing Rate: 404061.1 m/s
+Energy per Meter: 1.0

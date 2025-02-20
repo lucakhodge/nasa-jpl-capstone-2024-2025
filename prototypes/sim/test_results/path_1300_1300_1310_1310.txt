@@ -1,0 +1,19 @@
+# Mars Rover Path Analysis
+# Generated: 1739986089
+# Start: (1300,1300)
+# End: (1310,1310)
+# Metrics:
+#   Total Distance: 2828.427 m
+#   Horizontal Distance: 2828.427 m
+#   Total Elevation Change: 0.262 m
+#   Net Elevation Change: -0.262 m
+#   Maximum Slope: 0.053°
+#   Average Slope: 0.005°
+#   Energy Cost: 2828.953
+#   Base Elevation: 4082.234 m
+#   Waypoints: 11
+
+# X Y Elevation(m) 
+1300 1300 4082234.193 
+1305 1305 4082103.119 
+1310 1310 4081972.045 

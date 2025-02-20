@@ -385,7 +385,7 @@ private:
 
     void displaySimulationHeader(int startX, int startY, int endX, int endY) {
         std::cout << "\n=================================\n"
-                  << "NASA JPL Mars Rover Proxy\n"
+                  << "NASA JPL Mars Rover Standin\n"
                   << "=================================\n\n"
                   << "Configuration:\n"
                   << "- Start: (" << startX << ", " << startY << ")\n"
