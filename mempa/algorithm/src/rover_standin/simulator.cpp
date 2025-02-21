@@ -454,8 +454,8 @@ public:
 
     const std::string demFilePath = inFile;
     const std::string outputPath =
-        "outfile"; // TODO: for now this is hardcoded, ideally it should not
-                   // have to exist
+        "outdir"; // TODO: for now this is hardcoded, ideally it should not
+                  // have to exist
 
     try {
       logDebug("Initializing simulation");
