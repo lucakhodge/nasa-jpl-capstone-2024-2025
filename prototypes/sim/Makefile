@@ -1,26 +1,29 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
-INCLUDES = -I/usr/local/include
-LDFLAGS = -L/usr/local/lib
+INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include
+LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
 LIBS = -lgdal -ltiff
 
 OBJDIR = build
 
-SOURCES = simulator.cpp \
-    ../search_algorithms/dijkstras.cpp \
-    ../../algorithm/src/mempa_dem_handler/mempa_dem/buf_dem.cpp
-
-OBJECTS = $(SOURCES:%.cpp=$(OBJDIR)/%.o)
+OBJECTS = build/dijkstras.o build/buff_dem.o build/simulator.o
 
 simulator: $(OBJECTS)
-    @mkdir -p $(dir $@)
-    $(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-$(OBJDIR)/%.o: %.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+build/simulator.o: simulator.cpp
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o build/simulator.o
+
+build/dijkstras.o: ../search_algorithms/dijkstras.cpp
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o build/dijkstras.o
+
+build/buff_dem.o: ../../algorithm/src/mempa_dem_handler/mempa_dem/buf_dem.cpp
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o build/buff_dem.o
 
 clean:
-    rm -rf $(OBJDIR) simulator
+	rm -rf $(OBJDIR) simulator
 
 .PHONY: clean
