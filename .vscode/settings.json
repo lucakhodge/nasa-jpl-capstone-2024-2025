@@ -77,5 +77,8 @@
         "variant": "cpp",
         "filesystem": "cpp",
         "regex": "cpp"
+    },
+    "[makefile]": {
+        "editor.comments.insertSpace": false
     }
 }
