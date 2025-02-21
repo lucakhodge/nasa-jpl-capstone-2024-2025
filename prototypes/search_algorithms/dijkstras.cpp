@@ -213,7 +213,7 @@ vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col)
 }
 
 double Dijkstras::calculate_distance_between_nodes(Node* node1, Node* node2, 
-                                                 double rise, double pixelSize) {
+    double rise, double pixelSize) {
     bool isDiagonal = (node1->x != node2->x && node1->y != node2->y);
     double run = isDiagonal ? (pixelSize * M_SQRT2) : pixelSize;
     return sqrt(pow(run, 2) + pow(rise, 2));
@@ -247,7 +247,7 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
         bool isDiagonal = (p1.first != p2.first && p1.second != p2.second);
         double horizontalDist = isDiagonal ? PIXEL_SIZE * M_SQRT2 : PIXEL_SIZE;
         double elevChange = std::abs(elevTracker.relativeHeights[p2.first][p2.second] - 
-                                   elevTracker.relativeHeights[p1.first][p1.second]);
+        elevTracker.relativeHeights[p1.first][p1.second]);
         double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
         
         totalDistance += sqrt(pow(horizontalDist, 2) + pow(elevChange, 2));
