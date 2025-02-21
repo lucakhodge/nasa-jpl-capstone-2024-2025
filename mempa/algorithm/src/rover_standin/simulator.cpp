@@ -12,7 +12,7 @@
 #include <memory>
 #include <stdexcept>
 #include "../search_algorithms/dijkstras.h"
-#include "../mempa_dem/buf_dem.h"
+#include "../dem_handler/buf_dem.h"
 
 // Constants for Mars terrain analysis
 const double MARS_PIXEL_SIZE = 200.0;     // Mars DEM resolution (meters)
