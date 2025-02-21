@@ -1,5 +1,5 @@
 import { GeoTIFF, fromFile } from "geotiff";
-import { ChunkDescription, ChunkMapTile, DEMInfo } from "./electronIPC";
+import { ChunkDescription, Chunk, DEMInfo } from "./electronIPC";
 
 export class DEMManager {
   private demInfo: DEMInfo | null = null;
@@ -27,29 +27,17 @@ export class DEMManager {
   getDEMInfo() {
     return this.demInfo;
   }
-  async getChunk(description: ChunkDescription) {
+  async getChunk(chunkDescription: ChunkDescription) {
     if (!this.geoTiff) {
       console.error("DEM data is not loaded");
       return null;
     }
 
     // Calculate the area to read based on the chunk coordinates
-    const startX = description.coordinate.x * description.chunkSize.width;
-    const startY = description.coordinate.y * description.chunkSize.height;
-    const endX = Math.min(
-      startX + description.chunkSize.width,
-      this.demInfo.width
-    );
-    const endY = Math.min(
-      startY + description.chunkSize.height,
-      this.demInfo.height
-    );
-
-    console.log(
-      "width, height",
-      description.chunkSize.width,
-      description.chunkSize.height
-    );
+    const startX = chunkDescription.coordinate.x;
+    const startY = chunkDescription.coordinate.y;
+    const endX = chunkDescription.coordinate.x + chunkDescription.size.width;
+    const endY = chunkDescription.coordinate.y + chunkDescription.size.height;
 
     try {
       // Get the image and read the rasters for the specified region
@@ -80,12 +68,12 @@ export class DEMManager {
         chunkData.push(row);
       }
 
-      const tile: ChunkMapTile = {
-        chunkDescription: description,
+      const chunk: Chunk = {
+        description: chunkDescription,
         data: chunkData,
       };
-      console.log("dimensions", tile.data.length, tile.data[0].length);
-      return tile;
+      console.log("dimensions", chunk.data.length, chunk.data[0].length);
+      return chunk;
     } catch (err) {
       console.error("Error reading chunk data:", err);
       return null;
