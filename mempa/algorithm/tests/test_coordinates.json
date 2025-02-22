@@ -2,7 +2,7 @@
     "test_cases": [
         {
             "name": "Base Case",
-            "start": {"x": 1254, "y": 1265},
+            "start": {"x": 1252, "y": 1263},
             "end": {"x": 1340, "y": 1338}
         },
         {

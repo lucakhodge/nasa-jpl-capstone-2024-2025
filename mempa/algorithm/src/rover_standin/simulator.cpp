@@ -443,8 +443,13 @@ public:
   }
 
   void run(int startX, int startY, int endX, int endY, std::string inFile) {
-    displaySimulationHeader(startX, startY, endX, endY);
+    if (inFile.empty()) {
+      throw std::runtime_error("No input DEM file specified. Use -i option.");
+  }
 
+  displaySimulationHeader(startX, startY, endX, endY);
+  logDebug("Using DEM file: " + inFile);
+  
     /*const std::string demFilePath =
      * "/Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/"*/
     /*                                "nasa-jpl-capstone-2024-2025/prototypes/sim/"*/
@@ -454,8 +459,7 @@ public:
 
     const std::string demFilePath = inFile;
     const std::string outputPath =
-        "outdir"; // TODO: for now this is hardcoded, ideally it should not
-                  // have to exist
+        "/Users/adamcarlson/nasa-jpl-capstone-2024-2025-2/mempa/algorithm/outdir";
 
     try {
       logDebug("Initializing simulation");
@@ -508,7 +512,7 @@ public:
       updatePathMetrics(path, heightmap);
       optimizePath(path);
       writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
-                    endY, startRow, startCol);
+      endY, startRow, startCol);
 
       // Display summary
       std::cout << "\nPath Summary:\n";
