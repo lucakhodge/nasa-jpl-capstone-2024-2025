@@ -541,29 +541,43 @@ public:
 int main(int argc, char **argv) {
   // take argus for in an out fixed
   std::string inputFile;
+  int startX = 1254;
+  int startY = 1265;
+  int endX = 1340;
+  int endY = 1338;
   int opt;
 
-  while ((opt = getopt(argc, argv, "i:")) != -1) {
+  while ((opt = getopt(argc, argv, "i:x:y:X:Y:")) != -1) {
     switch (opt) {
     case 'i':
       inputFile = optarg;
       break;
+    case 'x':
+      startX = std::atoi(optarg);
+      break;
+    case 'y':
+      startY = std::atoi(optarg);
+      break;
+    case 'X':
+      endX = std::atoi(optarg);
+      break;
+    case 'Y':
+      endY = std::atoi(optarg);
+      break;
     case '?':
-      std::cerr << "Usage: " << argv[0]
-                << " -i <input_file> -o <output_file>\n";
+      std::cerr
+          << "Usage: " << argv[0]
+          << " -i <input_file> -x <startX> -y <startY> -X <endX> -Y <endY>\n";
       return 1;
     }
   }
 
   try {
-    // Default coordinates for testing
-    int startX = 1254;
-    int startY = 1265;
-    int endX = 1340;
-    int endY = 1338;
-
-    // TODO: add back in argumetns for specifing start and end (probably should
-    // be done in another file, cli)
+    // // Default coordinates for testing
+    // int startX = 1254;
+    // int startY = 1265;
+    // int endX = 1340;
+    // int endY = 1338;
 
     // if (argc >= 5) {
     //   // Override defaults with command line arguments
