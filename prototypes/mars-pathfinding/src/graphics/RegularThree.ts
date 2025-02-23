@@ -7,6 +7,17 @@ export default class RegularThree {
 
   scale = 0.005
 
+
+  renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
+  scene: THREE.Scene;
+  controls: OrbitControls;
+
+  tickTime = 0;
+  movingObject: THREE.Mesh;
+  path: THREE.CatmullRomCurve3;
+  isPlaying = false;
+
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
@@ -83,46 +94,6 @@ export default class RegularThree {
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     // compute normals for proper lighting
     geometry.computeVertexNormals();
-    //   // for head gradiantt
-    //   geometry.computeBoundingBox();
-    //   const heatGradiant = new THREE.ShaderMaterial({
-    //     uniforms: {
-    //       color1: {
-    //         value: new THREE.Color("red")
-    //       },
-    //       color2: {
-    //         value: new THREE.Color("purple")
-    //       },
-    //       bboxMin: {
-    //         value: geometry.boundingBox.min
-    //       },
-    //       bboxMax: {
-    //         value: geometry.boundingBox.max
-    //       }
-    //     },
-    //     vertexShader: `
-    //   uniform vec3 bboxMin;
-    //   uniform vec3 bboxMax;
-    //
-    //   varying vec2 vUv;
-    //
-    //   void main() {
-    //     vUv.y = (position.y - bboxMin.y) / (bboxMax.y - bboxMin.y);
-    //     gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-    //   }
-    // `,
-    //     fragmentShader: `
-    //   uniform vec3 color1;
-    //   uniform vec3 color2;
-    //
-    //   varying vec2 vUv;
-    //
-    //   void main() {
-    //
-    //     gl_FragColor = vec4(mix(color1, color2, vUv.y), 1.0);
-    //   }
-    // `,
-    //   })
 
     // material for mesh
     const material = new THREE.MeshStandardMaterial({
@@ -178,23 +149,34 @@ export default class RegularThree {
     movingObject.position.set(chunk.description.coordinate.x * this.scale, 0, chunk.description.coordinate.y * this.scale); // Place at center of the mesh
     scene.add(movingObject);
 
-    let t = 0; // Animation progress (0 to 1)
-    const r = renderer;
-    const c = camera;
-    const s = scene;
-    function animate() {
-      // move object along path
-      t += 0.001; // Adjust speed
-      if (t > 1) t = 0; // Loop animation
-      const position = path.getPointAt(t);
-      movingObject.position.set(position.x, position.y, position.z);
+    this.renderer = renderer;
+    this.camera = camera;
+    this.scene = scene;
+    this.controls = controls;
 
-      requestAnimationFrame(animate);
+    this.path = path;
+    this.movingObject = movingObject;
 
-      controls.update();
-      r.render(s, c);
+    this.animate();
+  }
+
+  animate = () => {
+    // move object along path
+    if (this.isPlaying) {
+      this.tickTime += 0.001; // Adjust speed
+      if (this.tickTime > 1) this.tickTime = 0; // Loop animation
+      const position = this.path.getPointAt(this.tickTime);
+      this.movingObject.position.set(position.x, position.y, position.z);
     }
-    animate();
+
+    requestAnimationFrame(this.animate);
+
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  togglePlay() {
+    this.isPlaying = !this.isPlaying;
   }
 
 }
