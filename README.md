@@ -24,6 +24,28 @@ Command: (still in progress)
 make run
 ``` 
 
+## Folder Structure
+```
+.
+├── .vscode/
+├── assets/
+├── docs/
+├── mempa/
+│   ├── algorithm/
+│   │   └── src/
+│   │       ├── mempa_dem_handler/
+│   │       ├── search_algorithms/
+│   │       ├── .gitignore
+│   │       ├── Doxyfile
+│   │       └── Makefile
+│   ├── gui/
+│   └── README.md
+├── prototypes/
+│   ├── .gitignore
+│   ├── C++.gitignore
+│   └── README.md
+```
+
 ## Dependencies
 
 - Windows Subsystem for Linux (WSL)
