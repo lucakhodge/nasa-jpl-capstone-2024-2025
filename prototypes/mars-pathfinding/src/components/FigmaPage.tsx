@@ -7,11 +7,9 @@ import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordina
 import Map3d from './Map3d';
 import FileStatus from './FileStatus';
 import RunCpp from './RunCpp';
-
-
+import nasaLogo from './images/nasa-logo-png-nasa-logo.png';
 
 export const FigmaPage = (props: {}) => {
-
   const dispatch = useAppDispatch();
 
   const startCoordinate = useAppSelector(selectStartCoordinate);
@@ -35,10 +33,19 @@ export const FigmaPage = (props: {}) => {
   };
 
   return (
-    <div className="grid grid-cols-[1fr_2fr] w-full h-full border-dashed bg-blue-200 absolute">
-      <div className='flex flex-col gap-1 bg-gray-600 w-full h-full, p-5'>
-        <div className='text-center text-[20px] text-red-500 font-bold'>Mempa</div>
-        <div className='flex flex-row'>
+    <div className="grid grid-cols-[1fr_2fr] w-screen h-screen fixed inset-0 overflow-hidden">
+      <div className='flex flex-col gap-1 w-full h-full p-5' style={{ backgroundColor: '#D1945A' }}>
+        <div className='flex items-center justify-center gap-4 mb-2'>
+          <img 
+            src={nasaLogo} 
+            alt="NASA Logo" 
+            className='h-12 w-auto object-contain'
+          />
+          <div className='text-center text-[20px] text-red-600 font-bold font-orbitron'>
+            MEMPA
+          </div>
+        </div>
+        <div className='flex flex-row text-black'>
           <div className='whitespace-nowrap'>Start Coordinate: (</div>
           <MyNumberInput value={startCoordinate.x} onChange={(val) => {
             dispatch(setStartCoordinate({ x: val, y: startCoordinate.y }))
@@ -49,7 +56,7 @@ export const FigmaPage = (props: {}) => {
           }}></MyNumberInput>
           <div>)</div>
         </div>
-        <div className='flex flex-row'>
+        <div className='flex flex-row text-black'>
           <div className='whitespace-nowrap'>End Coordinate: (</div>
           <MyNumberInput value={endCoordinate.x} onChange={(val) => {
             dispatch(setEndCoordinate({ x: val, y: endCoordinate.y }))
@@ -60,10 +67,10 @@ export const FigmaPage = (props: {}) => {
           }}></MyNumberInput>
           <div>)</div>
         </div>
-        <div>Start Area</div>
-        <div>End Area</div>
-        <div>Number of iterations</div>
-        <div className='flex flex-row'>
+        <div className='text-black'>Start Area: </div>
+        <div className='text-black'>End Area: </div>
+        <div className='text-black'>Number of iterations: </div>
+        <div className='flex flex-row text-black'>
           <div className='mr-2'>{"Slope tolerance: "}</div>
           <MyNumberInput value={slope} onChange={(val) => {
             dispatch(setSlope(val))
@@ -77,12 +84,11 @@ export const FigmaPage = (props: {}) => {
           <MyButton onClick={handleRetrieveChunk}>Display Optimum Path</MyButton>
         </div>
       </div>
-      <div style={{ width: "100%", height: "100%" }} className='bg-slate-500'>
-        <Map3d chunk={chunk}></Map3d>
+      <div className='relative w-full h-full bg-gray-700'>
+        <div className='absolute inset-0'>
+          <Map3d chunk={chunk} />
+        </div>
       </div>
     </div>
   )
 }
-
-
-

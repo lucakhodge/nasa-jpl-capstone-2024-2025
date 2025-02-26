@@ -7,7 +7,6 @@ interface Map3dPropsI {
 }
 
 export default function Map3d(props: Map3dPropsI) {
-
   const [regularThree, setRegularThree] = useState<RegularThree | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -24,8 +23,9 @@ export default function Map3d(props: Map3dPropsI) {
       regularThree?.displayChunk(props.chunk);
     }
   }, [props.chunk]);
+
   return (
-    <div>
+    <div className="w-full h-full">
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
     </div>
   );
