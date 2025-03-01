@@ -3,6 +3,7 @@ import started from 'electron-squirrel-startup';
 import path from 'node:path';
 import "./IPC/mainProcDEMFileHandlers";
 import "./IPC/runCpp";
+import "./IPC/callAlgorithim";
 
 // I added browser window so I can have getRendererWindow
 let browserWindow: BrowserWindow | undefined = undefined;

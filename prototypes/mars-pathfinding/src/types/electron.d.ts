@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { REACT_LOADING_DONE, CALL_CPP } from "../IPC/electronIPC";
+import { REACT_LOADING_DONE, CALL_CPP, Parameters } from "../IPC/electronIPC";
 
 interface ElectronIPC {
   openDEM: () => void;
@@ -11,6 +11,7 @@ interface ElectronIPC {
   onDEMClosed: (callback: (() => void) | undefined) => void;
   setReactLoaded: () => void;
   callCpp: (string: string) => Promise<string>;
+  callAlgorithim: (Parameters: Parameters) => Promise<string>;
 }
 
 declare global {
@@ -19,4 +20,4 @@ declare global {
   }
 }
 
-export {};
+export { };

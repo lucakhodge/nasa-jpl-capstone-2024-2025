@@ -2,8 +2,8 @@ import { exec } from 'child_process';
 import { app, ipcMain } from "electron";
 import path from 'path';
 import { promisify } from 'util';
-import { CALL_CPP } from "./electronIPC";
 import fs from 'fs';
+import { CALL_ALGORITHIM, Parameters } from './electronIPC';
 
 const execPromise = promisify(exec)
 
@@ -23,9 +23,9 @@ const getExecutablePath = () => {
   return path.join(basePath, executableName);
 };
 
-ipcMain.handle(CALL_CPP, async () => {
+ipcMain.handle(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
 
-  console.log("in call cpp handle")
+  console.log("in call algo handle, was passed:", parameters);
   let outputDir = app.getPath("temp");
   let outputPath = path.join(outputDir, 'path-result');
   // let outputPath = "/Users/lucahodge/Boulder/capstone/nasa-jpl-capstone-2024-2025/prototypes/mars-pathfinding/test";

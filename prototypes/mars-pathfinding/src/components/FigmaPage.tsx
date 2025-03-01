@@ -7,6 +7,7 @@ import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordina
 import Map3d from './Map3d';
 import FileStatus from './FileStatus';
 import RunCpp from './RunCpp';
+import CallAlgorithim from './CallAlgorithim';
 
 
 
@@ -70,7 +71,8 @@ export const FigmaPage = (props: {}) => {
           }}></MyNumberInput>
         </div>
         <FileStatus />
-        <RunCpp />
+        {/* <RunCpp /> */}
+        <CallAlgorithim />
         <div className='flex-1' />
         <div className='grid grid-cols-2 gap-5'>
           <LoadFileButton />

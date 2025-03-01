@@ -52,3 +52,19 @@ export const CALL_CPP = "call-cpp";
 export const setReactLoaded = () => ipcRenderer.send(REACT_LOADING_DONE);
 export const callCpp = (message: string) =>
   ipcRenderer.invoke(CALL_CPP, message);
+
+export interface Parameters {
+  startCoordinate: Coordinate
+  endCoordinate: Coordinate
+  slope: number | null
+
+}
+
+export interface Coordinate {
+  x: number | null,
+  y: number | null
+}
+export const CALL_ALGORITHIM = "call-algorithim"
+export const callAlgorithim = (parameters: Parameters) =>
+  ipcRenderer.invoke(CALL_ALGORITHIM, parameters);
+
