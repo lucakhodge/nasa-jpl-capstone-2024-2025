@@ -2,6 +2,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Chunk } from "../IPC/electronIPC";
 import * as THREE from "three";
 import { Vector3 } from "@react-three/fiber";
+import { Path } from "../store/mapSlice";
 export default class RegularThree {
   canvas: HTMLCanvasElement;
 
@@ -15,14 +16,14 @@ export default class RegularThree {
 
   tickTime = 0;
   movingObject: THREE.Mesh;
-  path: THREE.CatmullRomCurve3;
+  track: THREE.CatmullRomCurve3;
   isPlaying = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
 
-  displayChunk(chunk: Chunk) {
+  displayChunk(chunk: Chunk, path: Path) {
     // // Uncomment below to clear scene (not needed in current setup)
     // while (this.scene.children.length > 0) {
     //   this.scene.remove(this.scene.children[0]);
@@ -126,20 +127,20 @@ export default class RegularThree {
     camera.position.copy(controls.target).add(offset);
     controls.update();
 
-    // create path
+    // create track from path
     const path_offset = 0.01
-    const startX = chunk.description.coordinate.x;
-    const startY = chunk.description.coordinate.y;
-    const width = rows;
-    const height = cols;
     const path_positions = [];
-    for (let i = 0; i < Math.min(width, height); i++) {
-      path_positions[i] = new THREE.Vector3((startX + i) * this.scale, normalizedData[i][i] + path_offset, (startY + i) * this.scale);
+    for (let i = 0; i < path.length; i++) {
+      let x_pos = path[i].x * this.scale;
+      let y_pos = normalizedData[path[i].x - chunk.description.coordinate.x][path[i].y - chunk.description.coordinate.y] + path_offset;
+      // let y_pos = 0;
+      let z_pos = path[i].y * this.scale;
+      path_positions[i] = new THREE.Vector3(x_pos, y_pos, z_pos);
     }
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(path_positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-    const path = new THREE.CatmullRomCurve3(path_positions);
+    const track = new THREE.CatmullRomCurve3(path_positions);
     scene.add(pathLine);
 
     //object to foolow path
@@ -154,7 +155,7 @@ export default class RegularThree {
     this.scene = scene;
     this.controls = controls;
 
-    this.path = path;
+    this.track = track;
     this.movingObject = movingObject;
 
     this.animate();
@@ -165,7 +166,7 @@ export default class RegularThree {
     if (this.isPlaying) {
       this.tickTime += 0.001; // Adjust speed
       if (this.tickTime > 1) this.tickTime = 0; // Loop animation
-      const position = this.path.getPointAt(this.tickTime);
+      const position = this.track.getPointAt(this.tickTime);
       this.movingObject.position.set(position.x, position.y, position.z);
     }
 

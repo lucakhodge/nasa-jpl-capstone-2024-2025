@@ -3,15 +3,15 @@ import { RootState } from "./store"
 
 
 interface ParamatersState {
-  startCoordinate: Coordinate
-  endCoordinate: Coordinate
+  startCoordinate: Coordinate,
+  endCoordinate: Coordinate,
   slope: number | null
 
 }
 
 interface Coordinate {
   x: number | null,
-  y: number | null
+  y: number | null,
 }
 
 const initialState: ParamatersState = {
@@ -24,10 +24,10 @@ export const paramaterSlice = createSlice({
   name: "parameters",
   initialState,
   reducers: {
-    setStartCoordinate: (state, action: PayloadAction<Coordinate>) => {
+    setStartCoordinate: (state, action: PayloadAction<Coordinate | null>) => {
       state.startCoordinate = action.payload
     },
-    setEndCoordinate: (state, action: PayloadAction<Coordinate>) => {
+    setEndCoordinate: (state, action: PayloadAction<Coordinate | null>) => {
       state.endCoordinate = action.payload
     },
     setSlope: (state, action: PayloadAction<number | null>) => {

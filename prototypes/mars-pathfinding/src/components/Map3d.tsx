@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Chunk } from "../IPC/electronIPC";
 import RegularThree from "../graphics/RegularThree";
 import { MyButton } from "./MyButton";
+import { Path } from "../store/mapSlice";
 
 interface Map3dPropsI {
   chunk: Chunk | null
+  path: Path | null
 }
 
 export default function Map3d(props: Map3dPropsI) {
@@ -17,14 +19,15 @@ export default function Map3d(props: Map3dPropsI) {
     if (canvasRef.current) {
       setRegularThree(new RegularThree(canvasRef.current));
     } else {
-      console.log("nope");
+      console.log("Could not find canvasRef");
     }
   }, []);
 
   // load chunk if chuck appears or changes
+  // Only rerender once you have new chunk
   useEffect(() => {
-    if (props.chunk) {
-      regularThree?.displayChunk(props.chunk);
+    if (props.chunk && props.path) {
+      regularThree?.displayChunk(props.chunk, props.path);
     }
   }, [props.chunk]);
 

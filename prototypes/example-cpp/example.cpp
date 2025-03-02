@@ -39,7 +39,7 @@ string getJson(vector<tuple<int, int>> v) {
   json j;
   j["data"] = json::array();
   for (const auto &t : v) {
-    j["data"].push_back({get<0>(t), get<1>(t)});
+    j["data"].push_back({{"x", get<0>(t)}, {"y", get<1>(t)}});
   }
   return j.dump();
 }
