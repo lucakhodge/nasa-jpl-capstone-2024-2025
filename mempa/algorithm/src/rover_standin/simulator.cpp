@@ -454,7 +454,7 @@ public:
 
     const std::string demFilePath = inFile;
     const std::string outputPath =
-        "outdir"; // TODO: for now this is hardcoded, ideally it should not
+        "/mnt/c/Users/Oscar/Desktop/MEMPA_Personal/output"; // TODO: for now this is hardcoded, ideally it should not
                   // have to exist
 
     try {
@@ -475,8 +475,14 @@ public:
                "," + std::to_string(startCol) + ") to (" +
                std::to_string(endRow) + "," + std::to_string(endCol) + ")");
 
-      auto heightmap =
-          demHandler.demVector(demFilePath, startRow, endRow, startCol, endCol);
+    std::vector<std::pair<double, double>> coordinates = {{startRow, startCol}, {endRow, endCol}};
+    double radius_eccentricity = 0.5;
+    const std::string outputFilename = "outputRaster";
+    bool useSquareClipping = false;
+
+
+      auto heightmap = demHandler.makeRequest(coordinates, radius_eccentricity, demFilePath, outputPath, outputFilename, useSquareClipping);
+          //demHandler.demVector(demFilePath, startRow, endRow, startCol, endCol);
 
       if (heightmap.empty() || heightmap[0].empty()) {
         throw std::runtime_error("Failed to load heightmap data");

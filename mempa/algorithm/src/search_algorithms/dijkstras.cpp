@@ -83,6 +83,7 @@ struct CompareNodes {
     }
 };
 
+//TODO: if the given endpoint is out of bounds navigate to the closest point to the goal as possible.  
 vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap, 
     pair<int, int> startPoint, 
     pair<int, int> endPoint, 
@@ -190,6 +191,45 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
 
     cout << "No valid path found after " << iteration << " iterations" << endl;
     return {};
+}
+
+pair<int, int> Dijkstras::get_step(vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int, int> endPoint, double maxSlope, double pixelSize)//, vector<pair<int, int>> *pathStorage)
+{
+    pair<int, int> out;
+
+    if(pathStoredThanDisplayed)
+    {
+        out = {-1,-1};
+        cout << "You have completed the path, if you want to start over please call reset_dijkstras(), returning -1, -1" << endl;
+        return out;
+    }
+
+    if(pathStorage.empty() && pathStoredThanDisplayed == false)
+    {
+        vector<pair<int, int>> realPath = dijkstras(heightmap, startPoint, endPoint, maxSlope, pixelSize);
+
+        for(int i = 0; i < realPath.size(); i++)
+        {
+            pathStorage.push_back(realPath.at(i));
+        }
+
+        out = pathStorage.back();
+        pathStorage.pop_back();
+
+        return out;
+    }
+    else
+    {
+        out = pathStorage.back();
+        pathStorage.pop_back();
+
+        if(pathStorage.empty())
+        {
+            pathStoredThanDisplayed = true;
+        }
+
+        return out;
+    }
 }
 
 vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col) {

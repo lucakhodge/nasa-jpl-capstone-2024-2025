@@ -313,8 +313,11 @@ GDALDataset* BUFFDEM::demClip(const std::string& output_name, bool overwrite) {
                          "\" -crop_to_cutline -dstnodata -9999 \"" + 
                          dem_fp.string() + "\" \"" + output_raster.string() + "\"";
 
-    if (std::system(command.c_str()) != 0) {
-        throw std::runtime_error("[Error]: gdalwarp command failed");
+    int returnCode = std::system(command.c_str());
+
+    if (returnCode != 0) {
+        
+        throw std::runtime_error("[Error]: gdalwarp command failed with code: " + std::to_string(returnCode) +  ", Command: " + command);
     }
 
     destination_dataset = static_cast<GDALDataset*>(GDALOpen(output_raster.c_str(), GA_ReadOnly));
