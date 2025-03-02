@@ -48,9 +48,13 @@ int main(int argc, char *argv[]) {
   int ch;
   int x = 0, y = 0, X = 0, Y = 0;
   string outFileName = "";
+  string inFileName = "";
   try {
-    while ((ch = getopt(argc, argv, "o:x:y:X:Y:")) != -1) {
+    while ((ch = getopt(argc, argv, "i:o:x:y:X:Y:")) != -1) {
       switch (ch) {
+      case 'i':
+        outFileName = optarg;
+        break;
       case 'o':
         outFileName = optarg;
         break;

@@ -10,6 +10,7 @@ import {
   ON_DEM_OPENED,
   OPEN_DEM,
 } from "./electronIPC";
+import { setDemFilePath } from "./FilePathStore";
 
 const myDEMManager: DEMManager = new DEMManager();
 
@@ -28,6 +29,8 @@ ipcMain.on(OPEN_DEM, async () => {
     // try to open the file
     // if good, pass to DEM Manager class
     const filePath = result.filePaths[0];
+    setDemFilePath(filePath);
+
     myDEMManager.openDEM(filePath).then(() => {
       // send: on dem opened (send DEM Manger's info about the file )
       const demInfo: DEMInfo = myDEMManager.getDEMInfo();

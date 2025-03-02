@@ -11,7 +11,7 @@ import CallAlgorithim from './CallAlgorithim';
 
 
 
-export const FigmaPage = (props: {}) => {
+export default function FigmaPage(props: {}) {
 
   const dispatch = useAppDispatch();
 

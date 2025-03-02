@@ -21,7 +21,7 @@ const initialState: ParamatersState = {
 }
 
 export const paramaterSlice = createSlice({
-  name: "paramaters",
+  name: "parameters",
   initialState,
   reducers: {
     setStartCoordinate: (state, action: PayloadAction<Coordinate>) => {

@@ -4,6 +4,7 @@ import path from 'path';
 import { promisify } from 'util';
 import fs from 'fs';
 import { CALL_ALGORITHIM, Parameters } from './electronIPC';
+import { getDemFilePath } from './FilePathStore';
 
 const execPromise = promisify(exec)
 
@@ -19,31 +20,35 @@ const getExecutablePath = () => {
   //   executableName = 'example-linux';
   // }
 
-  // Adjust for Vite's structure
   return path.join(basePath, executableName);
 };
 
-ipcMain.handle(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
+const getFlags = (parameters: Parameters, inputPath: string, outputPath: string) => {
+  let flagsStr = ""
+  flagsStr += " -x " + parameters.startCoordinate.x
+  flagsStr += " -y " + parameters.startCoordinate.y
+  flagsStr += " -X " + parameters.endCoordinate.x
+  flagsStr += " -Y " + parameters.endCoordinate.y
+  flagsStr += " -i " + inputPath
+  flagsStr += " -o " + outputPath
+  return flagsStr;
+}
+
+ipcMain.handle(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
 
   console.log("in call algo handle, was passed:", parameters);
-  let outputDir = app.getPath("temp");
-  let outputPath = path.join(outputDir, 'path-result');
-  // let outputPath = "/Users/lucahodge/Boulder/capstone/nasa-jpl-capstone-2024-2025/prototypes/mars-pathfinding/test";
+  const outputPath = path.join(app.getPath("temp"), 'path-result');
 
   try {
-
-    let executableCall = getExecutablePath() + " -x 10 -y 15 -X 20 -Y 30 -o " + outputPath
-    console.log("ec ", executableCall)
+    const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
+    console.log("EC: ", executableCall)
 
     const { stderr } = await execPromise(executableCall);
     if (stderr) {
       throw new Error(stderr);
     }
-    // console.log(stdout);
-    // return stdout;
   } catch (error) {
-    // return `Error: ${error.message}`;
-    // return `Error: ${error}`;
+    // TODO: what should happen on error?
     return undefined;
   }
 
