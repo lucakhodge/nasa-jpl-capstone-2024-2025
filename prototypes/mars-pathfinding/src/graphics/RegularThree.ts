@@ -132,7 +132,7 @@ export default class RegularThree {
     const path_positions = [];
     for (let i = 0; i < path.length; i++) {
       let x_pos = path[i].x * this.scale;
-      let y_pos = normalizedData[path[i].x - chunk.description.coordinate.x][path[i].y - chunk.description.coordinate.y] + path_offset;
+      let y_pos = normalizedData[path[i].y - chunk.description.coordinate.y][path[i].x - chunk.description.coordinate.x] + path_offset;
       // let y_pos = 0;
       let z_pos = path[i].y * this.scale;
       path_positions[i] = new THREE.Vector3(x_pos, y_pos, z_pos);

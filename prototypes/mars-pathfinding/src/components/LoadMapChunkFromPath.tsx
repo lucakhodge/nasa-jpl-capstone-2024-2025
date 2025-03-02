@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Map3d from './Map3d'
 import { useAppSelector } from '../store/hooks'
 import { selectPath } from '../store/mapSlice';
+import { selectDemInfo } from '../store/demSlice';
 
-export const LoadMap = (props: {}) => {
+export const LoadMapChunkFromPath = (props: {}) => {
   const path = useAppSelector(selectPath);
+  const demInfo = useAppSelector(selectDemInfo);
 
   const [chunk, setChunk] = useState(null);
 
@@ -26,14 +28,23 @@ export const LoadMap = (props: {}) => {
           maxY: -Infinity,
           minY: Infinity,
         })
+
+      const xCoordinate = Math.max(0, limits.minX - buffer);
+      const yCoordinate = Math.max(0, limits.minY - buffer);
+
+      const width = Math.min(demInfo.width, limits.maxX + buffer) - xCoordinate
+      const height = Math.min(demInfo.height, limits.maxY + buffer) - yCoordinate
+
+      console.log("coord width ", xCoordinate, yCoordinate, width, height);
+
       const chunk = window.electronIPC.getChunk({
         coordinate: {
-          x: limits.minX - buffer,
-          y: limits.minY - buffer,
+          x: xCoordinate,
+          y: yCoordinate,
         },
         size: {
-          width: limits.maxX - limits.minX + 2 * buffer,
-          height: limits.maxY - limits.minY + 2 * buffer,
+          width: width,
+          height: height,
         },
       });
       setChunk(chunk)

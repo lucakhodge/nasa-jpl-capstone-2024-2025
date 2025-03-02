@@ -1,16 +1,10 @@
-import { useEffect, useState } from 'react';
-import { MyButton } from './MyButton'
-import { MyNumberInput } from './MyNumberInput'
-import LoadFileButton from './LoadFileButton';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordinate, setSlope, setStartCoordinate } from '../store/paramatersSlice';
-import Map3d from './Map3d';
 import FileStatus from './FileStatus';
-import RunCpp from './RunCpp';
-import CallAlgorithim from './CallAlgorithim';
 import GeneratePathButton from './GeneratePathButton';
-import { selectPath } from '../store/mapSlice';
-import { LoadMap } from './LoadMap';
+import LoadFileButton from './LoadFileButton';
+import { LoadMapChunkFromPath } from './LoadMapChunkFromPath';
+import { MyNumberInput } from './MyNumberInput';
 
 
 
@@ -21,8 +15,6 @@ export default function FigmaPage(props: {}) {
   const startCoordinate = useAppSelector(selectStartCoordinate);
   const endCoordinate = useAppSelector(selectEndCoordinate);
   const slope = useAppSelector(selectSlope);
-
-  const path = useAppSelector(selectPath);
 
   return (
     <div className="grid grid-cols-[1fr_2fr] w-full h-full border-dashed bg-blue-200 absolute">
@@ -60,7 +52,6 @@ export default function FigmaPage(props: {}) {
           }}></MyNumberInput>
         </div>
         <FileStatus />
-        <div>{JSON.stringify(path)}</div>
         <div className='flex-1' />
         <div className='grid grid-cols-2 gap-5'>
           <LoadFileButton />
@@ -68,7 +59,7 @@ export default function FigmaPage(props: {}) {
         </div>
       </div>
       <div style={{ width: "100%", height: "100%" }} className='bg-slate-500'>
-        <LoadMap></LoadMap>
+        <LoadMapChunkFromPath></LoadMapChunkFromPath>
       </div>
     </div>
   )
