@@ -17,11 +17,28 @@ export default function Map3d(props: Map3dPropsI) {
   // init three on load
   useEffect(() => {
     if (canvasRef.current) {
-      setRegularThree(new RegularThree(canvasRef.current));
+      setRegularThree(new RegularThree(canvasRef));
     } else {
       console.log("Could not find canvasRef");
     }
   }, []);
+
+  ////update renderer when canvas is resized
+  //useEffect(() => {
+  //  if (regularThree) {
+  //    const observer = new ResizeObserver(
+  //      () => {
+  //        // requestAnimationFrame(() => {
+  //        //   regularThree?.resizeToCanvas();
+  //        // });
+  //      }
+  //    );
+  //    observer.observe(canvasRef.current);
+  //    return () => {
+  //      observer.disconnect();
+  //    };
+  //  }
+  //}, [regularThree])
 
   // load chunk if chuck appears or changes
   // Only rerender once you have new chunk
@@ -36,10 +53,14 @@ export default function Map3d(props: Map3dPropsI) {
     regularThree?.togglePlay();
   }
 
+
+
   return (
-    <div>
+    <div className="w-full, h-full">
+      {/* <div> */}
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
       <MyButton onClick={handleTogglePlay}>Play/Pause</MyButton>
+      {/* <button onClick={() => { regularThree?.resizeToCanvas() }}>resize</button> */}
     </div>
   );
 }

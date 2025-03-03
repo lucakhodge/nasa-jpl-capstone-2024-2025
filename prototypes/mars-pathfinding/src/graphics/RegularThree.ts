@@ -1,10 +1,10 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Chunk } from "../IPC/electronIPC";
 import * as THREE from "three";
-import { Vector3 } from "@react-three/fiber";
 import { Path } from "../store/mapSlice";
 export default class RegularThree {
-  canvas: HTMLCanvasElement;
+  // canvas: HTMLCanvasElement;
+  canvasRef: React.RefObject<HTMLCanvasElement>
 
   scale = 0.005
 
@@ -19,27 +19,38 @@ export default class RegularThree {
   track: THREE.CatmullRomCurve3;
   isPlaying = false;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  constructor(canvasRef: React.RefObject<HTMLCanvasElement>) {
+    this.canvasRef = canvasRef;
+  }
+
+  resizeToCanvas() {
+    const { width, height } = this.canvasRef.current.getBoundingClientRect();
+
+    // console.log("RESISE TO CNAVAS", this.canvas.current.clientWidth, this.canvas.current.clientHeight);
+
+    if (this.renderer) {
+      this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+    }
+    if (this.camera) {
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+    }
   }
 
   displayChunk(chunk: Chunk, path: Path) {
-    // // Uncomment below to clear scene (not needed in current setup)
-    // while (this.scene.children.length > 0) {
-    //   this.scene.remove(this.scene.children[0]);
-    // }
 
     // create scene, camera, and renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      this.canvas.clientWidth / this.canvas.clientHeight,
+      this.canvasRef.current.clientWidth / this.canvasRef.current.clientHeight,
       0.1,
       1000
     );
-    const renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
-    renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-
+    const renderer = new THREE.WebGLRenderer({ canvas: this.canvasRef.current, antialias: true });
+    renderer.setSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, false);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
