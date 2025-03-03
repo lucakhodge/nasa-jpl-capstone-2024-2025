@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y g++ cmake make
+
+      - name: Clone and build GoogleTest
+        run: |
+          git clone https://github.com/google/googletest.git mempa/algorithm/tests/googletest
+          cd mempa/algorithm/tests/googletest
+          mkdir -p build && cd build
+          cmake .. && make -j$(nproc)
+
+      - name: Build and run tests
+        run: |
+          cd mempa/algorithm/tests
+          make clean
+          make
+          make run
