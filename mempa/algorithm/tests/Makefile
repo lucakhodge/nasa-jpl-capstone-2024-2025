@@ -42,10 +42,12 @@ run: $(GTEST_LIB_DIR) $(TEST_EXEC)
 
 # Link main app
 $(APP_EXEC): $(APP_OBJECTS) | $(BIN_DIR)
+	@if [ -z "$(APP_OBJECTS)" ]; then echo "Error: No object files for main app!"; exit 1; fi
 	$(CC) $(APP_OBJECTS) -o $@
 
 # Link test executable
 $(TEST_EXEC): $(TEST_OBJECTS) $(SRC_OBJECTS) | $(BIN_DIR)
+	@if [ -z "$(TEST_OBJECTS)" ] || [ -z "$(SRC_OBJECTS)" ]; then echo "Error: No test or source object files!"; exit 1; fi
 	$(CC) $(TEST_OBJECTS) $(SRC_OBJECTS) -L$(GTEST_LIB_DIR) -lgtest -lgtest_main -pthread -o $@
 
 # Compile app source files
@@ -60,8 +62,17 @@ $(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
 $(BIN_DIR) $(OBJ_DIR):
 	mkdir -p $@
 
+# Debugging: Print variable values
+print-vars:
+	@echo "APP_SOURCES: $(APP_SOURCES)"
+	@echo "APP_OBJECTS: $(APP_OBJECTS)"
+	@echo "SRC_SOURCES: $(SRC_SOURCES)"
+	@echo "SRC_OBJECTS: $(SRC_OBJECTS)"
+	@echo "TEST_SOURCES: $(TEST_SOURCES)"
+	@echo "TEST_OBJECTS: $(TEST_OBJECTS)"
+
 # Clean up
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-.PHONY: all build run clean
+.PHONY: all build run clean print-vars
