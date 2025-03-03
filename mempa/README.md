@@ -4,10 +4,6 @@ Our most up to date code lives here. Put everything else in protoypes folder.
 
 ## File structure:
 
-cli: command line interface
+algorith: stores all parts of the algorithm
 
 gui: graphical user interface
-
-rpm: rover pathfinding module
-
-sim: simulator

@@ -13,7 +13,6 @@
 make clean && make
 
 # Manual compilation
-```
 g++ -std=c++17 -o simulator simulator.cpp /file_path/dijkstras.cpp /file_path/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
 
 example: 
@@ -29,6 +28,13 @@ Use the following command to run the simulator with specific coordinates:
 example:
 ./simulator 1254 1265 1340 1338
 ```
+### Gtest
+
+Uses the testing framework gtest.
+
+If you don't see `googletest` dir, make sure to run ```make all``` from the `tests` dir. 
+
+After this, you can just do ```make run```.
 
 ### Running Multiple Tests
 ```
