@@ -28,6 +28,7 @@ export const FigmaPage = (props: {}) => {
         width: endCoordinate.x - startCoordinate.x,
         height: endCoordinate.y - startCoordinate.y,
       },
+      slopeTolerance: slope, // Add the slope parameter here
     });
     setChunk(chunk);
   };
