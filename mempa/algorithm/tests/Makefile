@@ -8,7 +8,7 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # Main app
-APP_SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+APP_SOURCES = $(wildcard $(SRC_DIR)/**/*.cpp)
 APP_OBJECTS = $(APP_SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 APP_EXEC = $(BIN_DIR)/search_algorithms
 
