@@ -7,8 +7,8 @@ SRC = example.cpp
 
 TARGET = example
 
-$(TARGET):
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) -I/opt/homebrew/include $(SRC) -o $(TARGET)
 
 # Clean build files
 clean:

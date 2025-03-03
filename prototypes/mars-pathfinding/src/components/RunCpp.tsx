@@ -3,10 +3,10 @@ import React, { useCallback, useState } from "react";
 export default function RunCpp() {
   const [result, setResult] = useState<string>("");
 
-//   const callCpp = useCallback(
-//     async () => setResult(await window.electronIPC.callCpp("Hello from App.tsx!")),
-//     []
-//   );
+  //   const callCpp = useCallback(
+  //     async () => setResult(await window.electronIPC.callCpp("Hello from App.tsx!")),
+  //     []
+  //   );
 
   const callCpp = useCallback(
     async () => {
@@ -15,6 +15,7 @@ export default function RunCpp() {
           throw new Error('electronIPC.callCpp is not available');
         }
         const response = await window.electronIPC.callCpp("Hello from App.tsx!");
+        console.log("response: ", response);
         setResult(response);
       } catch (error) {
         console.error('Failed to call C++:', error);

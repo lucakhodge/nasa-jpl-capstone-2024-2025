@@ -3,10 +3,11 @@ import started from 'electron-squirrel-startup';
 import path from 'node:path';
 import "./IPC/mainProcDEMFileHandlers";
 import "./IPC/runCpp";
+import "./IPC/callAlgorithim";
+import "./IPC/FilePathStore";
 
 // I added browser window so I can have getRendererWindow
 let browserWindow: BrowserWindow | undefined = undefined;
-
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {

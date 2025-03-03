@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import DemListener from "./components/DemListener";
-import { FigmaPage } from "./components/FigmaPage";
+import FigmaPage from "./components/FigmaPage";
 import "./index.css";
 import { store } from "./store/store";
 const root = createRoot(document.body);
