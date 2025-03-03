@@ -19,6 +19,13 @@ jobs:
           sudo apt update
           sudo apt install -y g++ cmake make
 
+      - name: Verify source files exist
+        run: |
+          echo "Checking source directory..."
+          ls -la mempa/algorithm/src
+          echo "Checking test directory..."
+          ls -la mempa/algorithm/tests
+
       - name: Clone and build GoogleTest
         run: |
           git clone https://github.com/google/googletest.git mempa/algorithm/tests/googletest
@@ -26,9 +33,14 @@ jobs:
           mkdir -p build && cd build
           cmake .. && make -j$(nproc)
 
-      - name: Build and run tests
+      - name: Debug Makefile Variables
         run: |
           cd mempa/algorithm/tests
           make clean
+          make print-vars  # This should be added to the Makefile (see below)
+
+      - name: Build and run tests
+        run: |
+          cd mempa/algorithm/tests
           make
           make run
