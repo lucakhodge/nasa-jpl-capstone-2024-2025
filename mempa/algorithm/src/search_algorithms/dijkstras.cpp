@@ -30,7 +30,7 @@ struct ElevationTracker {
     int warningCount;
 
     ElevationTracker() : baseElevation(std::numeric_limits<double>::quiet_NaN()),
-                        warningCount(0), rows(0), cols(0) {}
+    warningCount(0), rows(0), cols(0) {}
 
     void initialize(int r, int c) {
         rows = r;
