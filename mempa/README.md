@@ -4,6 +4,6 @@ Our most up to date code lives here. Put everything else in protoypes folder.
 
 ## File structure:
 
-algorith: stores all parts of the algorithm
+algorithm: stores all parts of the algorithm
 
 gui: graphical user interface
