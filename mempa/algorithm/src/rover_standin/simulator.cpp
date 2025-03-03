@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <vector>
+#include <tuple>
 
 // Constants for Mars terrain analysis
 const double MARS_PIXEL_SIZE = 200.0; // Mars DEM resolution (meters)
@@ -103,6 +104,7 @@ private:
   std::string name;
   std::chrono::steady_clock::time_point startTime;
   ProgressTracker progress;
+  std::pair<int,int> currentPos;
 
   void logDebug(const std::string &message) {
     auto now = std::chrono::steady_clock::now();
@@ -437,12 +439,27 @@ private:
               << "- Detailed path data written to: rover_path.txt\n";
   }
 
+  std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> calculateRegionCordinates(uint32_t startX, uint32_t startY, uint32_t endX, uint32_t endY)
+  {
+    uint32_t startRow =
+          (startY > TERRAIN_PADDING) ? startY - TERRAIN_PADDING : 0;
+      uint32_t endRow =
+          std::min(static_cast<uint32_t>(endY + TERRAIN_PADDING), 53347u);
+      uint32_t startCol =
+          (startX > TERRAIN_PADDING) ? startX - TERRAIN_PADDING : 0;
+      uint32_t endCol =
+          std::min(static_cast<uint32_t>(endX + TERRAIN_PADDING), 106694u);
+    
+    std::cout << startRow << " " << startCol << " " << endRow << " " << endCol << std::endl;
+    return std::make_tuple(startRow, startCol, endRow, endCol);
+  }
+
 public:
   explicit Simulator(std::string n) : name(std::move(n)) {
     startTime = std::chrono::steady_clock::now();
   }
 
-  void run(int startX, int startY, int endX, int endY, std::string inFile) {
+  void run(int startX, int startY, int endX, int endY, std::string inFile, int maxDemRegionSize) {
     displaySimulationHeader(startX, startY, endX, endY);
 
     /*const std::string demFilePath =
@@ -454,29 +471,26 @@ public:
 
     const std::string demFilePath = inFile;
     const std::string outputPath =
-        "outdir"; // TODO: for now this is hardcoded, ideally it should not
+        "/mnt/c/Users/Oscar/Desktop/MEMPA_Personal/output"; // TODO: for now this is hardcoded, ideally it should not
                   // have to exist
 
     try {
       logDebug("Initializing simulation");
       MEMPA::BUFFDEM demHandler(demFilePath, outputPath);
+      currentPos.first = startX;
+      currentPos.second = startY;
+
+      std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> regionCordinates;
 
       // Calculate region with padding
-      uint32_t startRow =
-          (startY > TERRAIN_PADDING) ? startY - TERRAIN_PADDING : 0;
-      uint32_t endRow =
-          std::min(static_cast<uint32_t>(endY + TERRAIN_PADDING), 53347u);
-      uint32_t startCol =
-          (startX > TERRAIN_PADDING) ? startX - TERRAIN_PADDING : 0;
-      uint32_t endCol =
-          std::min(static_cast<uint32_t>(endX + TERRAIN_PADDING), 106694u);
+      regionCordinates = calculateRegionCordinates(currentPos.first, currentPos.second, endX, endY);
 
-      logDebug("Loading heightmap for region: (" + std::to_string(startRow) +
-               "," + std::to_string(startCol) + ") to (" +
-               std::to_string(endRow) + "," + std::to_string(endCol) + ")");
+      logDebug("Loading heightmap for region: (" + std::to_string(std::get<0>(regionCordinates)) +
+               "," + std::to_string(std::get<1>(regionCordinates)) + ") to (" +
+               std::to_string(std::get<2>(regionCordinates)) + "," + std::to_string(std::get<3>(regionCordinates)) + ")");
 
       auto heightmap =
-          demHandler.demVector(demFilePath, startRow, endRow, startCol, endCol);
+          demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<1>(regionCordinates), std::get<2>(regionCordinates), std::get<3>(regionCordinates));
 
       if (heightmap.empty() || heightmap[0].empty()) {
         throw std::runtime_error("Failed to load heightmap data");
@@ -489,8 +503,8 @@ public:
                std::to_string(heightmap[0].size()));
 
       auto localStart =
-          convertToLocalCoordinates(startX, startY, startRow, startCol);
-      auto localEnd = convertToLocalCoordinates(endX, endY, startRow, startCol);
+          convertToLocalCoordinates(currentPos.first, currentPos.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+      auto localEnd = convertToLocalCoordinates(endX, endY, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
 
       if (!isValidCoordinate(localStart, heightmap) ||
           !isValidCoordinate(localEnd, heightmap)) {
@@ -498,8 +512,23 @@ public:
       }
 
       Dijkstras dijkstra;
-      auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
-                                     MARS_PIXEL_SIZE);
+
+      dijkstra.setUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
+
+      std::vector<std::pair<int,int>> path;
+      // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
+      //                                MARS_PIXEL_SIZE);
+
+      std::pair<int,int> step;
+      while (true)
+      {
+        step = dijkstra.get_step();
+        if(step == std::make_pair(-1, -1))
+        {
+          break;
+        }
+        path.push_back(step);
+      }
 
       if (path.empty()) {
         throw std::runtime_error("No valid path found between points");
@@ -508,7 +537,7 @@ public:
       updatePathMetrics(path, heightmap);
       optimizePath(path);
       writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
-                    endY, startRow, startCol);
+                    endY, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
 
       // Display summary
       std::cout << "\nPath Summary:\n";
@@ -609,7 +638,7 @@ int main(int argc, char **argv) {
               << endX << "," << endY << ")" << std::endl;
 
     Simulator sim("NASA JPL Rover Simulator");
-    sim.run(startX, startY, endX, endY, inputFile);
+    sim.run(startX, startY, endX, endY, inputFile, 20);
     return 0;
 
   } catch (const std::exception &e) {
