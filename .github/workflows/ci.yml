@@ -19,6 +19,9 @@ jobs:
           sudo apt update
           sudo apt install -y g++ cmake make
 
+      - name: Install GDAL
+        run: sudo apt-get update && sudo apt-get install -y libgdal-dev
+
       - name: Verify source files exist
         run: |
           echo "Checking source directory..."
