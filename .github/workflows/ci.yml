@@ -18,6 +18,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev
 
+    - name: Debug Google Test directory
+      working-directory: mempa/algorithm
+      run: ls -R tests/googletest/googletest/include
+
     - name: Build simulator
       working-directory: mempa/algorithm
       run: make clean && make
