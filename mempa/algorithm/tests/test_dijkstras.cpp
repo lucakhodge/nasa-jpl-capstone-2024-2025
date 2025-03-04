@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "dijkstras.h"
+#include "mempa/algorithm/src/search_algorithms/dijkstras.h"
 #include <vector>
 #include <utility>
 
