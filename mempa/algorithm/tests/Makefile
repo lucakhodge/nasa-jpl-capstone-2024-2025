@@ -62,6 +62,8 @@ $(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
 $(BIN_DIR) $(OBJ_DIR):
 	mkdir -p $@
 
+CFLAGS += -I/usr/include/gdal
+
 # Debugging: Print variable values
 print-vars:
 	@echo "APP_SOURCES: $(APP_SOURCES)"
