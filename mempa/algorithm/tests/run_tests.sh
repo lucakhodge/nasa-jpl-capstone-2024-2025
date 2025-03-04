@@ -9,6 +9,7 @@ set -x
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEST_DIR="${SCRIPT_DIR}/../test_results"
 mkdir -p "$TEST_DIR"
+mkdir -p "${SCRIPT_DIR}/../outdir"  # Add this line to create outdir
 
 echo "Starting Mars Rover path tests..."
 

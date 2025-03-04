@@ -13,27 +13,50 @@
 make clean && make
 
 # Manual compilation
-```
 g++ -std=c++17 -o simulator simulator.cpp /file_path/dijkstras.cpp /file_path/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
 
 example: 
-g++ -std=c++17 -o simulator simulator.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/search_algorithms/dijkstras.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/algorithm/src/mempa_dem_handler/mempa_dem/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
+g++ -std=c++17 -o simulator /Users/adamcarlson/nasa-jpl-capstone-2024-2025-5/mempa/algorithm/src/rover_standin/simulator.cpp /Users/adamcarlson/nasa-jpl-capstone-2024-2025-5/mempa/algorithm/src/search_algorithms/dijkstras.cpp /Users/adamcarlson/nasa-jpl-capstone-2024-2025-5/mempa/algorithm/src/dem_handler/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
 ```
-2. Run the code using the following command:
-```
-Use the following command to run the simulator with default coordinates:
-./simulator
 
-Use the following command to run the simulator with specific coordinates:
-./simulator <start_x> <start_y> <end_x> <end_y>
-example:
-./simulator 1254 1265 1340 1338
+### Setup
+Before running the simulator, create the required output directory:
+```bash
+mkdir -p outdir
 ```
+
+### Running the Simulator
+Use one of the following commands:
+
+```bash
+# Run with default coordinates
+./simulator -i <path_to_dem_file>
+
+# Run with specific coordinates
+./simulator -i <path_to_dem_file> -x <start_x> -y <start_y> -X <end_x> -Y <end_y>
+
+# Example
+./simulator -i /path/to/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif -x 1254 -y 1265 -X 1340 -Y 1338
+```
+
+Valid coordinate ranges:
+- X: 0 to 106,694
+- Y: 0 to 53,347
 
 ### Running Multiple Tests
+1. First build the simulator
+2. Create required directories:
+```bash
+mkdir -p test_results
+mkdir -p outdir
 ```
-# First build the simulator then:
-cd /sim/tests
-./run_tests.sh
-# Output will be saved in /sim/test_results
+
+3. Run the test script:
+```bash
+cd tests
+./run_tests.sh /path/to/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif
 ```
+
+Output will be saved in:
+- Test logs: `test_results/test_*_*_*_*.log`
+- Path files: `test_results/path_*_*_*_*.txt`
