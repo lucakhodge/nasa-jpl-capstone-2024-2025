@@ -1,4 +1,4 @@
 .DS_Store
-mempa/algorithm/tests/googletest
+# mempa/algorithm/tests/googletest
 mempa/algorithm/tests/bin
 mempa/algorithm/tests/obj
