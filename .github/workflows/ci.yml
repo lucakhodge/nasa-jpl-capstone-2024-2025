@@ -12,15 +12,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive  # Ensure submodules are fetched
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev
 
-    - name: Debug Google Test directory
+    - name: Debug directory structure
       working-directory: mempa/algorithm
-      run: ls -R tests/googletest/googletest/include
+      run: |
+        ls -R tests/
+        find . -name "gtest.h"  # Locate gtest.h anywhere in the repo
 
     - name: Build simulator
       working-directory: mempa/algorithm
