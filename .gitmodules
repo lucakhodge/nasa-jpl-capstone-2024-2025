@@ -1,0 +1,3 @@
+[submodule "mempa/algorithm/tests/googletest"]
+	path = mempa/algorithm/tests/googletest
+	url = https://github.com/google/googletest.git
