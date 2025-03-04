@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "dijkstras.h"
+#include "../src/search_algorithms/dijkstras.h"
 
 // Test fixture for Dijkstra's tests
 class DijkstrasTest : public ::testing::Test {
