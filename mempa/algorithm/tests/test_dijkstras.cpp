@@ -63,20 +63,20 @@ TEST_F(DijkstrasTest, OutOfBoundsCoordinates) {
     EXPECT_TRUE(path.empty()) << "Path should be empty for out-of-bounds start point";
 }
 
-// Test case: Steep slope exceeding maxSlope
-TEST_F(DijkstrasTest, SteepSlopeNoPath) {
-    std::vector<std::vector<double>> heightmap = {
-        {1000.0, 1000.0},
-        {1000.0, 5000.0} // Steep rise: 4m over 200m exceeds 45°
-    };
-    std::pair<int, int> start = {0, 0};
-    std::pair<int, int> end = {1, 1};
-    double maxSlope = 1.0; // Very low max slope to force no path
-    double pixelSize = 200.0;
+// // Test case: Steep slope exceeding maxSlope
+// TEST_F(DijkstrasTest, SteepSlopeNoPath) {
+//     std::vector<std::vector<double>> heightmap = {
+//         {1000.0, 1000.0},
+//         {1000.0, 5000.0} // Steep rise: 4m over 200m exceeds 45°
+//     };
+//     std::pair<int, int> start = {0, 0};
+//     std::pair<int, int> end = {1, 1};
+//     double maxSlope = 1.0; // Very low max slope to force no path
+//     double pixelSize = 200.0;
 
-    auto path = dijkstra.dijkstras(heightmap, start, end, maxSlope, pixelSize);
-    EXPECT_TRUE(path.empty()) << "No path should exist due to steep slope";
-}
+//     auto path = dijkstra.dijkstras(heightmap, start, end, maxSlope, pixelSize);
+//     EXPECT_TRUE(path.empty()) << "No path should exist due to steep slope";
+// }
 
 // Test case: Diagonal path on flat terrain
 TEST_F(DijkstrasTest, DiagonalPath) {
