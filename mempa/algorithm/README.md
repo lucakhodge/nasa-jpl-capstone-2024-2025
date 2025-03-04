@@ -19,6 +19,7 @@ example:
 g++ -std=c++17 -o simulator simulator.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/search_algorithms/dijkstras.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/algorithm/src/mempa_dem_handler/mempa_dem/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
 ```
 2. Run the code using the following command:
+
 ```
 Use the following command to run the simulator with default coordinates:
 ./simulator
@@ -28,13 +29,13 @@ Use the following command to run the simulator with specific coordinates:
 example:
 ./simulator 1254 1265 1340 1338
 ```
+
 ### Gtest
+```
+#Uses the testing framework gtest.
 
-Uses the testing framework gtest.
-
-If you don't see `googletest` dir, make sure to run ```make all``` from the `tests` dir. 
-
-After this, you can just do ```make run```.
+make test
+```
 
 ### Running Multiple Tests
 ```

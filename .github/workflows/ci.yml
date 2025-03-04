@@ -2,48 +2,26 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y g++ cmake make
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ libgdal-dev libtiff5-dev
 
-      - name: Install GDAL
-        run: sudo apt-get update && sudo apt-get install -y libgdal-dev
+    - name: Build simulator
+      working-directory: mempa/algorithm
+      run: make clean && make
 
-      - name: Verify source files exist
-        run: |
-          echo "Checking source directory..."
-          ls -la mempa/algorithm/src
-          echo "Checking test directory..."
-          ls -la mempa/algorithm/tests
-
-      - name: Clone and build GoogleTest
-        run: |
-          git clone https://github.com/google/googletest.git mempa/algorithm/tests/googletest
-          cd mempa/algorithm/tests/googletest
-          mkdir -p build && cd build
-          cmake .. && make -j$(nproc)
-
-      - name: Debug Makefile Variables
-        run: |
-          cd mempa/algorithm/tests
-          make clean
-          make print-vars  # This should be added to the Makefile (see below)
-
-      - name: Build and run tests
-        run: |
-          cd mempa/algorithm/tests
-          make
-          make run
+    - name: Run tests
+      working-directory: mempa/algorithm
+      run: make test

@@ -16,14 +16,6 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
   
   David Blaines (TA),  Marcel Llopis (Sponsor)
 
-## Installation
-
-Command: (still in progress)
-
-```bash
-make run
-``` 
-
 ## Folder Structure
 ```
 .
