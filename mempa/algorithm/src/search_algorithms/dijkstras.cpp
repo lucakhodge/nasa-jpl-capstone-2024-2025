@@ -269,7 +269,7 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
     }
     path.push_back({current->y, current->x});
 
-    reverse(path.begin(), path.end());
+    //reverse(path.begin(), path.end());
     
     // Calculate path metrics
     double totalDistance = 0.0;

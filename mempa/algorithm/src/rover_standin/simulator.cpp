@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <vector>
 #include <tuple>
+#include <typeinfo>
 
 // Constants for Mars terrain analysis
 const double MARS_PIXEL_SIZE = 200.0; // Mars DEM resolution (meters)
@@ -209,6 +210,17 @@ private:
              "," + std::to_string(localY) + ")");
     return {localX, localY};
   }
+
+  std::pair<int, int> convertToGlobalCoordinates(int localX, int localY,
+    uint32_t startRow,
+    uint32_t startCol) {
+    int globalX = localX + startCol;
+    int globalY = localY + startRow;
+    logDebug("Converting local (" + std::to_string(localX) + "," +
+        std::to_string(localY) + ") to global (" + std::to_string(globalX) +
+        "," + std::to_string(globalY) + ")");
+    return {globalX, globalY};
+}
 
   void optimizePath(std::vector<std::pair<int, int>> &path) {
     if (path.size() < 3)
@@ -444,14 +456,56 @@ private:
     uint32_t startRow =
           (startY > TERRAIN_PADDING) ? startY - TERRAIN_PADDING : 0;
       uint32_t endRow =
-          std::min(static_cast<uint32_t>(endY + TERRAIN_PADDING), 53347u);
+          std::min(static_cast<uint32_t>(endY + TERRAIN_PADDING), 53347u);  //TODO make 53347u a parameter of some sort
       uint32_t startCol =
           (startX > TERRAIN_PADDING) ? startX - TERRAIN_PADDING : 0;
       uint32_t endCol =
-          std::min(static_cast<uint32_t>(endX + TERRAIN_PADDING), 106694u);
+          std::min(static_cast<uint32_t>(endX + TERRAIN_PADDING), 106694u); //TODO make 106694u a parameter of some sort
     
     std::cout << startRow << " " << startCol << " " << endRow << " " << endCol << std::endl;
     return std::make_tuple(startRow, startCol, endRow, endCol);
+  }
+
+  //this function calulates the cordinates for the closesst postion to the actual goal cordinate within the limitations of the max dem size based on "memory"
+  std::pair<int, int> calculateDemNavToHere(int startX, int startY, int endX, int endY, int maxDemRegionPixelCount)
+  {
+    if(maxDemRegionPixelCount < (TERRAIN_PADDING * TERRAIN_PADDING))
+    {
+      throw std::runtime_error("maxDemRegionPixelCount is too low");
+    }
+
+    int width = endX - startX;
+    int height = endY - startY;
+    int closestX;
+    int closestY;
+
+    // Calculate the desired area of the rectangle
+    int desiredArea = width * height;
+
+    // If the area exceeds the max pixel limit, adjust the dimensions
+    if (desiredArea > maxDemRegionPixelCount) {
+        // Try adjusting the width or height while keeping the area under the limit
+        float aspectRatio = static_cast<float>(width) / height;
+
+        // Try adjusting the width first
+        int newWidth = std::min(width, static_cast<int>(sqrt(maxDemRegionPixelCount * aspectRatio)));
+        int newHeight = maxDemRegionPixelCount / newWidth;
+
+        if (newWidth * newHeight > maxDemRegionPixelCount) {
+            // If the new width and height do not satisfy the constraint, adjust height
+            newHeight = std::min(height, maxDemRegionPixelCount / width);
+            newWidth = maxDemRegionPixelCount / newHeight;
+        }
+
+        closestX = startX + newWidth;
+        closestY = startY + newHeight;
+    } else {
+        // If the area is within the limit, return the original end point
+        closestX = endX;
+        closestY = endY;
+    }
+
+    return std::make_pair(closestX, closestY);
   }
 
 public:
@@ -459,7 +513,7 @@ public:
     startTime = std::chrono::steady_clock::now();
   }
 
-  void run(int startX, int startY, int endX, int endY, std::string inFile, int maxDemRegionSize) {
+  void run(int startX, int startY, int endX, int endY, std::string inFile, int maxDemRegionPixelCount) {
     displaySimulationHeader(startX, startY, endX, endY);
 
     /*const std::string demFilePath =
@@ -481,57 +535,79 @@ public:
       currentPos.second = startY;
 
       std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> regionCordinates;
-
-      // Calculate region with padding
-      regionCordinates = calculateRegionCordinates(currentPos.first, currentPos.second, endX, endY);
-
-      logDebug("Loading heightmap for region: (" + std::to_string(std::get<0>(regionCordinates)) +
-               "," + std::to_string(std::get<1>(regionCordinates)) + ") to (" +
-               std::to_string(std::get<2>(regionCordinates)) + "," + std::to_string(std::get<3>(regionCordinates)) + ")");
-
-      auto heightmap =
-          demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<1>(regionCordinates), std::get<2>(regionCordinates), std::get<3>(regionCordinates));
-
-      if (heightmap.empty() || heightmap[0].empty()) {
-        throw std::runtime_error("Failed to load heightmap data");
-      }
-
-      // Initialize metrics before pathfinding
-      metrics.initialize(heightmap.size(), heightmap[0].size());
-
-      logDebug("Heightmap loaded: " + std::to_string(heightmap.size()) + "x" +
-               std::to_string(heightmap[0].size()));
-
-      auto localStart =
-          convertToLocalCoordinates(currentPos.first, currentPos.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
-      auto localEnd = convertToLocalCoordinates(endX, endY, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
-
-      if (!isValidCoordinate(localStart, heightmap) ||
-          !isValidCoordinate(localEnd, heightmap)) {
-        throw std::runtime_error("Start or end point out of bounds");
-      }
-
-      Dijkstras dijkstra;
-
-      dijkstra.setUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
-
+      std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int,int>> path;
-      // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
-      //                                MARS_PIXEL_SIZE);
+      std::vector<std::vector<double>> heightmap;
 
-      std::pair<int,int> step;
-      while (true)
+      //start looping here
+      while(currentPos.first != endX && currentPos.second != endY)
       {
-        step = dijkstra.get_step();
-        if(step == std::make_pair(-1, -1))
-        {
-          break;
+
+        // Calculate region with padding
+        DemNavToHere = calculateDemNavToHere(currentPos.first, currentPos.second, endX, endY, maxDemRegionPixelCount);
+        regionCordinates = calculateRegionCordinates(currentPos.first, currentPos.second, DemNavToHere.first, DemNavToHere.second);
+
+        logDebug("Loading heightmap for region: (" + std::to_string(std::get<0>(regionCordinates)) +
+                "," + std::to_string(std::get<1>(regionCordinates)) + ") to (" +
+                std::to_string(std::get<2>(regionCordinates)) + "," + std::to_string(std::get<3>(regionCordinates)) + ")");
+
+        heightmap = demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<2>(regionCordinates), std::get<1>(regionCordinates), std::get<3>(regionCordinates));
+
+        if (heightmap.empty() || heightmap[0].empty()) {
+          throw std::runtime_error("Failed to load heightmap data");
         }
-        path.push_back(step);
+
+        // Initialize metrics before pathfinding
+        metrics.initialize(heightmap.size(), heightmap[0].size());
+
+        logDebug("Heightmap loaded: " + std::to_string(heightmap.size()) + "x" +
+                std::to_string(heightmap[0].size()));
+
+        auto localStart =
+            convertToLocalCoordinates(currentPos.first, currentPos.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+        auto localEnd = convertToLocalCoordinates(DemNavToHere.first, DemNavToHere.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+
+        if (!isValidCoordinate(localStart, heightmap) ||
+            !isValidCoordinate(localEnd, heightmap)) {
+          throw std::runtime_error("Start or end point out of bounds");
+        }
+
+        Dijkstras dijkstra;
+
+        dijkstra.reset_dijkstras();
+        dijkstra.setUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
+
+        // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
+        //                                MARS_PIXEL_SIZE);
+
+        std::pair<int,int> localStep;
+        std::pair<int,int> globalStep;
+        while (true)
+        {
+          localStep = dijkstra.get_step();
+          if(localStep == std::make_pair(-1, -1))
+          {
+            break;
+          }
+          globalStep = convertToGlobalCoordinates(localStep.first, localStep.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+          path.push_back(globalStep);
+        }
+
+        //need to set new start cordinates here
+        currentPos = globalStep;
       }
 
       if (path.empty()) {
         throw std::runtime_error("No valid path found between points");
+      }
+
+      regionCordinates = calculateRegionCordinates(startX, startY, endX, endY);
+      heightmap = demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<2>(regionCordinates), std::get<1>(regionCordinates), std::get<3>(regionCordinates));
+
+      //update path to local cordinates in this final heightmap
+      for(std::pair<int,int>& step : path)
+      {
+        step = convertToLocalCoordinates(step.first, step.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
       }
 
       updatePathMetrics(path, heightmap);
@@ -638,7 +714,7 @@ int main(int argc, char **argv) {
               << endX << "," << endY << ")" << std::endl;
 
     Simulator sim("NASA JPL Rover Simulator");
-    sim.run(startX, startY, endX, endY, inputFile, 20);
+    sim.run(startX, startY, endX, endY, inputFile, 500);
     return 0;
 
   } catch (const std::exception &e) {
