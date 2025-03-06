@@ -3,7 +3,8 @@ import { Chunk } from "../IPC/electronIPC";
 import RegularThree from "../graphics/RegularThree";
 
 interface Map3dPropsI {
-  chunk: Chunk | null
+  chunk: Chunk | null;
+  path?: Array<[number, number]>;  // Add path prop with proper type
 }
 
 export default function Map3d(props: Map3dPropsI) {
@@ -23,6 +24,12 @@ export default function Map3d(props: Map3dPropsI) {
       regularThree?.displayChunk(props.chunk);
     }
   }, [props.chunk]);
+
+  useEffect(() => {
+    if (props.path && regularThree) {
+      regularThree.renderPath(props.path);
+    }
+  }, [props.path, regularThree]);
 
   return (
     <div className="w-full h-full">

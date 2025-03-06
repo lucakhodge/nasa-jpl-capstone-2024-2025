@@ -1,0 +1,11 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+      "module": "commonjs",
+      "outDir": "../.vite/build",
+      "sourceMap": true
+    },
+    "include": [
+      "."
+    ]
+  }
