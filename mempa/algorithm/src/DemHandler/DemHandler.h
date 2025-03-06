@@ -24,11 +24,11 @@ namespace mempa
         int getImageResolution() const;
 
     private:
-        const char *const pszFilename;
-        GDALDatasetUniquePtr poDataset;
-        GDALRasterBand *poBand;
-        static constexpr int ELEVATION_BAND = 1;
-        static constexpr int GEOTRANSFORM_SIZE = 6;
-        double adfGeoTransform[GEOTRANSFORM_SIZE];
+        const char *const pszFilename;              /* Filepath to the input DEM.tif file. */
+        GDALDatasetUniquePtr poDataset;             /* Pointer to the GDAL Dataset. */
+        GDALRasterBand *poBand;                     /* Pointer to the Elevation Values Band. */
+        static constexpr int ELEVATION_BAND = 1;    /* For a DEM, the Elevation Band should be at indice 1. */
+        static constexpr int GEOTRANSFORM_SIZE = 6; /* GDAL Geotransforms are sets of 6 coefficients. */
+        double adfGeoTransform[GEOTRANSFORM_SIZE];  /* Array to store all Geotransform values. */
     };
 }
