@@ -34,7 +34,7 @@ namespace mempa
      *
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
-     * 
+     *
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -76,7 +76,7 @@ namespace mempa
      *
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
-     * 
+     *
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -112,7 +112,7 @@ namespace mempa
      *
      * @param imgCoordinates A pair of pairs of integer coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
-     * 
+     *
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
@@ -166,5 +166,16 @@ namespace mempa
         const int xPixelCoordinate = static_cast<int>((xGeoCoordinate - adfGeoTransform[0]) / adfGeoTransform[1]);
         const int yPixelCoordinate = static_cast<int>((yGeoCoordinate - adfGeoTransform[3]) / adfGeoTransform[5]);
         return std::make_pair(xPixelCoordinate, yPixelCoordinate);
+    }
+
+    int DemHandler::getImageResolution() const
+    {
+        const int pixelWidth = static_cast<int>(adfGeoTransform[1]);
+        const int pixelHeight = static_cast<int>(std::abs(adfGeoTransform[5]));
+        if (pixelWidth != pixelHeight)
+        {
+            throw std::runtime_error("Non-square pixel shape.");
+        }
+        return pixelWidth;
     }
 }

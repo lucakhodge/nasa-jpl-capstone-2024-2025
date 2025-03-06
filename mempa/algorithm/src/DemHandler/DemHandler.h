@@ -21,6 +21,7 @@ namespace mempa
         std::vector<std::vector<float>> readCircleChunk(const std::pair<int, int> &imgCoordinate, int radius) const;
         std::vector<std::vector<float>> readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, int radius) const;
         std::pair<int, int> transformCoordinates(double xGeoCoordinate, double yGeoCoordinate) const;
+        int getImageResolution() const;
 
     private:
         const char *const pszFilename;
