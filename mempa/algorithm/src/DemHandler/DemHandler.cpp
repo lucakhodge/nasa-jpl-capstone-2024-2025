@@ -7,7 +7,6 @@ namespace mempa
      * @brief Construct a new Dem Handler:: Dem Handler object
      *
      * @param pszFilename Filepath to the DEM raster to be read.
-     * @param radius The value used for the general size of the output chunk of elevation data.
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
      */
@@ -34,6 +33,8 @@ namespace mempa
      * @brief Creates a square chunk from a single coordinate point. The input coordinate will be the centerpoint of the chunk.
      *
      * @param imgCoordinate A pair of integer image coordinates.
+     * @param radius The value used for the general size of the output chunk of elevation data.
+     * 
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -74,6 +75,8 @@ namespace mempa
      * @details The corner values of the initial square will be overwritten with NaN.
      *
      * @param imgCoordinate A pair of integer image coordinates.
+     * @param radius The value used for the general size of the output chunk of elevation data.
+     * 
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -108,6 +111,8 @@ namespace mempa
      * @details The coordinates will not necessarily be the center points of the chunk, but should be around opposing corners buffered by the radius.
      *
      * @param imgCoordinates A pair of pairs of integer coordinates.
+     * @param radius The value used for the general size of the output chunk of elevation data.
+     * 
      * @return std::vector<std::vector<float>>
      */
     std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
