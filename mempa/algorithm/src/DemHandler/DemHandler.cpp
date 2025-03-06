@@ -7,6 +7,8 @@ namespace mempa
      * @brief Construct a new Dem Handler:: Dem Handler object
      *
      * @param pszFilename Filepath to the DEM raster to be read.
+     * 
+     * @throws Failure to create DGAL dataset, read the elevation raster band, or get geotransform.
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
      */
@@ -35,7 +37,9 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>>
+     * @return std::vector<std::vector<float>> Elevation values.
+     * 
+     * @throws Failure to allocate memory or read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
     {
@@ -77,7 +81,9 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>>
+     * @return std::vector<std::vector<float>> Elevation values.
+     * 
+     * @throw Failure to read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
     {
@@ -113,7 +119,9 @@ namespace mempa
      * @param imgCoordinates A pair of pairs of integer coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>>
+     * @return std::vector<std::vector<float>> Elevation values.
+     * 
+     * @throws Failure to allocate memory or read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
     {
@@ -157,7 +165,7 @@ namespace mempa
      * @param xGeoCoordinate The longitude value.
      * @param yGeoCoordinate The latitude value.
      *
-     * @return std::pair<int, int>
+     * @return std::pair<int, int> Pixel-based image coordinates.
      *
      * @note For more information on Geotransform, see: https://gdal.org/en/stable/tutorials/geotransforms_tut.html
      */
@@ -168,6 +176,13 @@ namespace mempa
         return std::make_pair(xPixelCoordinate, yPixelCoordinate);
     }
 
+    /**
+     * @brief Gets the spatial resolution of the raster.
+     * 
+     * @return int
+     * 
+     * @throw Non-Square pixels (inequal height and width) are invalid.
+     */
     int DemHandler::getImageResolution() const
     {
         const int pixelWidth = static_cast<int>(adfGeoTransform[1]);
