@@ -112,13 +112,13 @@ namespace mempa
      *
      * @details The coordinates will not necessarily be the center points of the chunk, but should be around opposing corners buffered by the radius.
      *
-     * @param geoCoordinates A pair of pairs of integer coordinates.
+     * @param imgCoordinates A pair of pairs of integer coordinates.
      * @return std::vector<std::vector<float>>
      */
-    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &geoCoordinates) const
+    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates) const
     {
-        const std::pair<int, int> imgCoordinate1 = transformCoordinates(geoCoordinates.first.first, geoCoordinates.first.second);
-        const std::pair<int, int> imgCoordinate2 = transformCoordinates(geoCoordinates.second.first, geoCoordinates.second.second);
+        const std::pair<int, int> imgCoordinate1 = transformCoordinates(imgCoordinates.first.first, imgCoordinates.first.second);
+        const std::pair<int, int> imgCoordinate2 = transformCoordinates(imgCoordinates.second.first, imgCoordinates.second.second);
         const int xCenter1 = imgCoordinate1.first;
         const int yCenter1 = imgCoordinate1.second;
         const int xCenter2 = imgCoordinate2.first;

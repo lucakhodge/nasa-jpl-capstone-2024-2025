@@ -19,7 +19,7 @@ namespace mempa
         explicit DemHandler(const char *pszFilename, int radius);
         std::vector<std::vector<float>> readSquareChunk(const std::pair<int, int> &imgCoordinate) const;
         std::vector<std::vector<float>> readCircleChunk(const std::pair<int, int> &imgCoordinate) const;
-        std::vector<std::vector<float>> readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &geoCoordinates) const;
+        std::vector<std::vector<float>> readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates) const;
         std::pair<int, int> transformCoordinates(double xGeoCoordinate, double yGeoCoordinate) const;
 
     private:
