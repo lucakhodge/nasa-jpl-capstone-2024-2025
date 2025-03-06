@@ -10,7 +10,8 @@ namespace mempa
 {
     /**
      * @brief Class to hold DEM interactions for CU Boulder MEMPA simulation.
-     * 
+     *
+     * @author Ryan Wagster <ryan.wagster@colorado.edu>
      */
     class DemHandler
     {
