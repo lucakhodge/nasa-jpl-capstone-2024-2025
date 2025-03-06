@@ -177,7 +177,7 @@ namespace mempa
     /**
      * @brief Gets the spatial resolution of the raster.
      *
-     * @return int
+     * @return int Spatial resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
