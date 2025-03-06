@@ -11,13 +11,8 @@ namespace mempa
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
      */
-    DemHandler::DemHandler(const char *const pszFilename, const int radius)
-        : pszFilename(pszFilename), radius(radius)
+    DemHandler::DemHandler(const char *const pszFilename) : pszFilename(pszFilename)
     {
-        if (radius <= 0)
-        {
-            throw std::runtime_error("Cannot read chunk of non-positive radius.");
-        }
         GDALAllRegister();
         poDataset = GDALDatasetUniquePtr(GDALDataset::FromHandle(GDALOpen(pszFilename, GA_ReadOnly)));
         if (!poDataset)
@@ -41,7 +36,7 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @return std::vector<std::vector<float>>
      */
-    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate) const
+    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
     {
         const int xCenter = imgCoordinate.first;
         const int yCenter = imgCoordinate.second;
@@ -81,9 +76,9 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @return std::vector<std::vector<float>>
      */
-    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate) const
+    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
     {
-        std::vector<std::vector<float>> rasterVector = readSquareChunk(imgCoordinate);
+        std::vector<std::vector<float>> rasterVector = readSquareChunk(imgCoordinate, radius);
         if (rasterVector.empty())
         {
             throw std::runtime_error("Cannot read empty chunk.");
@@ -115,7 +110,7 @@ namespace mempa
      * @param imgCoordinates A pair of pairs of integer coordinates.
      * @return std::vector<std::vector<float>>
      */
-    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates) const
+    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
     {
         const std::pair<int, int> imgCoordinate1 = transformCoordinates(imgCoordinates.first.first, imgCoordinates.first.second);
         const std::pair<int, int> imgCoordinate2 = transformCoordinates(imgCoordinates.second.first, imgCoordinates.second.second);
