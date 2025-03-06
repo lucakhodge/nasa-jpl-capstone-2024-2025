@@ -56,17 +56,17 @@ namespace mempa
         {
             throw std::runtime_error("Failed to allocate memory.");
         }
-        if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, sizeof(float), (sizeof(float) * xSize)) != CE_None)
+        if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             CPLFree(pafScanline);
             throw std::runtime_error("Failure to read raster values.");
         }
-        std::vector<std::vector<float>> rasterVector(xSize, std::vector<float>(ySize));
-        for (int xVec = 0; xVec < xSize; ++xVec)
+        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
+        for (int yVec = 0; yVec < ySize; ++yVec)
         {
-            for (int yVec = 0; yVec < ySize; ++yVec)
+            for (int xVec = 0; xVec < xSize; ++xVec)
             {
-                rasterVector[yVec][xVec] = pafScanline[xSize * yVec + xVec];
+                rasterVector[yVec][xVec] = pafScanline[yVec * xSize + xVec];
             }
         }
         CPLFree(pafScanline);
@@ -88,8 +88,8 @@ namespace mempa
         {
             throw std::runtime_error("Cannot read empty chunk.");
         }
-        const int xVec = rasterVector.size();
-        const int yVec = rasterVector.front().size();
+        const int xVec = rasterVector.front().size();
+        const int yVec = rasterVector.size();
         const int xCenter = xVec / 2;
         const int yCenter = yVec / 2;
         for (int row = 0; row < xVec; ++row)
@@ -123,10 +123,10 @@ namespace mempa
         const int yCenter1 = imgCoordinate1.second;
         const int xCenter2 = imgCoordinate2.first;
         const int yCenter2 = imgCoordinate2.second;
-        const int xOff = std::max(0, std::min(xCenter1 - radius, xCenter2 - radius));
-        const int yOff = std::max(0, std::min(yCenter1 - radius, yCenter2 - radius));
-        const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1 + radius + 1, xCenter2 + radius + 1));
-        const int yEnd = std::min(poBand->GetYSize(), std::max(yCenter1 + radius + 1, yCenter2 + radius + 1));
+        const int xOff = std::max(0, std::min(xCenter1, xCenter2) - radius);
+        const int yOff = std::max(0, std::min(yCenter1, yCenter2) - radius);
+        const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1, xCenter2) + radius + 1);
+        const int yEnd = std::min(poBand->GetYSize(), std::max(yCenter1, yCenter2) + radius + 1);
         const int xSize = xEnd - xOff;
         const int ySize = yEnd - yOff;
         float *pafScanline = reinterpret_cast<float *>(CPLMalloc(sizeof(float) * xSize * ySize));
@@ -134,17 +134,17 @@ namespace mempa
         {
             throw std::runtime_error("Failed to allocate memory.");
         }
-        if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, sizeof(float), (sizeof(float) * xSize)) != CE_None)
+        if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             CPLFree(pafScanline);
             throw std::runtime_error("Failure to read raster values.");
         }
-        std::vector<std::vector<float>> rasterVector(xSize, std::vector<float>(ySize));
-        for (int xVec = 0; xVec < xSize; ++xVec)
+        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
+        for (int yVec = 0; yVec < ySize; ++yVec)
         {
-            for (int yVec = 0; yVec < ySize; ++yVec)
+            for (int xVec = 0; xVec < xSize; ++xVec)
             {
-                rasterVector[xVec][yVec] = pafScanline[xSize * yVec + xVec];
+                rasterVector[yVec][xVec] = pafScanline[yVec * xSize + xVec];
             }
         }
         CPLFree(pafScanline);
