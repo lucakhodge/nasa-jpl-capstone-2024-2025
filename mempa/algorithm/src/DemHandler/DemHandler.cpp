@@ -7,7 +7,7 @@ namespace mempa
      * @brief Construct a new Dem Handler:: Dem Handler object
      *
      * @param pszFilename Filepath to the DEM raster to be read.
-     * 
+     *
      * @throws Failure to create DGAL dataset, read the elevation raster band, or get geotransform.
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
@@ -38,7 +38,7 @@ namespace mempa
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
      * @return std::vector<std::vector<float>> Elevation values.
-     * 
+     *
      * @throws Failure to allocate memory or read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -82,7 +82,7 @@ namespace mempa
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
      * @return std::vector<std::vector<float>> Elevation values.
-     * 
+     *
      * @throw Failure to read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
@@ -92,8 +92,8 @@ namespace mempa
         {
             throw std::runtime_error("Cannot read empty chunk.");
         }
-        const int xVec = rasterVector.front().size();
-        const int yVec = rasterVector.size();
+        const int xVec = static_cast<int>(rasterVector.front().size());
+        const int yVec = static_cast<int>(rasterVector.size());
         const int xCenter = xVec / 2;
         const int yCenter = yVec / 2;
         for (int row = 0; row < xVec; ++row)
@@ -120,17 +120,15 @@ namespace mempa
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
      * @return std::vector<std::vector<float>> Elevation values.
-     * 
+     *
      * @throws Failure to allocate memory or read raster values.
      */
     std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
     {
-        const std::pair<int, int> imgCoordinate1 = transformCoordinates(imgCoordinates.first.first, imgCoordinates.first.second);
-        const std::pair<int, int> imgCoordinate2 = transformCoordinates(imgCoordinates.second.first, imgCoordinates.second.second);
-        const int xCenter1 = imgCoordinate1.first;
-        const int yCenter1 = imgCoordinate1.second;
-        const int xCenter2 = imgCoordinate2.first;
-        const int yCenter2 = imgCoordinate2.second;
+        const int xCenter1 = imgCoordinates.first.first;
+        const int yCenter1 = imgCoordinates.first.second;
+        const int xCenter2 = imgCoordinates.second.first;
+        const int yCenter2 = imgCoordinates.second.second;
         const int xOff = std::max(0, std::min(xCenter1, xCenter2) - radius);
         const int yOff = std::max(0, std::min(yCenter1, yCenter2) - radius);
         const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1, xCenter2) + radius + 1);
@@ -178,9 +176,9 @@ namespace mempa
 
     /**
      * @brief Gets the spatial resolution of the raster.
-     * 
+     *
      * @return int
-     * 
+     *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
     int DemHandler::getImageResolution() const
