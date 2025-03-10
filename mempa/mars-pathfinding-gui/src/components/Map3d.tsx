@@ -10,7 +10,6 @@ interface Map3dPropsI {
 }
 
 export default function Map3d(props: Map3dPropsI) {
-
   const [regularThree, setRegularThree] = useState<RegularThree | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -53,14 +52,13 @@ export default function Map3d(props: Map3dPropsI) {
     regularThree?.togglePlay();
   }
 
-
-
   return (
-    <div className="w-full, h-full">
-      {/* <div> */}
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
-      <MyButton onClick={handleTogglePlay}>Play/Pause</MyButton>
-      {/* <button onClick={() => { regularThree?.resizeToCanvas() }}>resize</button> */}
+    <div className="w-full h-full flex flex-col">
+      <canvas ref={canvasRef} className="w-full h-full flex-grow" />
+      <div className="p-4 text-center">
+        <MyButton onClick={handleTogglePlay}>Play/Pause</MyButton>
+        {/* <button onClick={() => { regularThree?.resizeToCanvas() }}>resize</button> */}
+      </div>
     </div>
   );
 }
