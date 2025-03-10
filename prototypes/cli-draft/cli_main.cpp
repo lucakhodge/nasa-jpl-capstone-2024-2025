@@ -1,6 +1,7 @@
 #include <iostream>
 #include "cli.h"
 //#include "buf_dem.h"
+//#include "dijkstras.h"
 
 int main(int argc, char* argv[]) {
     CLI config;
@@ -24,6 +25,13 @@ int main(int argc, char* argv[]) {
     config.processCoordinates();
 
     //mars_dem.demArea(config.coordinates, config.radius, 0.8);
+
+    //Simulator
+    // MEMPA::Simulator simulator(string n);
+
+    // void run(int startX, int startY, int endX, int endY, std::string inFile)
+    // ** can pass output file given my user ** or NULL for output into created .txt file
+    // simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, config.input_file);
 
     return 0;
 }

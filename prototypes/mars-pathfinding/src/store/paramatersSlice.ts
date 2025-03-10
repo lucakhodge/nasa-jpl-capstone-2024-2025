@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "./store"
 
+
 interface ParamatersState {
-  startCoordinate: Coordinate
-  endCoordinate: Coordinate
+  startCoordinate: Coordinate,
+  endCoordinate: Coordinate,
   slope: number | null
+
 }
 
 interface Coordinate {
   x: number | null,
-  y: number | null
+  y: number | null,
 }
 
 const initialState: ParamatersState = {
@@ -19,13 +21,13 @@ const initialState: ParamatersState = {
 }
 
 export const paramaterSlice = createSlice({
-  name: "paramaters",
+  name: "parameters",
   initialState,
   reducers: {
-    setStartCoordinate: (state, action: PayloadAction<Coordinate>) => {
+    setStartCoordinate: (state, action: PayloadAction<Coordinate | null>) => {
       state.startCoordinate = action.payload
     },
-    setEndCoordinate: (state, action: PayloadAction<Coordinate>) => {
+    setEndCoordinate: (state, action: PayloadAction<Coordinate | null>) => {
       state.endCoordinate = action.payload
     },
     setSlope: (state, action: PayloadAction<number | null>) => {
@@ -40,5 +42,6 @@ export const { setStartCoordinate, setEndCoordinate, setSlope } = paramaterSlice
 export const selectStartCoordinate = (state: RootState) => state.paramaters.startCoordinate
 export const selectEndCoordinate = (state: RootState) => state.paramaters.endCoordinate
 export const selectSlope = (state: RootState) => state.paramaters.slope
+export const selectParameters = (state: RootState) => state.paramaters
 
 export default paramaterSlice.reducer

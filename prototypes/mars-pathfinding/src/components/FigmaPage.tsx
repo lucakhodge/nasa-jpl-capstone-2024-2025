@@ -1,38 +1,20 @@
-import { useState } from 'react';
-import { MyButton } from './MyButton'
-import { MyNumberInput } from './MyNumberInput'
-import LoadFileButton from './LoadFileButton';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordinate, setSlope, setStartCoordinate } from '../store/paramatersSlice';
-import Map3d from './Map3d';
 import FileStatus from './FileStatus';
-import RunCpp from './RunCpp';
+import GeneratePathButton from './GeneratePathButton';
+import LoadFileButton from './LoadFileButton';
+import { LoadMapChunkFromPath } from './LoadMapChunkFromPath';
+import { MyNumberInput } from './MyNumberInput';
 
 
 
-export const FigmaPage = (props: {}) => {
+export default function FigmaPage(props: {}) {
 
   const dispatch = useAppDispatch();
 
   const startCoordinate = useAppSelector(selectStartCoordinate);
   const endCoordinate = useAppSelector(selectEndCoordinate);
   const slope = useAppSelector(selectSlope);
-
-  const [chunk, setChunk] = useState(null);
-
-  const handleRetrieveChunk = () => {
-    const chunk = window.electronIPC.getChunk({
-      coordinate: {
-        x: startCoordinate.x,
-        y: startCoordinate.y,
-      },
-      size: {
-        width: endCoordinate.x - startCoordinate.x,
-        height: endCoordinate.y - startCoordinate.y,
-      },
-    });
-    setChunk(chunk);
-  };
 
   return (
     <div className="grid grid-cols-[1fr_2fr] w-full h-full border-dashed bg-blue-200 absolute">
@@ -70,15 +52,14 @@ export const FigmaPage = (props: {}) => {
           }}></MyNumberInput>
         </div>
         <FileStatus />
-        <RunCpp />
         <div className='flex-1' />
         <div className='grid grid-cols-2 gap-5'>
           <LoadFileButton />
-          <MyButton onClick={handleRetrieveChunk}>Display Optimum Path</MyButton>
+          <GeneratePathButton></GeneratePathButton>
         </div>
       </div>
       <div style={{ width: "100%", height: "100%" }} className='bg-slate-500'>
-        <Map3d chunk={chunk}></Map3d>
+        <LoadMapChunkFromPath></LoadMapChunkFromPath>
       </div>
     </div>
   )

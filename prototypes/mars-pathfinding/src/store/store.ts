@@ -3,6 +3,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import sessionStorage from "redux-persist/es/storage/session";
 import demReducer from './demSlice';
 import paramaterReducer from './paramatersSlice';
+import mapReducer from './mapSlice';
 import {
   persistStore,
   persistReducer,
@@ -16,7 +17,8 @@ import {
 
 const rootReducer = combineReducers({
   dem: demReducer,
-  paramaters: paramaterReducer
+  paramaters: paramaterReducer,
+  map: mapReducer,
 })
 
 const persistConfig = {

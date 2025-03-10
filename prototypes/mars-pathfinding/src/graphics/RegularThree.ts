@@ -1,33 +1,56 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Chunk } from "../IPC/electronIPC";
 import * as THREE from "three";
-import { Vector3 } from "@react-three/fiber";
+import { Path } from "../store/mapSlice";
 export default class RegularThree {
-  canvas: HTMLCanvasElement;
+  // canvas: HTMLCanvasElement;
+  canvasRef: React.RefObject<HTMLCanvasElement>
 
   scale = 0.005
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+
+  renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
+  scene: THREE.Scene;
+  controls: OrbitControls;
+
+  tickTime = 0;
+  movingObject: THREE.Mesh;
+  track: THREE.CatmullRomCurve3;
+  isPlaying = false;
+
+  constructor(canvasRef: React.RefObject<HTMLCanvasElement>) {
+    this.canvasRef = canvasRef;
   }
 
-  displayChunk(chunk: Chunk) {
-    // // Uncomment below to clear scene (not needed in current setup)
-    // while (this.scene.children.length > 0) {
-    //   this.scene.remove(this.scene.children[0]);
-    // }
+  resizeToCanvas() {
+    const { width, height } = this.canvasRef.current.getBoundingClientRect();
+
+    // console.log("RESISE TO CNAVAS", this.canvas.current.clientWidth, this.canvas.current.clientHeight);
+
+    if (this.renderer) {
+      this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+    }
+    if (this.camera) {
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+    }
+  }
+
+  displayChunk(chunk: Chunk, path: Path) {
 
     // create scene, camera, and renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      this.canvas.clientWidth / this.canvas.clientHeight,
+      this.canvasRef.current.clientWidth / this.canvasRef.current.clientHeight,
       0.1,
       1000
     );
-    const renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
-    renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-
+    const renderer = new THREE.WebGLRenderer({ canvas: this.canvasRef.current, antialias: true });
+    renderer.setSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, false);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
@@ -83,46 +106,6 @@ export default class RegularThree {
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     // compute normals for proper lighting
     geometry.computeVertexNormals();
-    //   // for head gradiantt
-    //   geometry.computeBoundingBox();
-    //   const heatGradiant = new THREE.ShaderMaterial({
-    //     uniforms: {
-    //       color1: {
-    //         value: new THREE.Color("red")
-    //       },
-    //       color2: {
-    //         value: new THREE.Color("purple")
-    //       },
-    //       bboxMin: {
-    //         value: geometry.boundingBox.min
-    //       },
-    //       bboxMax: {
-    //         value: geometry.boundingBox.max
-    //       }
-    //     },
-    //     vertexShader: `
-    //   uniform vec3 bboxMin;
-    //   uniform vec3 bboxMax;
-    //
-    //   varying vec2 vUv;
-    //
-    //   void main() {
-    //     vUv.y = (position.y - bboxMin.y) / (bboxMax.y - bboxMin.y);
-    //     gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-    //   }
-    // `,
-    //     fragmentShader: `
-    //   uniform vec3 color1;
-    //   uniform vec3 color2;
-    //
-    //   varying vec2 vUv;
-    //
-    //   void main() {
-    //
-    //     gl_FragColor = vec4(mix(color1, color2, vUv.y), 1.0);
-    //   }
-    // `,
-    //   })
 
     // material for mesh
     const material = new THREE.MeshStandardMaterial({
@@ -155,20 +138,20 @@ export default class RegularThree {
     camera.position.copy(controls.target).add(offset);
     controls.update();
 
-    // create path
+    // create track from path
     const path_offset = 0.01
-    const startX = chunk.description.coordinate.x;
-    const startY = chunk.description.coordinate.y;
-    const width = rows;
-    const height = cols;
     const path_positions = [];
-    for (let i = 0; i < Math.min(width, height); i++) {
-      path_positions[i] = new THREE.Vector3((startX + i) * this.scale, normalizedData[i][i] + path_offset, (startY + i) * this.scale);
+    for (let i = 0; i < path.length; i++) {
+      let x_pos = path[i].x * this.scale;
+      let y_pos = normalizedData[path[i].y - chunk.description.coordinate.y][path[i].x - chunk.description.coordinate.x] + path_offset;
+      // let y_pos = 0;
+      let z_pos = path[i].y * this.scale;
+      path_positions[i] = new THREE.Vector3(x_pos, y_pos, z_pos);
     }
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(path_positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     const pathLine = new THREE.Line(pathGeometry, pathMaterial);
-    const path = new THREE.CatmullRomCurve3(path_positions);
+    const track = new THREE.CatmullRomCurve3(path_positions);
     scene.add(pathLine);
 
     //object to foolow path
@@ -178,23 +161,34 @@ export default class RegularThree {
     movingObject.position.set(chunk.description.coordinate.x * this.scale, 0, chunk.description.coordinate.y * this.scale); // Place at center of the mesh
     scene.add(movingObject);
 
-    let t = 0; // Animation progress (0 to 1)
-    const r = renderer;
-    const c = camera;
-    const s = scene;
-    function animate() {
-      // move object along path
-      t += 0.001; // Adjust speed
-      if (t > 1) t = 0; // Loop animation
-      const position = path.getPointAt(t);
-      movingObject.position.set(position.x, position.y, position.z);
+    this.renderer = renderer;
+    this.camera = camera;
+    this.scene = scene;
+    this.controls = controls;
 
-      requestAnimationFrame(animate);
+    this.track = track;
+    this.movingObject = movingObject;
 
-      controls.update();
-      r.render(s, c);
+    this.animate();
+  }
+
+  animate = () => {
+    // move object along path
+    if (this.isPlaying) {
+      this.tickTime += 0.001; // Adjust speed
+      if (this.tickTime > 1) this.tickTime = 0; // Loop animation
+      const position = this.track.getPointAt(this.tickTime);
+      this.movingObject.position.set(position.x, position.y, position.z);
     }
-    animate();
+
+    requestAnimationFrame(this.animate);
+
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  togglePlay() {
+    this.isPlaying = !this.isPlaying;
   }
 
 }
