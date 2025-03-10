@@ -102,7 +102,7 @@ std::vector<std::pair<int, int>> Dijkstras::dijkstras()
         _startPoint.second < 0 || _startPoint.second >= cols ||
         _endPoint.first < 0 || _endPoint.first >= rows ||
         _endPoint.second < 0 || _endPoint.second >= cols) {
-        cout << "Error: Start or end point out of bounds" << endl;
+        cout << "Dijkstras Error: Start or end point out of bounds" << endl;
         return {};
     }
 

@@ -1,5 +1,5 @@
 
-#include "../dem_handler/buf_dem.h"
+#include "../DemHandler/DemHandler.h"
 #include "../search_algorithms/dijkstras.h"
 #include <algorithm>
 #include <chrono>
@@ -18,41 +18,41 @@
 #include <typeinfo>
 
 // Constants for Mars terrain analysis
-const double MARS_PIXEL_SIZE = 200.0; // Mars DEM resolution (meters)
-const double MAX_SLOPE = 25.0;        // Maximum allowed slope (degrees)
-const double MM_TO_M = 0.001;         // Millimeter to meter conversion
+const float MARS_PIXEL_SIZE = 200.0; // Mars DEM resolution (meters)
+const float MAX_SLOPE = 25.0;        // Maximum allowed slope (degrees)
+const float MM_TO_M = 0.001;         // Millimeter to meter conversion
 const uint32_t TERRAIN_PADDING = 15;  // Padding for path finding
-const double MAX_ELEVATION_CHANGE =
+const float MAX_ELEVATION_CHANGE =
     50.0; // Maximum elevation change per pixel (meters)
-const double ELEVATION_EPSILON =
+const float ELEVATION_EPSILON =
     0.1; // Small elevation difference threshold (meters)
-const double MIN_MARS_ELEVATION = -8500.0; // Minimum Mars elevation (meters)
-const double MAX_MARS_ELEVATION = 21230.0; // Maximum Mars elevation (meters)
-const double ELEVATION_SCALING = 0.001;    // Scale factor for large elevations
-const double SIGNIFICANT_CHANGE =
+const float MIN_MARS_ELEVATION = -8500.0; // Minimum Mars elevation (meters)
+const float MAX_MARS_ELEVATION = 21230.0; // Maximum Mars elevation (meters)
+const float ELEVATION_SCALING = 0.001;    // Scale factor for large elevations
+const float SIGNIFICANT_CHANGE =
     10.0; // Significant elevation change threshold (meters)
 
 class TerrainMetrics {
 public:
-  double totalDistance = 0.0;
-  double horizontalDistance = 0.0;
-  double totalElevationChange = 0.0;
-  double netElevationChange = 0.0;
-  double maxSlope = 0.0;
-  double averageSlope = 0.0;
-  double energyCost = 0.0;
+  float totalDistance = 0.0;
+  float horizontalDistance = 0.0;
+  float totalElevationChange = 0.0;
+  float netElevationChange = 0.0;
+  float maxSlope = 0.0;
+  float averageSlope = 0.0;
+  float energyCost = 0.0;
   size_t waypointCount = 0;
-  std::vector<double> slopes;
-  double baseElevation = 0.0;
+  std::vector<float> slopes;
+  float baseElevation = 0.0;
   bool baseElevationSet = false;
-  std::vector<std::vector<double>> relativeHeights;
+  std::vector<std::vector<float>> relativeHeights;
 
   void initialize(size_t rows, size_t cols) {
     if (rows == 0 || cols == 0) {
       throw std::runtime_error("Invalid dimensions for terrain metrics");
     }
     reset();
-    relativeHeights.resize(rows, std::vector<double>(cols, 0.0));
+    relativeHeights.resize(rows, std::vector<float>(cols, 0.0));
   }
 
   void reset() {
@@ -74,9 +74,9 @@ public:
     return !relativeHeights.empty() && !relativeHeights[0].empty();
   }
 
-  double calculateEnergyCost(double distance, double elevChange, double slope) {
-    double slopePenalty = std::pow(slope / MAX_SLOPE, 2);
-    double elevationPenalty = std::abs(elevChange) * 2.0;
+  float calculateEnergyCost(float distance, float elevChange, float slope) {
+    float slopePenalty = std::pow(slope / MAX_SLOPE, 2);
+    float elevationPenalty = std::abs(elevChange) * 2.0;
     return distance + elevationPenalty + (distance * slopePenalty);
   }
 };
@@ -87,7 +87,7 @@ private:
   int spinnerIndex = 0;
 
 public:
-  void updateProgress(const std::string &status, double progress) {
+  void updateProgress(const std::string &status, float progress) {
     std::cout << "\r" << spinner[spinnerIndex] << " " << status << ": "
               << std::fixed << std::setprecision(1) << progress << "%"
               << std::flush;
@@ -116,7 +116,7 @@ private:
   }
 
   bool isValidCoordinate(const std::pair<int, int> &coord,
-                         const std::vector<std::vector<double>> &heightmap) {
+                         const std::vector<std::vector<float>> &heightmap) {
     if (!metrics.isInitialized()) {
       throw std::runtime_error("Terrain metrics not initialized");
     }
@@ -132,18 +132,18 @@ private:
 
     if (!valid) {
       logDebug("Invalid coordinate (" + std::to_string(coord.first) + "," +
-               std::to_string(coord.second) + ")");
+               std::to_string(coord.second) + ") heightmap.size(): " + std::to_string(heightmap.size()) + " heightmap[0].size(): " + std::to_string(heightmap[0].size()));
     }
     return valid;
   }
 
-  double validateElevation(double rawElevation) {
+  float validateElevation(float rawElevation) {
     if (std::isnan(rawElevation)) {
       logDebug("Warning: NaN elevation detected");
       return 0.0;
     }
 
-    double elevation = rawElevation * MM_TO_M;
+    float elevation = rawElevation * MM_TO_M;
     if (elevation > 1000000.0) {
       elevation *= ELEVATION_SCALING;
       logDebug("Scaled large elevation from " +
@@ -154,7 +154,7 @@ private:
     return elevation;
   }
 
-  double processElevation(double rawElevation, int row, int col) {
+  float processElevation(float rawElevation, int row, int col) {
     if (!metrics.isInitialized()) {
       throw std::runtime_error("Terrain metrics not initialized");
     }
@@ -164,7 +164,7 @@ private:
       throw std::runtime_error("Elevation coordinates out of bounds");
     }
 
-    double elevation = validateElevation(rawElevation);
+    float elevation = validateElevation(rawElevation);
 
     if (!metrics.baseElevationSet) {
       metrics.baseElevation = elevation;
@@ -174,7 +174,7 @@ private:
       return 0.0;
     }
 
-    double relativeElevation = elevation - metrics.baseElevation;
+    float relativeElevation = elevation - metrics.baseElevation;
     metrics.relativeHeights[row][col] = relativeElevation;
 
     static int warningCount = 0;
@@ -190,13 +190,13 @@ private:
     return relativeElevation;
   }
 
-  double calculateSlope(double dx, double dy, double elevChange) {
-    double horizontalDist = std::sqrt(dx * dx + dy * dy) * MARS_PIXEL_SIZE;
+  float calculateSlope(float dx, float dy, float elevChange) {
+    float horizontalDist = std::sqrt(dx * dx + dy * dy) * MARS_PIXEL_SIZE;
     if (horizontalDist < ELEVATION_EPSILON)
       return 0.0;
 
     elevChange = std::min(std::abs(elevChange), MAX_ELEVATION_CHANGE);
-    double slope = std::atan2(elevChange, horizontalDist) * 180.0 / M_PI;
+    float slope = std::atan2(elevChange, horizontalDist) * 180.0 / M_PI;
     return std::min(slope, MAX_SLOPE);
   }
 
@@ -216,9 +216,9 @@ private:
     uint32_t startCol) {
     int globalX = localX + startCol;
     int globalY = localY + startRow;
-    logDebug("Converting local (" + std::to_string(localX) + "," +
-        std::to_string(localY) + ") to global (" + std::to_string(globalX) +
-        "," + std::to_string(globalY) + ")");
+    // logDebug("Converting local (" + std::to_string(localX) + "," +
+    //     std::to_string(localY) + ") to global (" + std::to_string(globalX) +
+    //     "," + std::to_string(globalY) + ")");
     return {globalX, globalY};
 }
 
@@ -235,12 +235,12 @@ private:
     optimized.push_back(path.front());
 
     size_t originalSize = path.size();
-    double lastSignificantElev =
+    float lastSignificantElev =
         metrics.relativeHeights[path[0].first][path[0].second];
 
     for (size_t i = 1; i < path.size() - 1; i++) {
       const auto &curr = path[i];
-      double currElev = metrics.relativeHeights[curr.first][curr.second];
+      float currElev = metrics.relativeHeights[curr.first][curr.second];
 
       if (std::abs(currElev - lastSignificantElev) > SIGNIFICANT_CHANGE) {
         optimized.push_back(curr);
@@ -250,12 +250,12 @@ private:
 
       const auto &prev = path[i - 1];
       const auto &next = path[i + 1];
-      double dx1 = curr.first - prev.first;
-      double dy1 = curr.second - prev.second;
-      double dx2 = next.first - curr.first;
-      double dy2 = next.second - curr.second;
+      float dx1 = curr.first - prev.first;
+      float dy1 = curr.second - prev.second;
+      float dx2 = next.first - curr.first;
+      float dy2 = next.second - curr.second;
 
-      double angle = std::abs(std::atan2(dy2, dx2) - std::atan2(dy1, dx1));
+      float angle = std::abs(std::atan2(dy2, dx2) - std::atan2(dy1, dx1));
       if (angle > M_PI / 4) {
         optimized.push_back(curr);
         continue;
@@ -274,7 +274,7 @@ private:
   }
 
   void updatePathMetrics(const std::vector<std::pair<int, int>> &path,
-                         const std::vector<std::vector<double>> &heightmap) {
+                         const std::vector<std::vector<float>> &heightmap) {
     if (path.empty()) {
       throw std::runtime_error("Empty path provided");
     }
@@ -289,10 +289,10 @@ private:
         }
       }
 
-      double startElev =
+      float startElev =
           processElevation(heightmap[path[0].first][path[0].second],
                            path[0].first, path[0].second);
-      double endElev =
+      float endElev =
           processElevation(heightmap[path.back().first][path.back().second],
                            path.back().first, path.back().second);
       metrics.netElevationChange = endElev - startElev;
@@ -301,16 +301,16 @@ private:
         const auto &curr = path[i];
         const auto &prev = path[i - 1];
 
-        double dx = curr.first - prev.first;
-        double dy = curr.second - prev.second;
-        double horizontalDist = std::sqrt(dx * dx + dy * dy) * MARS_PIXEL_SIZE;
+        float dx = curr.first - prev.first;
+        float dy = curr.second - prev.second;
+        float horizontalDist = std::sqrt(dx * dx + dy * dy) * MARS_PIXEL_SIZE;
 
-        double elev1 = metrics.relativeHeights[prev.first][prev.second];
-        double elev2 = metrics.relativeHeights[curr.first][curr.second];
-        double elevChange = std::abs(elev2 - elev1);
+        float elev1 = metrics.relativeHeights[prev.first][prev.second];
+        float elev2 = metrics.relativeHeights[curr.first][curr.second];
+        float elevChange = std::abs(elev2 - elev1);
 
-        double slope = calculateSlope(dx, dy, elevChange);
-        double distance = std::sqrt(horizontalDist * horizontalDist +
+        float slope = calculateSlope(dx, dy, elevChange);
+        float distance = std::sqrt(horizontalDist * horizontalDist +
                                     elevChange * elevChange);
 
         metrics.totalDistance += distance;
@@ -346,7 +346,7 @@ private:
 
   void writePathData(const std::string &filename,
                      const std::vector<std::pair<int, int>> &path,
-                     const std::vector<std::vector<double>> &heightmap,
+                     const std::vector<std::vector<float>> &heightmap,
                      int startX, int startY, int endX, int endY,
                      uint32_t startRow, uint32_t startCol) {
     std::ofstream outFile(filename);
@@ -376,7 +376,7 @@ private:
 
     for (size_t i = 0; i < path.size(); ++i) {
       const auto &coord = path[i];
-      double elevation = heightmap[coord.first][coord.second] * MM_TO_M;
+      float elevation = heightmap[coord.first][coord.second] * MM_TO_M;
 
       // Fix coordinate ordering: swap row/col to match X/Y convention
       int globalY = coord.first + startRow;
@@ -391,8 +391,8 @@ private:
   }
 
   void displayDetailedSummary(int startX, int startY, int endX, int endY) {
-    const double metersPerPixel = MARS_PIXEL_SIZE;
-    const double actualDistance =
+    const float metersPerPixel = MARS_PIXEL_SIZE;
+    const float actualDistance =
         std::sqrt(std::pow((endX - startX) * metersPerPixel, 2) +
                   std::pow((endY - startY) * metersPerPixel, 2));
 
@@ -423,7 +423,7 @@ private:
   }
 
   void logProgress(const std::string &status, int current, int total) {
-    double percent = (current * 100.0) / total;
+    float percent = (current * 100.0) / total;
     progress.updateProgress(status, percent);
   }
 
@@ -451,16 +451,16 @@ private:
               << "- Detailed path data written to: rover_path.txt\n";
   }
 
-  std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> calculateRegionCordinates(uint32_t startX, uint32_t startY, uint32_t endX, uint32_t endY)
+  std::tuple<int, int, int, int> calculateRegionCordinates(int startX, int startY, int endX, int endY)
   {
-    uint32_t startRow =
+    int startRow =
           (startY > TERRAIN_PADDING) ? startY - TERRAIN_PADDING : 0;
-      uint32_t endRow =
-          std::min(static_cast<uint32_t>(endY + TERRAIN_PADDING), 53347u);  //TODO make 53347u a parameter of some sort
-      uint32_t startCol =
+      int endRow =
+          std::min(static_cast<int>(endY + TERRAIN_PADDING), 53347);  //TODO make 53347u a parameter of some sort
+      int startCol =
           (startX > TERRAIN_PADDING) ? startX - TERRAIN_PADDING : 0;
-      uint32_t endCol =
-          std::min(static_cast<uint32_t>(endX + TERRAIN_PADDING), 106694u); //TODO make 106694u a parameter of some sort
+      int endCol =
+          std::min(static_cast<int>(endX + TERRAIN_PADDING), 106694); //TODO make 106694u a parameter of some sort
     
     std::cout << startRow << " " << startCol << " " << endRow << " " << endCol << std::endl;
     return std::make_tuple(startRow, startCol, endRow, endCol);
@@ -530,14 +530,15 @@ public:
 
     try {
       logDebug("Initializing simulation");
-      MEMPA::BUFFDEM demHandler(demFilePath, outputPath);
+      //MEMPA::BUFFDEM demHandler(demFilePath, outputPath);
+      mempa::DemHandler demHandler = mempa::DemHandler(demFilePath.c_str());
       currentPos.first = startX;
       currentPos.second = startY;
 
-      std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> regionCordinates;
+      std::tuple<int, int, int, int> regionCordinates;
       std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int,int>> path;
-      std::vector<std::vector<double>> heightmap;
+      std::vector<std::vector<float>> heightmap;
 
       //start looping here
       while(currentPos.first != endX && currentPos.second != endY)
@@ -551,7 +552,7 @@ public:
                 "," + std::to_string(std::get<1>(regionCordinates)) + ") to (" +
                 std::to_string(std::get<2>(regionCordinates)) + "," + std::to_string(std::get<3>(regionCordinates)) + ")");
 
-        heightmap = demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<2>(regionCordinates), std::get<1>(regionCordinates), std::get<3>(regionCordinates));
+        heightmap = demHandler.readRectangleChunk(std::make_pair(std::make_pair(std::get<0>(regionCordinates), std::get<1>(regionCordinates)), std::make_pair(std::get<2>(regionCordinates), std::get<3>(regionCordinates))), 0);
 
         if (heightmap.empty() || heightmap[0].empty()) {
           throw std::runtime_error("Failed to load heightmap data");
@@ -602,7 +603,7 @@ public:
       }
 
       regionCordinates = calculateRegionCordinates(startX, startY, endX, endY);
-      heightmap = demHandler.demVector(demFilePath, std::get<0>(regionCordinates), std::get<2>(regionCordinates), std::get<1>(regionCordinates), std::get<3>(regionCordinates));
+      heightmap = demHandler.readRectangleChunk(std::make_pair(std::make_pair(std::get<0>(regionCordinates), std::get<1>(regionCordinates)), std::make_pair(std::get<2>(regionCordinates), std::get<3>(regionCordinates))), 0);
 
       //update path to local cordinates in this final heightmap
       for(std::pair<int,int>& step : path)
