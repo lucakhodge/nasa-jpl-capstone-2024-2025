@@ -1,5 +1,3 @@
-import { ipcRenderer } from 'electron';
-
 export interface PathfindingResult {
   path: Array<[number, number]>;
   metrics: {
@@ -10,20 +8,28 @@ export interface PathfindingResult {
   };
 }
 
-export const runPathfinding = async (
+export async function runPathfinding(
   demFile: string,
   startX: number,
   startY: number,
   endX: number,
   endY: number,
   maxSlope: number
-): Promise<PathfindingResult> => {
-  return await ipcRenderer.invoke('run-pathfinding', {
-    demFile,
-    startX,
-    startY,
-    endX,
-    endY,
-    maxSlope
-  });
-};
+): Promise<PathfindingResult> {
+  try {
+    // Call the IPC handler for pathfinding
+    const result = await window.electronIPC.runPathfinding({
+      demFile,
+      startX,
+      startY,
+      endX,
+      endY,
+      maxSlope
+    });
+    
+    return result;
+  } catch (error) {
+    console.error('Error running pathfinding:', error);
+    throw error;
+  }
+}

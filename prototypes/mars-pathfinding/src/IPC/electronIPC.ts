@@ -21,8 +21,50 @@ export interface ChunkDescription {
 }
 
 export interface Chunk {
-  description: ChunkDescription;
+  description: {
+    coordinate: {
+      x: number;
+      y: number;
+    };
+    size: {
+      width: number;
+      height: number;
+    };
+    filename: string;
+  };
   data: number[][];
+}
+
+export interface PathfindingResult {
+  path: Array<[number, number]>;
+  metrics: {
+    length: number;
+    steps: number;
+    maxSlope: number;
+    avgSlope: number;
+  };
+}
+
+export interface ElectronIPC {
+  openDEM: (filePath?: string) => Promise<any>;
+  closeDEM: () => Promise<boolean>;
+  getChunk: (args: any) => Promise<Chunk>;
+  onDEMOpened: (callback: (demInfo: any) => void) => void;
+  onDEMClosed: (callback: () => void) => void;
+  runPathfinding: (args: {
+    demFile: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    maxSlope: number;
+  }) => Promise<PathfindingResult>;
+}
+
+declare global {
+  interface Window {
+    electronIPC: ElectronIPC;
+  }
 }
 
 // constants for message chanels
