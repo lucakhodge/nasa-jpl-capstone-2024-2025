@@ -76,7 +76,8 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "filesystem": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "__hash_table": "cpp"
     },
     "[makefile]": {
         "editor.comments.insertSpace": false
