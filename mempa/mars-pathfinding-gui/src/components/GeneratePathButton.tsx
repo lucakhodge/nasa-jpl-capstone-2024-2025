@@ -4,7 +4,12 @@ import { setPath } from '../store/mapSlice';
 import { selectParameters } from '../store/paramatersSlice';
 import { MyButton } from './MyButton';
 
-export default function GeneratePathButton() {
+interface GeneratePathButtonPropsI {
+  children?: React.ReactNode,
+  onClick?: () => void,
+}
+
+export default function GeneratePathButton(props: GeneratePathButtonPropsI) {
   const dispatch = useAppDispatch();
   const paramaters = useAppSelector(selectParameters);
   const demInfo = useAppSelector(selectDemInfo);
@@ -17,7 +22,7 @@ export default function GeneratePathButton() {
     || paramaters.slope === null
 
 
-  const handleClick = async () => {
+  const generatePath = async () => {
     // call algorithim, set path
     let algorithimResult = await window.electronIPC.callAlgorithim(paramaters)
     let path = JSON.parse(algorithimResult).data;
@@ -25,7 +30,12 @@ export default function GeneratePathButton() {
   }
 
   return (
-    <MyButton onClick={handleClick} disabled={isDisabled}>Generate Path</MyButton>
+    <MyButton onClick={() => {
+      generatePath()
+      if (props.onClick) {
+        props.onClick()
+      }
+    }} disabled={isDisabled}>Generate Path</MyButton>
   )
 }
 
