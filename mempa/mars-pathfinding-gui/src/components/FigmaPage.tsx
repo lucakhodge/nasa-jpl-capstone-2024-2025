@@ -6,8 +6,6 @@ import LoadFileButton from './LoadFileButton';
 import { LoadMapChunkFromPath } from './LoadMapChunkFromPath';
 import { MyNumberInput } from './MyNumberInput';
 
-import nasaLogo from './images/nasa-logo-png-nasa-logo.png';
-
 export default function FigmaPage(props: {}) {
 
   const dispatch = useAppDispatch();
@@ -19,16 +17,6 @@ export default function FigmaPage(props: {}) {
   return (
     <div className="grid grid-cols-[1fr_2fr] w-screen h-screen fixed inset-0 overflow-hidden">
       <div className='flex flex-col gap-1 w-full h-full p-5' style={{ backgroundColor: '#D1945A' }}>
-        <div className='flex items-center justify-center gap-4 mb-2'>
-          <img
-            src={nasaLogo}
-            alt="NASA Logo"
-            className='h-12 w-auto object-contain'
-          />
-          <div className='text-center text-[20px] text-red-600 font-bold font-orbitron'>
-            MEMPA
-          </div>
-        </div>
         <div className='flex flex-row text-black'>
           <div className='whitespace-nowrap'>Start Coordinate: (</div>
           <MyNumberInput value={startCoordinate.x} onChange={(val) => {
