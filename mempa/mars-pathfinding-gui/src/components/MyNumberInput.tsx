@@ -18,7 +18,7 @@ export const MyNumberInput = (props: MyNumberInputPropsI) => {
   }
   return (
     <div>
-      <input onChange={handleChange} type='number' value={props.value == null ? "" : props.value} className='w-20 bg-slate-300 rounded hover:bg-slate-400 font-bold' />
+      <input onChange={handleChange} type='number' value={props.value == null ? "" : props.value} className='w-20 px-2 bg-slate-300 rounded hover:bg-slate-400 font-bold' />
     </div>
   )
 }
