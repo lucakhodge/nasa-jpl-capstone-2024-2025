@@ -95,6 +95,7 @@
         "ios": "cpp",
         "locale": "cpp",
         "queue": "cpp"
+        "__hash_table": "cpp"
     },
     "[makefile]": {
         "editor.comments.insertSpace": false
