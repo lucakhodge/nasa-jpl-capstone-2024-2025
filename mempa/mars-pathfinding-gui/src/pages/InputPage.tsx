@@ -5,6 +5,7 @@ import { MyNumberInput } from "../components/MyNumberInput";
 import LoadFileButton from "../components/LoadFileButton";
 import GeneratePathButton from "../components/GeneratePathButton";
 import { selectDemInfo } from "../store/demSlice";
+import FileStatus from "../components/FileStatus";
 
 interface InputPagePropsI {
   onNext: () => void;
@@ -27,6 +28,7 @@ export default function (props: InputPagePropsI) {
       <div>
         <LoadFileButton />
       </div>
+      <FileStatus></FileStatus>
 
       <div className='flex flex-row text-black'>
         <div className='whitespace-nowrap'>Start Coordinate: (</div>
