@@ -32,6 +32,11 @@ const float ELEVATION_SCALING = 0.001;    // Scale factor for large elevations
 const float SIGNIFICANT_CHANGE =
     10.0; // Significant elevation change threshold (meters)
 
+/**
+ * @brief Class to hold Terrain Metrics to display information discorved about the path to the user
+ *
+ * @author Adam Carlson
+ */
 class TerrainMetrics {
 public:
   float totalDistance = 0.0;
@@ -47,6 +52,11 @@ public:
   bool baseElevationSet = false;
   std::vector<std::vector<float>> relativeHeights;
 
+  /**
+ * @brief Function to set up TerrainMetrics class for use.
+ *
+ * @author Adam Carlson
+ */
   void initialize(size_t rows, size_t cols) {
     if (rows == 0 || cols == 0) {
       throw std::runtime_error("Invalid dimensions for terrain metrics");
@@ -55,6 +65,11 @@ public:
     relativeHeights.resize(rows, std::vector<float>(cols, 0.0));
   }
 
+  /**
+ * @brief Resets all of the TerrianMetric class values to their default values. 
+ *
+ * @author Adam Carlson
+ */
   void reset() {
     totalDistance = 0.0;
     horizontalDistance = 0.0;
@@ -70,10 +85,20 @@ public:
     relativeHeights.clear();
   }
 
+  /**
+ * @brief A check to see if the TerrianMetrics calss has been initialized
+ *
+ * @author Adam Carlson
+ */
   bool isInitialized() const {
     return !relativeHeights.empty() && !relativeHeights[0].empty();
   }
 
+  /**
+ * @brief calculates a value to represent the energy cost of a path.  Takes into account distaance and elavation change
+ *
+ * @author Adam Carlson
+ */
   float calculateEnergyCost(float distance, float elevChange, float slope) {
     float slopePenalty = std::pow(slope / MAX_SLOPE, 2);
     float elevationPenalty = std::abs(elevChange) * 2.0;
@@ -81,12 +106,22 @@ public:
   }
 };
 
+/**
+ * @brief Class to track the progress of the pathfinding
+ *
+ * @author Adam Carlson
+ */
 class ProgressTracker {
 private:
   const char *spinner = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
   int spinnerIndex = 0;
 
 public:
+  /**
+ * @brief function to change the displyed progress spinner
+ *
+ * @author Adam Carlson
+ */
   void updateProgress(const std::string &status, float progress) {
     std::cout << "\r" << spinner[spinnerIndex] << " " << status << ": "
               << std::fixed << std::setprecision(1) << progress << "%"
@@ -94,11 +129,21 @@ public:
     spinnerIndex = (spinnerIndex + 1) % 10;
   }
 
+  /**
+ * @brief function to show that the search is complete.  
+ *
+ * @author Adam Carlson
+ */
   void complete(const std::string &message) {
     std::cout << "\r✓ " << message << std::endl;
   }
 };
 
+/**
+ * @brief The Simulator class, this class is used to abstract the starting and goal conditions from the DEM files and search algoritm used to traverse the DEM file
+ *
+ * @author Adam Carlson and Oscar Mikus
+ */
 class Simulator {
 private:
   TerrainMetrics metrics;
@@ -107,6 +152,11 @@ private:
   ProgressTracker progress;
   std::pair<int,int> currentPos;
 
+  /**
+ * @brief Used to output debug messages within the Simulator class
+ *
+ * @author Adam Carlson
+ */
   void logDebug(const std::string &message) {
     auto now = std::chrono::steady_clock::now();
     auto elapsed =
@@ -115,6 +165,11 @@ private:
     std::cout << "[DEBUG:" << elapsed << "ms] " << message << std::endl;
   }
 
+  /**
+ * @brief Given a cordinate in std::pair<int, int> and a heightmap std::vector<std::vector<float>> retuns a truth value based on if the coodinate pair is within the heightmap.  
+ *
+ * @author Adam Carlson
+ */
   bool isValidCoordinate(const std::pair<int, int> &coord,
                          const std::vector<std::vector<float>> &heightmap) {
     if (!metrics.isInitialized()) {
@@ -137,6 +192,11 @@ private:
     return valid;
   }
 
+  /**
+   * @brief retruns a height value for elavation or 0.0 if a height value of Nan is found.  
+   *
+   * @author Adam Carlson
+   */
   float validateElevation(float rawElevation) {
     if (std::isnan(rawElevation)) {
       logDebug("Warning: NaN elevation detected");
@@ -154,6 +214,11 @@ private:
     return elevation;
   }
 
+  /**
+ * @brief Used to turn a raw elavation into a relative elavation TODO - Adam describe what this does better
+ *
+ * @author Adam Carlson
+ */
   float processElevation(float rawElevation, int row, int col) {
     if (!metrics.isInitialized()) {
       throw std::runtime_error("Terrain metrics not initialized");
@@ -190,6 +255,11 @@ private:
     return relativeElevation;
   }
 
+  /**
+ * @brief used to calculate the slope based on the change in x and y coordinates and an absolute elavation change
+ *
+ * @author Adam Carlson
+ */
   float calculateSlope(float dx, float dy, float elevChange) {
     float horizontalDist = std::sqrt(dx * dx + dy * dy) * MARS_PIXEL_SIZE;
     if (horizontalDist < ELEVATION_EPSILON)
@@ -200,6 +270,11 @@ private:
     return std::min(slope, MAX_SLOPE);
   }
 
+  /**
+ * @brief Converts pixel coordinates from an entire DEM file to the local pixel coordinates of a chunk of a DEM file
+ *
+ * @author Adam Carlson
+ */
   std::pair<int, int> convertToLocalCoordinates(int globalX, int globalY,
                                                 uint32_t startRow,
                                                 uint32_t startCol) {
@@ -211,6 +286,11 @@ private:
     return {localX, localY};
   }
 
+  /**
+ * @brief Used to change local pixel coordintes of a small DEM chunk back to the pixel coordinates of an entire DEM file
+ *
+ * @author Oscar Mikus
+ */
   std::pair<int, int> convertToGlobalCoordinates(int localX, int localY,
     uint32_t startRow,
     uint32_t startCol) {
@@ -220,8 +300,13 @@ private:
     //     std::to_string(localY) + ") to global (" + std::to_string(globalX) +
     //     "," + std::to_string(globalY) + ")");
     return {globalX, globalY};
-}
+  }
 
+  /**
+ * @brief For displaying the path taken in termianl.  Removes many coordinates from the path to not display too many values in terminal.
+ *
+ * @author Adam Carlson
+ */
   void optimizePath(std::vector<std::pair<int, int>> &path) {
     if (path.size() < 3)
       return;
@@ -273,6 +358,11 @@ private:
              std::to_string(path.size()) + " waypoints");
   }
 
+  /**
+ * @brief TODO Adam desribe this function
+ *
+ * @author Adam Carlson
+ */
   void updatePathMetrics(const std::vector<std::pair<int, int>> &path,
                          const std::vector<std::vector<float>> &heightmap) {
     if (path.empty()) {
@@ -344,6 +434,11 @@ private:
     }
   }
 
+  /**
+ * @brief This function displays the path in a readable format.  Creates a text file?? TODO Adam help better desribe this function
+ *
+ * @author Adam Carlson
+ */
   void writePathData(const std::string &filename,
                      const std::vector<std::pair<int, int>> &path,
                      const std::vector<std::vector<float>> &heightmap,
@@ -390,6 +485,11 @@ private:
     logDebug("Path data written to " + filename);
   }
 
+  /**
+ * @brief TODO Adam desribe this function
+ *
+ * @author Adam Carlson
+ */
   void displayDetailedSummary(int startX, int startY, int endX, int endY) {
     const float metersPerPixel = MARS_PIXEL_SIZE;
     const float actualDistance =
@@ -422,11 +522,21 @@ private:
               << "- Max slope: " << MAX_SLOPE << "°\n\n";
   }
 
+  /**
+ * @brief updates the ProgressTracker inside of the Simulator class with new information
+ *
+ * @author Adam Carlson
+ */
   void logProgress(const std::string &status, int current, int total) {
     float percent = (current * 100.0) / total;
     progress.updateProgress(status, percent);
   }
 
+  /**
+ * @brief Dispalys path information in the terminal TODO Adam help better desribe this function
+ *
+ * @author Adam Carlson
+ */
   void displayResults() {
     std::cout << "\nSimulation Results:\n"
               << "==================\n\n"
@@ -451,6 +561,11 @@ private:
               << "- Detailed path data written to: rover_path.txt\n";
   }
 
+  /**
+ * @brief calculates the coordiantes needed to create a region by the DEM handeler function
+ *
+ * @author Oscar Mikus, Adam Carlson
+ */
   std::tuple<int, int, int, int> calculateRegionCordinates(int startX, int startY, int endX, int endY)
   {
     int startRow =
@@ -466,7 +581,12 @@ private:
     return std::make_tuple(startRow, startCol, endRow, endCol);
   }
 
-  //this function calulates the cordinates for the closesst postion to the actual goal cordinate within the limitations of the max dem size based on "memory"
+  
+  /**
+ * @brief this function calulates the cordinates for the closesst postion to the actual goal cordinate within the limitations of the max dem size based on a max number of pixels to represent memory limitations
+ *
+ * @author Oscar Mikus
+ */
   std::pair<int, int> calculateDemNavToHere(int startX, int startY, int endX, int endY, int maxDemRegionPixelCount)
   {
     if(maxDemRegionPixelCount < (TERRAIN_PADDING * TERRAIN_PADDING))
@@ -509,10 +629,21 @@ private:
   }
 
 public:
+
+  /**
+ * @brief Defualt Constructor for Simulator class.  Intilize the start time for the simulator
+ *
+ * @author Adam Carlson
+ */
   explicit Simulator(std::string n) : name(std::move(n)) {
     startTime = std::chrono::steady_clock::now();
   }
 
+  /**
+ * @brief Main function to call within the Simulator class.  This will navigate from the startpoint to the endpoint in a given DEM file whie adhearing to the max pixel size constraint
+ *
+ * @author Adam Carlson, Oscar Mikus
+ */
   void run(int startX, int startY, int endX, int endY, std::string inFile, int maxDemRegionPixelCount) {
     displaySimulationHeader(startX, startY, endX, endY);
 
@@ -524,9 +655,6 @@ public:
      * "/Users/adamcarlson/Dropbox/Mac/Downloads";*/
 
     const std::string demFilePath = inFile;
-    const std::string outputPath =
-        "/mnt/c/Users/Oscar/Desktop/MEMPA_Personal/output"; // TODO: for now this is hardcoded, ideally it should not
-                  // have to exist
 
     try {
       logDebug("Initializing simulation");
@@ -644,6 +772,7 @@ public:
   }
 };
 
+//current way to run and test the Simulator.  
 int main(int argc, char **argv) {
   // take argus for in an out fixed
   std::string inputFile;
