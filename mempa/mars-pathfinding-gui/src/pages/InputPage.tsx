@@ -22,7 +22,7 @@ export default function (props: InputPagePropsI) {
   const isFileLoaded = useAppSelector(selectDemInfo) !== null;
 
   return (
-    <div className="w-screen h-screen flex flex-col gap-4 p-4">
+    <div className="w-screen h-screen flex flex-col gap-4 p-4" style={{ backgroundColor: '#D1945A' }}>
       <div className="font-orbitron text-center">Enter input parameters</div>
 
       <div>
