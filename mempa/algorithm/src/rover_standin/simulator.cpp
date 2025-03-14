@@ -214,9 +214,23 @@ private:
     return elevation;
   }
 
-  /**
- * @brief Used to turn a raw elavation into a relative elavation TODO - Adam describe what this does better
+/**
+ * @brief Converts raw elevation values into normalized relative elevations
  *
+ * This function processes raw elevation data (in millimeters) by:
+ * 1. Validating and normalizing the raw value to meters
+ * 2. Setting a base elevation reference point if not already established
+ * 3. Converting absolute elevations to relative elevations (difference from base)
+ * 4. Storing the relative elevation in the metrics matrix for later calculations
+ * 
+ * The relative elevations are used for slope calculations and energy estimation
+ * in path planning, as relative changes in height are more relevant than 
+ * absolute elevations for rover traversability analysis.
+ *
+ * @param rawElevation Raw elevation value in millimeters from the DEM file
+ * @param row Row coordinate in the current heightmap matrix
+ * @param col Column coordinate in the current heightmap matrix
+ * @return The processed relative elevation in meters
  * @author Adam Carlson
  */
   float processElevation(float rawElevation, int row, int col) {
@@ -358,13 +372,29 @@ private:
              std::to_string(path.size()) + " waypoints");
   }
 
-  /**
- * @brief TODO Adam desribe this function
+/**
+ * @brief Calculates comprehensive terrain metrics for a rover path
  *
+ * This function analyzes a path through the Mars terrain by:
+ * 1. Initializing the metrics data structure and validating all path coordinates
+ * 2. Processing elevations at start and end points to establish net elevation change
+ * 3. Iterating through path segments to calculate per-segment and cumulative metrics:
+ *    - Horizontal and 3D distances
+ *    - Elevation changes between waypoints
+ *    - Slope angles and their statistics
+ *    - Energy cost estimates based on distance, slope and elevation
+ * 4. Aggregating data for overall path assessment (total distance, max slope, etc.)
+ * 
+ * These metrics are essential for evaluating path quality, rover capability 
+ * requirements, and energy consumption estimates for the planned traverse.
+ *
+ * @param path Vector of coordinate pairs representing waypoints in the rover's path
+ * @param heightmap 2D vector containing elevation data for the terrain
+ * @throws std::runtime_error If path is empty or contains invalid coordinates
  * @author Adam Carlson
  */
   void updatePathMetrics(const std::vector<std::pair<int, int>> &path,
-                         const std::vector<std::vector<float>> &heightmap) {
+  const std::vector<std::vector<float>> &heightmap) {
     if (path.empty()) {
       throw std::runtime_error("Empty path provided");
     }
@@ -434,16 +464,30 @@ private:
     }
   }
 
-  /**
- * @brief This function displays the path in a readable format.  Creates a text file?? TODO Adam help better desribe this function
+/**
+ * @brief Displays advanced performance metrics about the rover path
  *
+ * This function calculates and presents higher-level analytics including:
+ * 1. Path efficiency - Ratio of direct distance to actual traversed path length
+ *    (lower values indicate more detours taken to avoid obstacles)
+ * 2. Processing rate - Algorithm performance measured in meters processed per second
+ * 3. Energy per meter - Energy consumption efficiency along the path
+ * 
+ * These metrics help evaluate the quality and efficiency of the generated path
+ * beyond simple distance measurements, providing insights into the algorithm's 
+ * performance characteristics and energy optimization capabilities.
+ *
+ * @param startX Global X-coordinate of the path's starting point
+ * @param startY Global Y-coordinate of the path's starting point
+ * @param endX Global X-coordinate of the path's destination
+ * @param endY Global Y-coordinate of the path's destination
  * @author Adam Carlson
  */
   void writePathData(const std::string &filename,
-                     const std::vector<std::pair<int, int>> &path,
-                     const std::vector<std::vector<float>> &heightmap,
-                     int startX, int startY, int endX, int endY,
-                     uint32_t startRow, uint32_t startCol) {
+      const std::vector<std::pair<int, int>> &path,
+      const std::vector<std::vector<float>> &heightmap,
+      int startX, int startY, int endX, int endY,
+      uint32_t startRow, uint32_t startCol) {
     std::ofstream outFile(filename);
     if (!outFile) {
       throw std::runtime_error("Failed to create output file: " + filename);
@@ -485,9 +529,23 @@ private:
     logDebug("Path data written to " + filename);
   }
 
-  /**
- * @brief TODO Adam desribe this function
+/**
+ * @brief Displays advanced performance metrics about the rover path
  *
+ * This function calculates and presents higher-level analytics including:
+ * 1. Path efficiency - Ratio of direct distance to actual traversed path length
+ *    (lower values indicate more detours taken to avoid obstacles)
+ * 2. Processing rate - Algorithm performance measured in meters processed per second
+ * 3. Energy per meter - Energy consumption efficiency along the path
+ * 
+ * These metrics help evaluate the quality and efficiency of the generated path
+ * beyond simple distance measurements, providing insights into the algorithm's 
+ * performance characteristics and energy optimization capabilities.
+ *
+ * @param startX Global X-coordinate of the path's starting point
+ * @param startY Global Y-coordinate of the path's starting point
+ * @param endX Global X-coordinate of the path's destination
+ * @param endY Global Y-coordinate of the path's destination
  * @author Adam Carlson
  */
   void displayDetailedSummary(int startX, int startY, int endX, int endY) {
@@ -532,8 +590,20 @@ private:
     progress.updateProgress(status, percent);
   }
 
-  /**
- * @brief Dispalys path information in the terminal TODO Adam help better desribe this function
+/**
+ * @brief Displays formatted path analysis results in the terminal
+ *
+ * This function presents a comprehensive summary of rover path metrics
+ * in a user-friendly, formatted display including:
+ * - Path distance measurements (3D and 2D)
+ * - Elevation statistics (total change, net change)
+ * - Slope information (maximum and average angles)
+ * - Energy consumption estimate
+ * - Path composition data (base elevation, waypoint count)
+ * 
+ * The output is organized into clear sections with appropriate headers
+ * and consistent decimal precision for readability. It also indicates
+ * where detailed path data has been stored for further analysis.
  *
  * @author Adam Carlson
  */
