@@ -2,7 +2,8 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
 INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
-LIBS = -lgdal -ltiff -lgtest -lgtest_main -pthread
+LIBS = -lgdal -ltiff
+TEST_LIBS = -lgdal -ltiff -lgtest -lgtest_main -pthread
 
 TARGET = simulator
 TEST_TARGET = run_tests
@@ -17,11 +18,15 @@ TEST_SOURCES := $(shell find $(TEST_DIR) -type f -name '*_test.cpp')
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TEST_SOURCES))
 
+# Simulator dependencies (all objects)
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-$(TEST_TARGET): $(OBJECTS) $(TEST_OBJECTS)
-	$(CXX) $(OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+# Test dependencies (only dijkstras and search algorithm + test files)
+TEST_DEP_OBJECTS := $(OBJ_DIR)/search_algorithms/dijkstras.o $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o
+
+$(TEST_TARGET): $(TEST_DEP_OBJECTS) $(TEST_OBJECTS)
+	$(CXX) $(TEST_DEP_OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(TEST_LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
