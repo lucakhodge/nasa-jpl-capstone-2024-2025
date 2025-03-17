@@ -5,17 +5,15 @@
 class DijkstrasTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Initialize a simple 3x3 heightmap
+        // Initialize a simple 3x3 heightmap with float type
         heightmap = {
-            {1000.0, 1500.0, 2000.0},
-            {1200.0, 1300.0, 1800.0},
-            {1100.0, 1400.0, 1600.0}
+            {1000.0f, 1500.0f, 2000.0f},
+            {1200.0f, 1300.0f, 1800.0f},
+            {1100.0f, 1400.0f, 1600.0f}
         };
         dijkstra = new Dijkstras();
-        dijkstra->_heightmap = heightmap;
-        dijkstra->_startPoint = {0, 0}; // Top-left
-        dijkstra->_endPoint = {2, 2};   // Bottom-right
-        dijkstra->_maxSlope = 45.0;     // Reasonable max slope
+        // Use the public setUpAlgo method instead of direct member access
+        dijkstra->setUpAlgo(heightmap, {0, 0}, {2, 2}, 45.0f, 200.0f);
     }
 
     void TearDown() override {
@@ -23,7 +21,7 @@ protected:
     }
 
     Dijkstras* dijkstra;
-    std::vector<std::vector<double>> heightmap;
+    std::vector<std::vector<float>> heightmap; // Changed to float
 };
 
 // Test the dijkstras() method with a valid path
@@ -36,30 +34,28 @@ TEST_F(DijkstrasTest, ValidPath) {
 
 // Test dijkstras() with an empty heightmap
 TEST_F(DijkstrasTest, EmptyHeightmap) {
-    dijkstra->_heightmap.clear();
+    std::vector<std::vector<float>> empty_map;
+    dijkstra->setUpAlgo(empty_map, {0, 0}, {2, 2}, 45.0f, 200.0f);
     auto path = dijkstra->dijkstras();
     EXPECT_TRUE(path.empty()) << "Path should be empty for an empty heightmap";
 }
 
 // Test dijkstras() with out-of-bounds coordinates
 TEST_F(DijkstrasTest, OutOfBoundsCoordinates) {
-    dijkstra->_startPoint = {-1, -1};
+    dijkstra->setUpAlgo(heightmap, {-1, -1}, {2, 2}, 45.0f, 200.0f);
     auto path = dijkstra->dijkstras();
     EXPECT_TRUE(path.empty()) << "Path should be empty for out-of-bounds start point";
 
-    dijkstra->_startPoint = {0, 0};
-    dijkstra->_endPoint = {5, 5};
+    dijkstra->setUpAlgo(heightmap, {0, 0}, {5, 5}, 45.0f, 200.0f);
     path = dijkstra->dijkstras();
     EXPECT_TRUE(path.empty()) << "Path should be empty for out-of-bounds end point";
 }
 
 // Test get_step() functionality
 TEST_F(DijkstrasTest, GetStep) {
-    // First call should populate pathStorage and return the last step
     auto step = dijkstra->get_step();
     EXPECT_NE(step, std::make_pair(-1, -1)) << "First step should not be (-1,-1)";
     
-    // Keep getting steps until path is exhausted
     while (dijkstra->can_get_next_step()) {
         step = dijkstra->get_step();
     }
@@ -79,10 +75,10 @@ TEST_F(DijkstrasTest, ResetFunctionality) {
 // Test neighbor index calculation
 TEST_F(DijkstrasTest, GetNeighborIndexes) {
     auto neighbors = dijkstra->get_neighbor_indexs(3, 3, 1, 1); // Center of 3x3 grid
-    EXPECT_EQ(neighbors.size(), 8) << "Center node should have 8 neighbors";
+    EXPECT_EQ(neighbors.size(), 8u) << "Center node should have 8 neighbors"; // Use 8u to avoid sign-compare warning
 
     neighbors = dijkstra->get_neighbor_indexs(3, 3, 0, 0); // Top-left corner
-    EXPECT_EQ(neighbors.size(), 3) << "Corner node should have 3 neighbors";
+    EXPECT_EQ(neighbors.size(), 3u) << "Corner node should have 3 neighbors"; // Use 3u
 }
 
 int main(int argc, char **argv) {

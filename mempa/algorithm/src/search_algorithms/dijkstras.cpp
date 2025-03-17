@@ -21,7 +21,6 @@ const double MAX_ELEVATION_CHANGE = 5.0; // Maximum elevation change per pixel (
 const double ELEVATION_EPSILON = 0.01;   // Small elevation difference threshold (meters)
 const double PIXEL_SIZE = 200.0;         // Mars DEM resolution (meters)
 
-
 // Elevation tracking structure
 struct ElevationTracker {
     double baseElevation;
