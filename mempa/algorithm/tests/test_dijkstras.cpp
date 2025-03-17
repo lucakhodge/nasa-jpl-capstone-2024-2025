@@ -81,7 +81,7 @@ TEST_F(DijkstrasTest, GetNeighborIndexes) {
     EXPECT_EQ(neighbors.size(), 3u) << "Corner node should have 3 neighbors"; // Use 3u
 }
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// int main(int argc, char **argv) {
+//     ::testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }

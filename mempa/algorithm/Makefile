@@ -8,7 +8,6 @@ TARGET = simulator
 OBJ_DIR = build
 SRC_DIR = src
 TEST_SRC_DIR = tests
-# Adjusted GTEST_DIR to point to the correct base directory
 GTEST_DIR = tests/googletest
 
 # Simulator sources and objects
@@ -39,14 +38,14 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(GTEST_OBJ): $(GTEST_DIR)/googletest/src/gtest-all.cc
 	$(CXX) $(CXXFLAGS) -I$(GTEST_DIR)/googletest/include -I$(GTEST_DIR)/googletest -c $< -o $@
 
-# Compile test source files (adjusted include path)
+# Compile test source files
 $(OBJ_DIR)/tests/%.o: $(TEST_SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -I$(GTEST_DIR)/googletest/include -c $< -o $@
 
 # Build the test executable
-$(TEST_TARGET): $(IMPL_OBJECTS) $(TEST_OBJECTS) $(GTEST_OBJ)
-	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS) -lpthread
+$(TEST_TARGET): $(TEST_OBJECTS) $(GTEST_OBJ)
+	$(CXX) $^ -o $@ $(LDFLAGS) -lgtest_main -lgtest -lpthread
 
 # Run the tests
 test: $(TEST_TARGET)
