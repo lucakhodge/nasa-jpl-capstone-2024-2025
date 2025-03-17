@@ -13,12 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: recursive  # Ensure submodules are fetched
+        submodules: recursive
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ libgdal-dev libtiff5-dev
+        sudo apt-get install -y g++ libgdal-dev libtiff5-dev libgtest-dev
 
     - name: Debug directory structure
       working-directory: mempa/algorithm
