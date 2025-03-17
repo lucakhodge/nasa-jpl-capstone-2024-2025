@@ -22,8 +22,14 @@ TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TEST_SOURCES))
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-# Test dependencies (dijkstras, SearchAlgorithm, and test objects)
+# Test dependencies
 TEST_DEP_OBJECTS := $(OBJ_DIR)/search_algorithms/dijkstras.o $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o
+
+# Debug: Print variables
+print-vars:
+	@echo "TEST_SOURCES = $(TEST_SOURCES)"
+	@echo "TEST_OBJECTS = $(TEST_OBJECTS)"
+	@echo "TEST_DEP_OBJECTS = $(TEST_DEP_OBJECTS)"
 
 $(TEST_TARGET): $(TEST_DEP_OBJECTS) $(TEST_OBJECTS)
 	$(CXX) $(TEST_DEP_OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(TEST_LIBS)
@@ -42,4 +48,4 @@ clean:
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
-.PHONY: clean test
+.PHONY: clean test print-vars
