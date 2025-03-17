@@ -35,7 +35,7 @@ print-vars:
 
 # Test target
 $(TEST_TARGET): $(TEST_DEP_OBJECTS) $(TEST_OBJECTS)
-	$(CXX) $(TEST_DEP_OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(TEST_LIBS)
+	$(CXX) $(CXXFLAGS) $(TEST_DEP_OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(TEST_LIBS)
 
 # Compile source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

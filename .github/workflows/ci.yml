@@ -19,6 +19,10 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev libgtest-dev
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo cp lib/*.a /usr/lib
 
     - name: Build simulator
       working-directory: mempa/algorithm
