@@ -92,8 +92,3 @@ TEST_F(DijkstrasTest, DiagonalPath) {
     EXPECT_EQ(path.back(), end) << "Path should end at (1,1)";
     EXPECT_EQ(path.size(), 2) << "Diagonal path should be 2 steps";
 }
-
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
