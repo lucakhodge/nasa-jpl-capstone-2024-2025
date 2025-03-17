@@ -22,7 +22,7 @@ TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TEST_SOURCES))
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-# Test dependencies (only dijkstras and search algorithm + test files)
+# Test dependencies (dijkstras, SearchAlgorithm, and test objects)
 TEST_DEP_OBJECTS := $(OBJ_DIR)/search_algorithms/dijkstras.o $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o
 
 $(TEST_TARGET): $(TEST_DEP_OBJECTS) $(TEST_OBJECTS)

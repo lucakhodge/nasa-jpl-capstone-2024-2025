@@ -20,16 +20,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev libgtest-dev
 
-    - name: Debug directory structure
-      working-directory: mempa/algorithm
-      run: |
-        ls -R tests/
-        find . -name "gtest.h"
-
     - name: Build simulator
       working-directory: mempa/algorithm
       run: make clean && make
 
     - name: Run tests
       working-directory: mempa/algorithm
-      run: make test || (cat test_results.xml; exit 1)
+      # Replace the old run command with this
+      run: make test && ./run_tests --gtest_output=xml:test_results.xml || (cat test_results.xml; exit 1)
