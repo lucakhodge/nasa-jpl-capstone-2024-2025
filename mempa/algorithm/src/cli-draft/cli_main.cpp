@@ -4,17 +4,22 @@
 // #include "../rover_standin/simulator.cpp"
 
 int main(int argc, char* argv[]) {
+    // instantiate CLI
     CLI config;
 
+    // parse arguments from user
     config.parseArgs(argc, argv);
 
+    // validate all inputs besides coordinates
     config.validateInputs();
 
+    // validate coordinates
     if (!config.coordinate_check()) {
         std::cerr << "Error: Invalid coordinate configurations" << std::endl;
         return 1;
     }
 
+    // display what was recieved and initialized
     config.displayInputs();
 
     std::cout << "Program successfully initialized. Proceeding with processing..." << std::endl;

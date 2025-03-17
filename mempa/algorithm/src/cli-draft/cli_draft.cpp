@@ -2,7 +2,7 @@
 Instructions for use:
 
 ** Make sure you are in correct directory where cli file is **
-To Compile: g++ ./cli_draft.cpp -o cli
+To Compile: g++ ./cli_main.cpp -o cli
 
 ** Fill in inputs and flags with correct ones **
 To run: ./cli --flag INPUT
@@ -14,6 +14,8 @@ Required flags:
     2 of the following (1 being start and 1 being end):
         --start
         --end
+        --start-pixel
+        --end-pixel
         --start_area
         --end_area 
     
@@ -33,6 +35,11 @@ Required flags:
 #include <vector>
 #include "cli.h"
 
+/**
+ * @brief Construct a new CLI::CLI object and set all flags and variables to false/-1
+ * 
+ * @author Brock Hoos
+ */
 CLI::CLI() : 
     iterations(-1), 
     slope_tolerance(-1), 
@@ -46,7 +53,17 @@ CLI::CLI() :
     coordinates() 
     {}
 
-std::pair<double, double> CLI::parseCoordinates(std::string input) {
+    /**
+     * @brief Takes in string input form user, and parses coordinates for delimiter ',' 
+     * and makes sure coordinates are in correct format. (For geographical coordinates of
+     * double type)
+     * 
+     * @param input 
+     * @return std::pair<double, double> 
+     * 
+     * @author Brock Hoos
+     */
+    std::pair<double, double> CLI::parseCoordinates(std::string input) {
     size_t comma_pos = input.find(',');
     if (comma_pos == std::string::npos) {
         throw std::invalid_argument("Invalid coordinate format: " + input);
@@ -56,6 +73,16 @@ std::pair<double, double> CLI::parseCoordinates(std::string input) {
     return std::make_pair(x, y);
 }
 
+/**
+ * @brief Takes in string input form user, and parses coordinates for delimiter ',' 
+ * and makes sure coordinates are in correct format. (For pixel coordinates of
+ * int type)
+ * 
+ * @param input 
+ * @return std::pair<int, int> 
+ * 
+ * @author Brock Hoos
+ */
 std::pair<int, int> CLI::parsePixelCoordinates(std::string input) {
     size_t comma_pos = input.find(',');
     if (comma_pos == std::string::npos) {
@@ -67,6 +94,15 @@ std::pair<int, int> CLI::parsePixelCoordinates(std::string input) {
 }
 
 
+/**
+ * @brief Takes in 2 coordinates (area) and uses ',' as delimiter to correctly parse
+ * area and check format
+ * 
+ * @param input 
+ * @return std::pair<std::pair<double, double>, std::pair<double, double> > 
+ * 
+ * @author Brock Hoos
+ */
 std::pair<std::pair<double, double>, std::pair<double, double> > CLI::parseArea(std::string input) {
     size_t colon_pos = input.find(':');
     if (colon_pos == std::string::npos) {
@@ -77,6 +113,14 @@ std::pair<std::pair<double, double>, std::pair<double, double> > CLI::parseArea(
     return std::make_pair(start, end);
 }
 
+/**
+ * @brief Makes sure that CLI recieved only 1 start coordinate and 1 end coordinate.
+ * 
+ * @return true 
+ * @return false 
+ * 
+ * @author Brock Hoos
+ */
 bool CLI::coordinate_check() {
     int start_count = start_set + start_area_set + start_pixel;
     int end_count = end_set + end_area_set + end_pixel;
@@ -94,11 +138,29 @@ bool CLI::coordinate_check() {
     return true; 
 }
 
+/**
+ * @brief Checks to make sure input and output files exist
+ * 
+ * @param filename 
+ * @return true 
+ * @return false 
+ * 
+ * @author Brock Hoos
+ */
 bool CLI::file_exist_check(std::string filename) {
     std::ifstream file(filename);
     return file.good();
 }
 
+/**
+ * @brief Using switch staements to parse inputs given through POSIX flags from user and set internal
+ * flags for which type of coordinates recieved
+ * 
+ * @param argc 
+ * @param argv 
+ * 
+ * @author Brock Hoos
+ */
 void CLI::parseArgs(int argc, char* argv[]) {
     struct option long_options[] = {
         {"start", required_argument, nullptr, 's'},
@@ -169,6 +231,11 @@ void CLI::parseArgs(int argc, char* argv[]) {
     }
 }
 
+/**
+ * @brief Print out helper of flags for each type of input
+ * 
+ * @author Brock Hoos
+ */
 void CLI::print_helper() {
     std::cout << "Options:\n"
               << "  --start          Start coordinates (e.g., 1,1 or 'random')\n"
@@ -185,35 +252,66 @@ void CLI::print_helper() {
               << "  --help           Print help message\n";
 }
 
+
+/**
+ * @brief Helper for cli_main.cpp to validate all inputs in single method. 
+ * (coordinate validation is done in coordinate_check())
+ * 
+ * @author Brock Hoos
+ * 
+ */
 void CLI::validateInputs() {
+    // check input file
     if (!file_exist_check(input_file)) {
         std::cerr << "Error: Input file does not exist or cannot be read" << std::endl;
         exit(1);
     }
+    // check output file
     if (!file_exist_check(output_file)) {
         std::cerr << "Error: Output file does not exist or cannot be read" << std::endl;
         exit(1);
     }
+    // check iterations
     if (iterations <= 0) {
         std::cerr << "Error: Iterations must be initialized and greater than 0" << std::endl;
         exit(1);
     }
+    // check slope
     if (slope_tolerance <= 0) {
         std::cerr << "Error: Slope tolerance must be initialized and greater than 0" << std::endl;
         exit(1);
     }
+    // check radius
     if (radius <= 0) {
         std::cerr << "Error: Visibility radius must be initialized and greater than 0" << std::endl;
         exit(1);
     }
 }
 
+/**
+ * @brief Display inputs recieved and intialized from user 
+ * 
+ * @author Brock Hoos
+ * 
+ */
 void CLI::displayInputs() {
     std::cout << "Start: " << start << "\nEnd: " << end << "\nStart Area: " << start_area << "\nEnd Area: " << end_area << "\nStart (Pixel): " << pixel_start_coord << "\nEnd (Pixel): " << pixel_end_coord << "\n";
     std::cout << "Input File: " << input_file << "\nOutput File: " << output_file << "\nIterations: " << iterations << "\n";
     std::cout << "Slope Tolerance: " << slope_tolerance << "\nRadius: " << radius << std::endl;
 }
 
+/**
+ * @brief Helper for DEM Handler. Get random point in area of coordinates to pass one single point
+ * to DEM Handler
+ * 
+ * @param x1 
+ * @param y1 
+ * @param x2 
+ * @param y2 
+ * @return std::pair<double, double> 
+ * 
+ * @author Brock Hoos
+ */
 std::pair<double, double> CLI::getRandomPointInArea(double x1, double y1, double x2, double y2) {
     double random_x = x1 + static_cast<double>(rand()) / RAND_MAX * (x2 - x1);  
     double random_y = y1 + static_cast<double>(rand()) / RAND_MAX * (y2 - y1);
@@ -221,7 +319,15 @@ std::pair<double, double> CLI::getRandomPointInArea(double x1, double y1, double
     return std::make_pair(random_x, random_y);
 }
 
+/**
+ * @brief Given what type of flag was used, correctly initialize coordinates vector with correct inputs
+ * Start coordinate first, then end coordinate in vector
+ * 
+ * @author Brock Hoos
+ * 
+ */
 void CLI::processCoordinates() {
+    
     if (start_set) {
         std::pair<double, double> start_coords = parseCoordinates(start);
         coordinates.push_back(start_coords);
