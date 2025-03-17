@@ -9,6 +9,7 @@ local_paths.h.template
 
 # Output files
 rover_path.txt
+/Users/adamcarlson/nasa-jpl-capstone-2024-2025-8/mempa/algorithm/test_results/
 
 # Build artifacts
 *.o
