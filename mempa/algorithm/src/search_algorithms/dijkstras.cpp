@@ -14,12 +14,12 @@ using namespace std;
 // Constants for Mars terrain analysis
 const double MIN_ELEVATION = -8500.0;    // Hellas Basin (meters)
 const double MAX_ELEVATION = 22500.0;    // Olympus Mons (meters)
-const double MM_TO_M = 0.001;           // Millimeter to meter conversion
+const double MM_TO_M = 0.001;            // Millimeter to meter conversion
 const double NO_DATA_VALUE = -32768.0;   // Common no-data value for DEMs
-const double MAX_SLOPE = 45.0;          // Maximum slope in degrees
+const double MAX_SLOPE = 45.0;           // Maximum slope in degrees
 const double MAX_ELEVATION_CHANGE = 5.0; // Maximum elevation change per pixel (meters)
 const double ELEVATION_EPSILON = 0.01;   // Small elevation difference threshold (meters)
-const double PIXEL_SIZE = 200.0;        // Mars DEM resolution (meters)
+const double PIXEL_SIZE = 200.0;         // Mars DEM resolution (meters)
 
 
 // Elevation tracking structure
