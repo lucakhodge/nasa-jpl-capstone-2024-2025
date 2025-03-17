@@ -33,14 +33,14 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -c $< -o $@
 
-# Compile test source files
+# Compile test source files (use system gtest headers)
 $(OBJ_DIR)/tests/%.o: $(TEST_SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -I$(GTEST_DIR)/googletest/include -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -I/usr/include/gtest -c $< -o $@
 
-# Build the test executable (link with implementation objects, no gtest-all.o)
+# Build the test executable (link with gtest and gdal)
 $(TEST_TARGET): $(TEST_OBJECTS) $(IMPL_OBJECTS)
-	$(CXX) $^ -o $@ $(LDFLAGS) -lgtest_main -lgtest -lpthread
+	$(CXX) $^ -o $@ $(LDFLAGS) -lgtest_main -lgtest -lgdal -lpthread
 
 # Run the tests
 test: $(TEST_TARGET)
