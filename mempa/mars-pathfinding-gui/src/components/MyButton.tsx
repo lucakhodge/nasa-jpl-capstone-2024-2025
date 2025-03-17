@@ -10,7 +10,7 @@ export const MyButton = (props: MyButtonPropsI) => {
 
   if (isDisabled) {
     return (
-      <button disabled className='bg-slate-500 rounded  font-bold overflow-hidden'>
+      <button disabled className='bg-slate-500 px-2 rounded  font-bold overflow-hidden'>
         {props.children}
       </button >
     )
@@ -18,7 +18,7 @@ export const MyButton = (props: MyButtonPropsI) => {
   else {
 
     return (
-      <button className='bg-slate-300 rounded hover:bg-slate-400 font-bold overflow-hidden'
+      <button className='bg-slate-300 px-2 rounded hover:bg-slate-400 font-bold overflow-hidden'
         onClick={props.onClick}>
         {props.children}
       </button>
