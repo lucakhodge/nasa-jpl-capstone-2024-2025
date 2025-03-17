@@ -597,8 +597,20 @@ private:
     progress.updateProgress(status, percent);
   }
 
-  /**
- * @brief Dispalys path information in the terminal TODO Adam help better desribe this function
+/**
+ * @brief Displays formatted path analysis results in the terminal
+ *
+ * This function presents a comprehensive summary of rover path metrics
+ * in a user-friendly, formatted display including:
+ * - Path distance measurements (3D and 2D)
+ * - Elevation statistics (total change, net change)
+ * - Slope information (maximum and average angles)
+ * - Energy consumption estimate
+ * - Path composition data (base elevation, waypoint count)
+ * 
+ * The output is organized into clear sections with appropriate headers
+ * and consistent decimal precision for readability. It also indicates
+ * where detailed path data has been stored for further analysis.
  *
  * @author Adam Carlson
  */
