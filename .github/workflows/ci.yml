@@ -24,7 +24,7 @@ jobs:
       working-directory: mempa/algorithm
       run: |
         ls -R tests/
-        find . -name "gtest.h"  # Locate gtest.h anywhere in the repo
+        find . -name "gtest.h"
 
     - name: Build simulator
       working-directory: mempa/algorithm
@@ -32,4 +32,4 @@ jobs:
 
     - name: Run tests
       working-directory: mempa/algorithm
-      run: make test
+      run: make test || (cat test_results.xml; exit 1)

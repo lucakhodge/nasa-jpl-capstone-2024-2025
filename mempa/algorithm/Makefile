@@ -1,53 +1,40 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
-INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal -Imempa/algorithm/src/search_algorithms
+INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
-LIBS = -lgdal -ltiff
+LIBS = -lgdal -ltiff -lgtest -lgtest_main -pthread
 
 TARGET = simulator
-OBJ_DIR = build
-SRC_DIR = src
-TEST_SRC_DIR = tests
-GTEST_DIR = tests/googletest
-
-# Simulator sources and objects
-SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
-OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
-SIMULATOR_OBJ = $(OBJ_DIR)/rover_standin/simulator.o
-IMPL_OBJECTS = $(filter-out $(SIMULATOR_OBJ), $(OBJECTS))
-
-# Test sources and objects
-TEST_SOURCES := $(wildcard $(TEST_SRC_DIR)/*.cpp)
-TEST_OBJECTS := $(patsubst $(TEST_SRC_DIR)/%.cpp, $(OBJ_DIR)/tests/%.o, $(TEST_SOURCES))
 TEST_TARGET = run_tests
 
-# Default target: build the simulator
-all: $(TARGET)
+OBJ_DIR = build
+SRC_DIR = src
+TEST_DIR = tests
 
-# Build the simulator
+SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
+TEST_SOURCES := $(shell find $(TEST_DIR) -type f -name '*_test.cpp')
+
+OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
+TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TEST_SOURCES))
+
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-# Compile simulator source files
+$(TEST_TARGET): $(OBJECTS) $(TEST_OBJECTS)
+	$(CXX) $(OBJECTS) $(TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Compile test source files (use system gtest headers)
-$(OBJ_DIR)/tests/%.o: $(TEST_SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -I$(SRC_DIR) -I/usr/include/gtest -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Build the test executable (link with gtest and gdal)
-$(TEST_TARGET): $(TEST_OBJECTS) $(IMPL_OBJECTS)
-	$(CXX) $^ -o $@ $(LDFLAGS) -lgtest_main -lgtest -lgdal -lpthread
-
-# Run the tests
-test: $(TEST_TARGET)
-	./$(TEST_TARGET)
-
-# Clean up
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) $(TEST_TARGET)
 
-.PHONY: all test clean
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+.PHONY: clean test
