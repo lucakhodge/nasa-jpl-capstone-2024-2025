@@ -18,11 +18,16 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ libgdal-dev libtiff5-dev libgtest-dev
-        cd /usr/src/gtest
-        sudo cmake CMakeLists.txt
-        sudo make
-        sudo cp lib/*.a /usr/lib
+        sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git
+
+    - name: Build Google Test
+      working-directory: mempa/algorithm/tests
+      run: |
+        mkdir -p googletest/build
+        cd googletest
+        cmake ..
+        make
+        mkdir -p ../../build  # Ensure build directory exists
 
     - name: Build simulator
       working-directory: mempa/algorithm
@@ -30,4 +35,4 @@ jobs:
 
     - name: Run tests
       working-directory: mempa/algorithm
-      run: make test && ./run_tests --gtest_output=xml:test_results.xml || (cat test_results.xml; exit 1)
+      run: ./tests/run_tests.sh

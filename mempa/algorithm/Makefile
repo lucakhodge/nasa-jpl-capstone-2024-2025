@@ -1,7 +1,9 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
-INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal
-LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib -L/usr/lib/x86_64-linux-gnu
+# Include Google Test headers from your tests directory
+INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal -Itests/googletest/googletest/include
+# Point to locally built Google Test libraries
+LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib -L/usr/lib/x86_64-linux-gnu -Ltests/googletest/build/lib
 LIBS = -lgdal -ltiff
 TEST_LIBS = -lgdal -ltiff -lgtest -lgtest_main -pthread
 
@@ -22,16 +24,8 @@ TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TEST_SOURCES))
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
-# Test dependencies
+# Test dependencies (adjust based on your source files)
 TEST_DEP_OBJECTS := $(OBJ_DIR)/search_algorithms/dijkstras.o $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o
-
-# Debug variables
-print-vars:
-	@echo "SOURCES = $(SOURCES)"
-	@echo "OBJECTS = $(OBJECTS)"
-	@echo "TEST_SOURCES = $(TEST_SOURCES)"
-	@echo "TEST_OBJECTS = $(TEST_OBJECTS)"
-	@echo "TEST_DEP_OBJECTS = $(TEST_DEP_OBJECTS)"
 
 # Test target
 $(TEST_TARGET): $(TEST_DEP_OBJECTS) $(TEST_OBJECTS)
@@ -48,9 +42,9 @@ $(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET) $(TEST_TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET) $(TEST_TARGET) tests/googletest/build
 
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
-.PHONY: clean test print-vars
+.PHONY: clean test
