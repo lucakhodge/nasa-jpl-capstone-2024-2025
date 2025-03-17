@@ -26,5 +26,4 @@ jobs:
 
     - name: Run tests
       working-directory: mempa/algorithm
-      # Replace the old run command with this
       run: make test && ./run_tests --gtest_output=xml:test_results.xml || (cat test_results.xml; exit 1)
