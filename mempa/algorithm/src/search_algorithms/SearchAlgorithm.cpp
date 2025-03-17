@@ -8,3 +8,13 @@ void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float> > &heightmap, std
     _maxSlope = maxSlope;
     _pixelSize = pixelSize;
 }
+
+// SearchAlgorithm::SearchAlgorithm()
+// {
+    
+// }
+
+// SearchAlgorithm::~SearchAlgorithm()
+// {
+    
+// }

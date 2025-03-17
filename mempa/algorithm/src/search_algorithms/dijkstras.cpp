@@ -300,7 +300,7 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
     return path;
 }
 
-void Dijkstras::reset_dijkstras() {
+void Dijkstras::reset() {
     pathStorage.clear();
     pathStoredThanDisplayed = false;
     elevTracker.reset();
