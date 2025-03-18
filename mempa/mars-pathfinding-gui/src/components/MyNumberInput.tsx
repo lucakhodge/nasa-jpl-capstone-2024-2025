@@ -4,6 +4,7 @@ interface MyNumberInputPropsI {
   children?: React.ReactNode,
   value: number | null,
   onChange: (value: number) => void,
+  disabled?: boolean,
 }
 
 export const MyNumberInput = (props: MyNumberInputPropsI) => {
@@ -16,9 +17,18 @@ export const MyNumberInput = (props: MyNumberInputPropsI) => {
       props.onChange(isNaN(val) ? null : val)
     }
   }
-  return (
-    <div>
-      <input onChange={handleChange} type='number' value={props.value == null ? "" : props.value} className='w-20 bg-slate-300 rounded hover:bg-slate-400 font-bold' />
-    </div>
-  )
+  if (props.disabled) {
+    return (
+      <div>
+        <input onChange={handleChange} type='number' value={props.value == null ? "" : props.value} disabled className='w-20 px-2 bg-slate-500 rounded font-bold' />
+      </div>
+    )
+  }
+  else {
+    return (
+      <div>
+        <input onChange={handleChange} type='number' value={props.value == null ? "" : props.value} className='w-20 px-2 bg-slate-300 rounded hover:bg-slate-400 font-bold' />
+      </div>
+    )
+  }
 }
