@@ -28,6 +28,10 @@ int main(int argc, char *argv[])
         // Read the elevation chunk
         std::vector<std::vector<float>> elevationDataChunk = marsRaster.readSquareChunk(imageCoordinates, chunkSize);
 
+        // Ensure pixel resolution is 200.
+        const double sizetest = marsRaster.getImageResolution();
+        std::cout << "Image resolution: " << sizetest << "m" << std::endl;
+
         constexpr int lineWidth = 5;
         for (const auto &row : elevationDataChunk)
         {

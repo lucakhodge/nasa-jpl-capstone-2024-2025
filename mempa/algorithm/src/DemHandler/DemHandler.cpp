@@ -45,6 +45,12 @@ namespace mempa
         {
             throw std::runtime_error("DemHandler: GetProjectionRef() error");
         }
+
+        /* Initialize the OGRSpatialReference with the CRS Projection. */
+        if (CRS.importFromWkt(poProjection) != OGRERR_NONE)
+        {
+            throw std::runtime_error("DemHandler: importFromWkt() error");
+        }
     }
 
     /**
@@ -230,19 +236,37 @@ namespace mempa
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
-    int DemHandler::getImageResolution() const
+    double DemHandler::getImageResolution() const
     {
         /* Cast the west-east pixel resolution and the north-south pixel resolution to intgers. */
-        const int pixelWidth = static_cast<int>(adfGeoTransform[1]);
-        const int pixelHeight = static_cast<int>(std::abs(adfGeoTransform[5]));
+        const double pixelWidth = adfGeoTransform[1];
+        const double pixelHeight = adfGeoTransform[5];
 
         /* Pixels must always be square. */
-        if (pixelWidth != pixelHeight)
+        if (pixelWidth != std::abs(pixelHeight))
         {
             throw std::runtime_error("getImageResolution: non-square resolution");
         }
 
+        double metersResolution = pixelWidth;
+        if (CRS.IsGeographic())
+        {
+            /* Convert from degrees to meters. */
+            const double metersPerDegree = (M_PI * CRS.GetSemiMajor()) / DEM_180;
+            metersResolution = metersPerDegree * pixelWidth;
+        }
+        else if (CRS.IsGeocentric())
+        {
+            /* Not implemented. */
+            throw std::logic_error("getImageResolution: isGeocentric() not implemented");
+        }
+        else if (CRS.IsProjected())
+        {
+            /* Projected CRS should already be in meters. */
+            assert(metersResolution == pixelWidth && "getImageResolution: isProjected() error");
+        }
+
         /* Return the resolution. */
-        return pixelWidth;
+        return metersResolution;
     }
 }
