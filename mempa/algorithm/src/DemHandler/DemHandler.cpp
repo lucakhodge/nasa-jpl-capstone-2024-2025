@@ -10,7 +10,7 @@ namespace mempa
      *
      * @param pszFilename Filepath to the DEM raster to be read.
      *
-     * @throws Failure to create DGAL dataset, read the elevation raster band, or get geotransform.
+     * @throws Failure to perform GDAL functions.
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
      */
@@ -59,7 +59,7 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>> Elevation values.
+     * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -116,7 +116,7 @@ namespace mempa
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>> Elevation values.
+     * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throw Failure to read raster values.
      */
@@ -161,7 +161,7 @@ namespace mempa
      * @param imgCoordinates A pair of pairs of integer coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
      *
-     * @return std::vector<std::vector<float>> Elevation values.
+     * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -218,7 +218,7 @@ namespace mempa
      * @param xGeoCoordinate The longitude value.
      * @param yGeoCoordinate The latitude value.
      *
-     * @return std::pair<int, int> Pixel-based image coordinates.
+     * @return @c std::pair<int, @c int> Pixel-based image coordinates.
      *
      * @note For more information on Geotransform, see: https://gdal.org/en/stable/tutorials/geotransforms_tut.html
      */
@@ -232,7 +232,7 @@ namespace mempa
     /**
      * @brief Gets the spatial resolution of the raster.
      *
-     * @return int Pixel resolution in meters.
+     * @return @c double Pixel resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
