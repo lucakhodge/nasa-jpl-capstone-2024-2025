@@ -1,6 +1,8 @@
 #include "DemHandler.h"
 #include <algorithm>
+#include <cassert>
 #include <cmath>
+
 namespace mempa
 {
     /**
@@ -14,20 +16,34 @@ namespace mempa
      */
     DemHandler::DemHandler(const char *const pszFilename) : pszFilename(pszFilename)
     {
+        /* Initialize all GDAL operations. */
         GDALAllRegister();
+
+        /* Load the filename into a new GDAL Dataset. */
         poDataset = GDALDatasetUniquePtr(GDALDataset::FromHandle(GDALOpen(pszFilename, GA_ReadOnly)));
         if (!poDataset)
         {
-            throw std::runtime_error("Failure to create GDAL dataset.");
+            throw std::runtime_error("DemHandler: GDALOpen() error");
         }
+
+        /* Get the raster band of the dataset. DEM rasters always have one band. */
         poBand = poDataset->GetRasterBand(ELEVATION_BAND);
         if (!poBand)
         {
-            throw std::runtime_error("Failure to get raster band.");
+            throw std::runtime_error("DemHandler: GetRasterBand() error");
         }
+
+        /* Load the GeoTransform metadata from the dataset. */
         if (poDataset->GetGeoTransform(adfGeoTransform) != CE_None)
         {
-            throw std::runtime_error("Failure to get geotransform.");
+            throw std::runtime_error("DemHandler: GetGeoTransform() error");
+        }
+
+        /* Get the CRS projection reference from the dataset. */
+        poProjection = poDataset->GetProjectionRef();
+        if (!poProjection || *poProjection == '\0')
+        {
+            throw std::runtime_error("DemHandler: GetProjectionRef() error");
         }
     }
 
@@ -41,26 +57,37 @@ namespace mempa
      *
      * @throws Failure to allocate memory or read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
+    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> imgCoordinate, const int radius) const
     {
+        /* Get the X and Y coordiantes from the pair. */
         const int xCenter = imgCoordinate.first;
         const int yCenter = imgCoordinate.second;
+
+        /* Ensure the area to read is within raster bounds. */
         const int xOff = std::max(0, xCenter - radius);
         const int yOff = std::max(0, yCenter - radius);
         const int xEnd = std::min(poBand->GetXSize(), xCenter + radius + 1);
         const int yEnd = std::min(poBand->GetYSize(), yCenter + radius + 1);
+
+        /* Get size of in-boundary chunk to read. */
         const int xSize = xEnd - xOff;
         const int ySize = yEnd - yOff;
+
+        /* Allocate memory and read raster data into 1D pointer to array of floats. */
         float *pafScanline = reinterpret_cast<float *>(CPLMalloc(sizeof(float) * xSize * ySize));
         if (!pafScanline)
         {
-            throw std::runtime_error("Failed to allocate memory.");
+            throw std::runtime_error("readSquareChunk: CPLMalloc() error");
         }
+
+        /* Read raster data within our chunk into the 1D array. */
         if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             CPLFree(pafScanline);
-            throw std::runtime_error("Failure to read raster values.");
+            throw std::runtime_error("readSquareChunk: RasterIO() error");
         }
+
+        /* Build a 2D vector of vectors of floats from the 1D array. */
         std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
         for (int yVec = 0; yVec < ySize; ++yVec)
         {
@@ -69,6 +96,8 @@ namespace mempa
                 rasterVector[yVec][xVec] = pafScanline[yVec * xSize + xVec];
             }
         }
+
+        /* Free memory and return the 2D vector. */
         CPLFree(pafScanline);
         return rasterVector;
     }
@@ -85,17 +114,22 @@ namespace mempa
      *
      * @throw Failure to read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> &imgCoordinate, const int radius) const
+    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> imgCoordinate, const int radius) const
     {
+        /* Ensure that the initial 2D vector of floats is valid. */
         std::vector<std::vector<float>> rasterVector = readSquareChunk(imgCoordinate, radius);
         if (rasterVector.empty())
         {
-            throw std::runtime_error("Cannot read empty chunk.");
+            throw std::runtime_error("readCircleChunk: readSquareChunk() error");
         }
+
+        /* Set up values for distance calculations. */
         const int xVec = static_cast<int>(rasterVector.front().size());
         const int yVec = static_cast<int>(rasterVector.size());
         const int xCenter = xVec / 2;
         const int yCenter = yVec / 2;
+
+        /* For each coordinate in the chunk, change to not a number float if outside the radius. */
         for (int row = 0; row < xVec; ++row)
         {
             for (int col = 0; col < yVec; ++col)
@@ -108,6 +142,8 @@ namespace mempa
                 }
             }
         }
+
+        /* Return 2D vector of floats with not a number float corners to resemble a circle of values. */
         return rasterVector;
     }
 
@@ -123,28 +159,39 @@ namespace mempa
      *
      * @throws Failure to allocate memory or read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> &imgCoordinates, const int radius) const
+    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, const int radius) const
     {
+        /* Get X and Y coordinates from both pairs. */
         const int xCenter1 = imgCoordinates.first.first;
         const int yCenter1 = imgCoordinates.first.second;
         const int xCenter2 = imgCoordinates.second.first;
         const int yCenter2 = imgCoordinates.second.second;
+
+        /* Build boundaries from raster size and offsets from both coordinates. */
         const int xOff = std::max(0, std::min(xCenter1, xCenter2) - radius);
         const int yOff = std::max(0, std::min(yCenter1, yCenter2) - radius);
         const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1, xCenter2) + radius + 1);
         const int yEnd = std::min(poBand->GetYSize(), std::max(yCenter1, yCenter2) + radius + 1);
+
+        /* Get size of in-boundary chunk to read. */
         const int xSize = xEnd - xOff;
         const int ySize = yEnd - yOff;
+
+        /* Allocate memory and read raster data into 1D pointer to array of floats. */
         float *pafScanline = reinterpret_cast<float *>(CPLMalloc(sizeof(float) * xSize * ySize));
         if (!pafScanline)
         {
-            throw std::runtime_error("Failed to allocate memory.");
+            throw std::runtime_error("readRectangleChunk: CPLMalloc() error");
         }
+
+        /* Read raster data within our chunk into the 1D array. */
         if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, pafScanline, xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             CPLFree(pafScanline);
-            throw std::runtime_error("Failure to read raster values.");
+            throw std::runtime_error("readRectangleChunk: RasterIO() error");
         }
+
+        /* Build a 2D vector of vectors of floats from the 1D array. */
         std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
         for (int yVec = 0; yVec < ySize; ++yVec)
         {
@@ -153,6 +200,8 @@ namespace mempa
                 rasterVector[yVec][xVec] = pafScanline[yVec * xSize + xVec];
             }
         }
+
+        /* Free memory and return the 2D vector. */
         CPLFree(pafScanline);
         return rasterVector;
     }
@@ -177,18 +226,23 @@ namespace mempa
     /**
      * @brief Gets the spatial resolution of the raster.
      *
-     * @return int Spatial resolution in meters.
+     * @return int Pixel resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
     int DemHandler::getImageResolution() const
     {
+        /* Cast the west-east pixel resolution and the north-south pixel resolution to intgers. */
         const int pixelWidth = static_cast<int>(adfGeoTransform[1]);
         const int pixelHeight = static_cast<int>(std::abs(adfGeoTransform[5]));
+
+        /* Pixels must always be square. */
         if (pixelWidth != pixelHeight)
         {
-            throw std::runtime_error("Non-square pixel shape.");
+            throw std::runtime_error("getImageResolution: non-square resolution");
         }
+
+        /* Return the resolution. */
         return pixelWidth;
     }
 }
