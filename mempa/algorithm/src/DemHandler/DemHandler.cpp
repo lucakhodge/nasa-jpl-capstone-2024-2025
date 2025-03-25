@@ -1,6 +1,5 @@
 #include "DemHandler.h"
 #include <gdal_priv.h>
-#include <cassert>
 #include <cmath>
 #include <algorithm>
 #include <vector>
