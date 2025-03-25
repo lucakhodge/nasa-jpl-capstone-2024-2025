@@ -67,7 +67,7 @@ export default function FigmaPage(props: {}) {
           <GeneratePathButton></GeneratePathButton>
         </div>
       </div>
-      <div className='relative w-full h-full bg-gray-700'>
+      <div className='relative w-full h-full' style={{ backgroundColor: '#D1945A' }}>
         <div className='absolute inset-0'>
           <LoadMapChunkFromPath></LoadMapChunkFromPath>
         </div>

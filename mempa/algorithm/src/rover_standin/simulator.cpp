@@ -214,9 +214,24 @@ private:
     return elevation;
   }
 
-  /**
- * @brief Used to turn a raw elavation into a relative elavation TODO - Adam describe what this does better
+/**
+ * @brief Converts raw elevation values into normalized relative elevations
  *
+ * This function processes raw elevation data (in millimeters) to prepare it for path analysis by:
+ * 1. Validating input coordinates are within terrain bounds
+ * 2. Converting raw values from millimeters to meters using validateElevation()
+ * 3. Establishing a base elevation reference point (using the first elevation value processed)
+ * 4. Calculating relative elevations as the difference from this base elevation
+ * 5. Storing these relative values in the metrics matrix for later calculations
+ * 
+ * Using relative elevations rather than absolute values simplifies slope and energy
+ * consumption calculations, as the rover's performance is affected by changes in
+ * elevation rather than the absolute height above Mars datum.
+ *
+ * @param rawElevation Raw elevation value in millimeters from the DEM file
+ * @param row Row index in the heightmap matrix
+ * @param col Column index in the heightmap matrix
+ * @return The processed relative elevation in meters
  * @author Adam Carlson
  */
   float processElevation(float rawElevation, int row, int col) {
@@ -276,8 +291,8 @@ private:
  * @author Adam Carlson
  */
   std::pair<int, int> convertToLocalCoordinates(int globalX, int globalY,
-                                                uint32_t startRow,
-                                                uint32_t startCol) {
+    uint32_t startRow,
+    uint32_t startCol) {
     int localX = globalX - startCol;
     int localY = globalY - startRow;
     logDebug("Converting global (" + std::to_string(globalX) + "," +
@@ -358,13 +373,29 @@ private:
              std::to_string(path.size()) + " waypoints");
   }
 
-  /**
- * @brief TODO Adam desribe this function
+/**
+ * @brief Calculates comprehensive terrain metrics for a rover path
  *
+ * This function analyzes a path through the Mars terrain by:
+ * 1. Initializing the metrics data structure and validating all path coordinates
+ * 2. Processing elevations at start and end points to establish net elevation change
+ * 3. Iterating through path segments to calculate per-segment and cumulative metrics:
+ *    - Horizontal and 3D distances
+ *    - Elevation changes between waypoints
+ *    - Slope angles and their statistics
+ *    - Energy cost estimates based on distance, slope and elevation
+ * 4. Aggregating data for overall path assessment (total distance, max slope, etc.)
+ * 
+ * These metrics are essential for evaluating path quality, rover capability 
+ * requirements, and energy consumption estimates for the planned traverse.
+ *
+ * @param path Vector of coordinate pairs representing waypoints in the rover's path
+ * @param heightmap 2D vector containing elevation data for the terrain
+ * @throws std::runtime_error If path is empty or contains invalid coordinates
  * @author Adam Carlson
  */
   void updatePathMetrics(const std::vector<std::pair<int, int>> &path,
-                         const std::vector<std::vector<float>> &heightmap) {
+    const std::vector<std::vector<float>> &heightmap) {
     if (path.empty()) {
       throw std::runtime_error("Empty path provided");
     }
@@ -381,10 +412,10 @@ private:
 
       float startElev =
           processElevation(heightmap[path[0].first][path[0].second],
-                           path[0].first, path[0].second);
+          path[0].first, path[0].second);
       float endElev =
           processElevation(heightmap[path.back().first][path.back().second],
-                           path.back().first, path.back().second);
+          path.back().first, path.back().second);
       metrics.netElevationChange = endElev - startElev;
 
       for (size_t i = 1; i < path.size(); ++i) {
@@ -401,7 +432,7 @@ private:
 
         float slope = calculateSlope(dx, dy, elevChange);
         float distance = std::sqrt(horizontalDist * horizontalDist +
-                                    elevChange * elevChange);
+        elevChange * elevChange);
 
         metrics.totalDistance += distance;
         metrics.horizontalDistance += horizontalDist;
@@ -434,9 +465,29 @@ private:
     }
   }
 
-  /**
- * @brief This function displays the path in a readable format.  Creates a text file?? TODO Adam help better desribe this function
+/**
+ * @brief Exports path data and metrics to a formatted text file
  *
+ * This function creates a detailed report file containing:
+ * 1. Path metadata (start/end points, timestamp)
+ * 2. Comprehensive terrain metrics (distances, elevations, slopes, energy cost)
+ * 3. Waypoint coordinates with associated elevations
+ * 
+ * The output file uses a structured format with comments (prefixed by '#') 
+ * for metadata and a simple space-delimited format for coordinate data.
+ * All coordinates are converted from local heightmap indices to global 
+ * DEM coordinates before writing to ensure consistency across analyses.
+ *
+ * @param filename Output file path where data will be written
+ * @param path Vector of coordinate pairs representing the rover's path
+ * @param heightmap 2D vector containing elevation data for the terrain
+ * @param startX Global X-coordinate of the path's starting point
+ * @param startY Global Y-coordinate of the path's starting point
+ * @param endX Global X-coordinate of the path's destination
+ * @param endY Global Y-coordinate of the path's destination
+ * @param startRow Row offset for converting local to global coordinates
+ * @param startCol Column offset for converting local to global coordinates
+ * @throws std::runtime_error If file cannot be created
  * @author Adam Carlson
  */
   void writePathData(const std::string &filename,
@@ -485,9 +536,23 @@ private:
     logDebug("Path data written to " + filename);
   }
 
-  /**
- * @brief TODO Adam desribe this function
+/**
+ * @brief Displays advanced performance metrics about the rover path
  *
+ * This function calculates and presents higher-level analytics including:
+ * 1. Path efficiency - Ratio of direct distance to actual traversed path length
+ *    (lower values indicate more detours taken to avoid obstacles)
+ * 2. Processing rate - Algorithm performance measured in meters processed per second
+ * 3. Energy per meter - Energy consumption efficiency along the path
+ * 
+ * These metrics help evaluate the quality and efficiency of the generated path
+ * beyond simple distance measurements, providing insights into the algorithm's 
+ * performance characteristics and energy optimization capabilities.
+ *
+ * @param startX Global X-coordinate of the path's starting point
+ * @param startY Global Y-coordinate of the path's starting point
+ * @param endX Global X-coordinate of the path's destination
+ * @param endY Global Y-coordinate of the path's destination
  * @author Adam Carlson
  */
   void displayDetailedSummary(int startX, int startY, int endX, int endY) {
@@ -532,8 +597,20 @@ private:
     progress.updateProgress(status, percent);
   }
 
-  /**
- * @brief Dispalys path information in the terminal TODO Adam help better desribe this function
+/**
+ * @brief Displays formatted path analysis results in the terminal
+ *
+ * This function presents a comprehensive summary of rover path metrics
+ * in a user-friendly, formatted display including:
+ * - Path distance measurements (3D and 2D)
+ * - Elevation statistics (total change, net change)
+ * - Slope information (maximum and average angles)
+ * - Energy consumption estimate
+ * - Path composition data (base elevation, waypoint count)
+ * 
+ * The output is organized into clear sections with appropriate headers
+ * and consistent decimal precision for readability. It also indicates
+ * where detailed path data has been stored for further analysis.
  *
  * @author Adam Carlson
  */
@@ -929,6 +1006,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
   }
 };
 
+
 //current way to run and test the Simulator.  
 int main(int argc, char **argv) {
   // take argus for in an out fixed
@@ -1013,3 +1091,85 @@ int main(int argc, char **argv) {
     return 1;
   }
 }
+=======
+// //current way to run and test the Simulator.  
+// int main(int argc, char **argv) {
+//   // take argus for in an out fixed
+//   std::string inputFile;
+//   int startX = 1254;
+//   int startY = 1265;
+//   int endX = 1340;
+//   int endY = 1338;
+//   int opt;
+
+//   while ((opt = getopt(argc, argv, "i:x:y:X:Y:")) != -1) {
+//     switch (opt) {
+//     case 'i':
+//       inputFile = optarg;
+//       break;
+//     case 'x':
+//       startX = std::atoi(optarg);
+//       break;
+//     case 'y':
+//       startY = std::atoi(optarg);
+//       break;
+//     case 'X':
+//       endX = std::atoi(optarg);
+//       break;
+//     case 'Y':
+//       endY = std::atoi(optarg);
+//       break;
+//     case '?':
+//       std::cerr
+//           << "Usage: " << argv[0]
+//           << " -i <input_file> -x <startX> -y <startY> -X <endX> -Y <endY>\n";
+//       return 1;
+//     }
+//   }
+
+//   try {
+//     // // Default coordinates for testing
+//     // int startX = 1254;
+//     // int startY = 1265;
+//     // int endX = 1340;
+//     // int endY = 1338;
+
+//     // if (argc >= 5) {
+//     //   // Override defaults with command line arguments
+//     //   startX = std::stoi(argv[1]);
+//     //   startY = std::stoi(argv[2]);
+//     //   endX = std::stoi(argv[3]);
+//     //   endY = std::stoi(argv[4]);
+//     // } else if (argc > 1) {
+//     //   // If some but not all coordinates provided, show usage
+//     //   std::cerr << "Usage: " << argv[0] << " <startX> <startY> <endX>
+//     //   <endY>\n"
+//     //             << "Valid ranges:\n"
+//     //             << "  X: 0 to 106,694\n"
+//     //             << "  Y: 0 to 53,347\n"
+//     //             << "\nOr run without arguments to use default coordinates:\n"
+//     //             << "  Start: (" << startX << "," << startY << ")\n"
+//     //             << "  End:   (" << endX << "," << endY << ")\n";
+//     //   return 1;
+//     // }
+
+//     // Validate input coordinates
+//     if (startX < 0 || startY < 0 || endX < 0 || endY < 0 || startX > 106694 ||
+//         endX > 106694 || startY > 53347 || endY > 53347) {
+//       throw std::runtime_error("Coordinates out of bounds for Mars DEM");
+//     }
+
+//     std::cout << "NASA JPL Rover Proxy" << std::endl;
+//     std::cout << "Input coordinates: (" << startX << "," << startY << ") to ("
+//               << endX << "," << endY << ")" << std::endl;
+
+//     Simulator sim("NASA JPL Rover Simulator");
+//     sim.run(startX, startY, endX, endY, inputFile, 500);
+//     return 0;
+
+//   } catch (const std::exception &e) {
+//     std::cerr << "\n Fatal error: " << e.what() << std::endl;
+//     return 1;
+//   }
+// }
+

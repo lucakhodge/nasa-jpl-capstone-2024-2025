@@ -3,7 +3,7 @@
 #include <iostream>
 
 /* Capstone Project Libraries */
-#include "../dem_handler/buf_dem.h"
+#include "../DemHandler/DemHandler.h"
 
 /**
  * @brief Main function for terminal interface testing.
