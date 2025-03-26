@@ -22,7 +22,7 @@ namespace mempa
         GDALAllRegister();
 
         /* Load the filename into a new GDAL Dataset. */
-        poDataset = GDALDatasetUniquePtr(GDALDataset::FromHandle(GDALOpen(pszFilename, GA_ReadOnly)));
+        poDataset = GDALDatasetUniquePtr(GDALDataset::FromHandle(GDALOpen(this->pszFilename, GA_ReadOnly)));
         if (!poDataset)
         {
             throw std::runtime_error("DemHandler: GDALOpen() error");
@@ -66,39 +66,46 @@ namespace mempa
      *
      * @param imgCoordinate A pair of integer image coordinates.
      * @param buffer The value used for the general size of the output chunk of elevation data.
+     * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
      * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> imgCoordinate, const int buffer) const
+    std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> imgCoordinate, const int buffer, std::pair<int, int> *relativeCoordinate) const
     {
         /* Get the X and Y coordiantes from the pair. */
-        const int xCenter = imgCoordinate.first;
-        const int yCenter = imgCoordinate.second;
+        const int xCenter = imgCoordinate.first;  /* Input X ordinate. */
+        const int yCenter = imgCoordinate.second; /* Input Y ordinate. */
 
         /* Ensure the area to read is within raster bounds. */
-        const int xOff = std::max(0, xCenter - buffer);
-        const int yOff = std::max(0, yCenter - buffer);
-        const int xEnd = std::min(poBand->GetXSize(), xCenter + buffer + 1);
-        const int yEnd = std::min(poBand->GetYSize(), yCenter + buffer + 1);
+        const int xOff = std::max(0, xCenter - buffer);                      /* Left X offset. */
+        const int yOff = std::max(0, yCenter - buffer);                      /* Bottom Y offset. */
+        const int xEnd = std::min(poBand->GetXSize(), xCenter + buffer + 1); /* Right X offset. */
+        const int yEnd = std::min(poBand->GetYSize(), yCenter + buffer + 1); /* Top Y offset. */
 
         /* Get size of in-boundary chunk to read. */
-        const int xSize = xEnd - xOff;
-        const int ySize = yEnd - yOff;
+        const int xSize = xEnd - xOff; /* Total X size to be read. */
+        const int ySize = yEnd - yOff; /* Total Y size to be read. */
 
         /* Read raster data into 1D vector of floats. */
-        std::vector<float> vScanline(xSize * ySize);
+        std::vector<float> vScanline(xSize * ySize); /* Vector to hold RasterIO read. */
         if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, vScanline.data(), xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             throw std::runtime_error("readSquareChunk: RasterIO() error");
         }
 
         /* Build a 2D vector of vectors of floats from the 1D vector. */
-        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
-        for (int rowIndex = 0; rowIndex < ySize; ++rowIndex)
+        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize)); /* Vector to hold RasterIO read in 2D indexing. */
+        for (int rowIndex = 0; rowIndex < ySize; ++rowIndex)                            /* Current row to be copied. */
         {
             std::copy(vScanline.begin() + rowIndex * xSize, vScanline.begin() + (rowIndex + 1) * xSize, rasterVector[rowIndex].begin());
+        }
+
+        /* Modify the input pair to hold the input coordinates as vector indices. */
+        if (relativeCoordinate != nullptr)
+        {
+            *relativeCoordinate = std::make_pair(xCenter - xOff, yCenter - yOff);
         }
 
         /* Return 2D vector of floats. */
@@ -112,34 +119,35 @@ namespace mempa
      *
      * @param imgCoordinate A pair of integer image coordinates.
      * @param radius The value used for the general size of the output chunk of elevation data.
+     * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
      * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throw Failure to read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> imgCoordinate, const int radius) const
+    std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> imgCoordinate, const int radius, std::pair<int, int> *relativeCoordinate) const
     {
         /* Ensure that the initial 2D vector of floats is valid. */
-        std::vector<std::vector<float>> rasterVector = readSquareChunk(imgCoordinate, radius);
+        std::vector<std::vector<float>> rasterVector = readSquareChunk(imgCoordinate, radius, relativeCoordinate);
         if (rasterVector.empty())
         {
             throw std::runtime_error("readCircleChunk: readSquareChunk() error");
         }
 
         /* Set up values for distance calculations. */
-        const int yVec = static_cast<int>(rasterVector.size());
-        const int xVec = static_cast<int>(rasterVector.front().size());
-        const int yCenter = yVec / 2;
-        const int xCenter = xVec / 2;
-        const int radiusSquared = radius * radius;
+        const int xVec = static_cast<int>(rasterVector.front().size()); /* Size of each row. */
+        const int yVec = static_cast<int>(rasterVector.size());         /* Size of each column. */
+        const int xCenter = xVec / 2;                                   /* X center ordinate, assuming square chunk. */
+        const int yCenter = yVec / 2;                                   /* Y center ordinate, assuming square chunk. */
+        const int radiusSquared = radius * radius;                      /* Hypotenuse for distance formula. */
 
         /* For each coordinate in the chunk, change to not a number float if outside the radius. */
         for (int row = 0; row < yVec; ++row)
         {
             for (int col = 0; col < xVec; ++col)
             {
-                int xDistance = (col - xCenter) * (col - xCenter);
-                int yDistance = (row - yCenter) * (row - yCenter);
+                int xDistance = (col - xCenter) * (col - xCenter); /* First length for distance formula. */
+                int yDistance = (row - yCenter) * (row - yCenter); /* Second length for distance formula. */
                 if (xDistance + yDistance > radiusSquared)
                 {
                     rasterVector[row][col] = NAN;
@@ -158,41 +166,49 @@ namespace mempa
      *
      * @param imgCoordinates A pair of pairs of integer coordinates.
      * @param buffer The value used for the general size of the output chunk of elevation data.
+     * @param relativeCoordinates Optional parameter to reflect the local vector index of each image coordinate.
      *
      * @return @c std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
-    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, const int buffer) const
+    std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, const int buffer, std::pair<std::pair<int, int>, std::pair<int, int>> *relativeCoordinates) const
     {
         /* Get X and Y coordinates from both pairs. */
-        const int xCenter1 = imgCoordinates.first.first;
-        const int yCenter1 = imgCoordinates.first.second;
-        const int xCenter2 = imgCoordinates.second.first;
-        const int yCenter2 = imgCoordinates.second.second;
+        const int xCenter1 = imgCoordinates.first.first;   /* First coordinate X. */
+        const int yCenter1 = imgCoordinates.first.second;  /* First coordinate Y.*/
+        const int xCenter2 = imgCoordinates.second.first;  /* Second coordinate X. */
+        const int yCenter2 = imgCoordinates.second.second; /* Second coordinate Y. */
 
         /* Build boundaries from raster size and offsets from both coordinates. */
-        const int xOff = std::max(0, std::min(xCenter1, xCenter2) - buffer);
-        const int yOff = std::max(0, std::min(yCenter1, yCenter2) - buffer);
-        const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1, xCenter2) + buffer + 1);
-        const int yEnd = std::min(poBand->GetYSize(), std::max(yCenter1, yCenter2) + buffer + 1);
+        const int xOff = std::max(0, std::min(xCenter1, xCenter2) - buffer);                      /* Left X offset. */
+        const int yOff = std::max(0, std::min(yCenter1, yCenter2) - buffer);                      /* Bottom Y offset. */
+        const int xEnd = std::min(poBand->GetXSize(), std::max(xCenter1, xCenter2) + buffer + 1); /* Right X offset. */
+        const int yEnd = std::min(poBand->GetYSize(), std::max(yCenter1, yCenter2) + buffer + 1); /* Top Y offset. */
 
         /* Get size of in-boundary chunk to read. */
-        const int xSize = xEnd - xOff;
-        const int ySize = yEnd - yOff;
+        const int xSize = xEnd - xOff; /* Total X size to be read. */
+        const int ySize = yEnd - yOff; /* Total Y size to be read. */
 
         /* Read raster data within our chunk into the 1D vector. */
-        std::vector<float> vScanline(xSize * ySize);
+        std::vector<float> vScanline(xSize * ySize); /* Vector to hold RasterIO read. */
         if (poBand->RasterIO(GF_Read, xOff, yOff, xSize, ySize, vScanline.data(), xSize, ySize, GDT_Float32, 0, 0) != CE_None)
         {
             throw std::runtime_error("readRectangleChunk: RasterIO() error");
         }
 
         /* Build a 2D vector of vectors of floats from the 1D vector. */
-        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize));
-        for (int rowIndex = 0; rowIndex < ySize; ++rowIndex)
+        std::vector<std::vector<float>> rasterVector(ySize, std::vector<float>(xSize)); /* Vector to hold RasterIO read in 2D indexing. */
+        for (int rowIndex = 0; rowIndex < ySize; ++rowIndex)                            /* Current row to be copied. */
         {
             std::copy(vScanline.begin() + rowIndex * xSize, vScanline.begin() + (rowIndex + 1) * xSize, rasterVector[rowIndex].begin());
+        }
+
+        /* Modify the input pair to hold the input coordinates as vector indices. */
+        if (relativeCoordinates != nullptr)
+        {
+            relativeCoordinates->first = std::make_pair(xCenter1 - xOff, yCenter1 - yOff);
+            relativeCoordinates->second = std::make_pair(xCenter2 - xOff, yCenter2 - yOff);
         }
 
         /* Return 2D vector of floats. */
@@ -210,8 +226,8 @@ namespace mempa
      */
     std::pair<int, int> DemHandler::transformCoordinates(const std::pair<double, double> geoCoordinate) const noexcept
     {
-        const int xPixelCoordinate = static_cast<int>((geoCoordinate.first - adfGeoTransform[0]) / adfGeoTransform[1]);
-        const int yPixelCoordinate = static_cast<int>((geoCoordinate.second - adfGeoTransform[3]) / adfGeoTransform[5]);
+        const int xPixelCoordinate = static_cast<int>((geoCoordinate.first - adfGeoTransform[0]) / adfGeoTransform[1]);  /* Longitude ordinate minus upper-left pixel X coordinate divided by pixel width. */
+        const int yPixelCoordinate = static_cast<int>((geoCoordinate.second - adfGeoTransform[3]) / adfGeoTransform[5]); /* Latitude ordinate minus upper left pixel Y coordinate divided by pixel height. */
         return std::make_pair(xPixelCoordinate, yPixelCoordinate);
     }
 
@@ -225,8 +241,8 @@ namespace mempa
     double DemHandler::getImageResolution() const
     {
         /* Get the west-east pixel resolution and the north-south pixel resolution. */
-        const double pixelWidth = adfGeoTransform[1];
-        const double pixelHeight = adfGeoTransform[5];
+        const double pixelWidth = adfGeoTransform[1];  /* West-East pixel resolution. */
+        const double pixelHeight = adfGeoTransform[5]; /* North-South pixel resolution. */
 
         /* Pixels must always be square. */
         if (pixelWidth != std::abs(pixelHeight))
@@ -235,11 +251,11 @@ namespace mempa
         }
 
         /* Return the spatial resolution in meters. Modify based on the CRS. */
-        double metersResolution = pixelWidth;
+        double metersResolution = pixelWidth; /* Pixel resolution in meters. */
         if (CRS.IsGeographic())
         {
             /* Convert from degrees to meters. */
-            const double metersPerDegree = (M_PI * CRS.GetSemiMajor()) / DEM_180;
+            const double metersPerDegree = (M_PI * CRS.GetSemiMajor()) / DEM_180; /* Converstion constant for degrees to meters. Pi times the CRS's semi-major axis divided by 180. */
             metersResolution *= metersPerDegree;
         }
 

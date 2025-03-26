@@ -4,23 +4,31 @@
 
 namespace mempa
 {
+
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
-     * @param geoCoords A pair of double pairs, representing coordinates. The first coordinate pair shall be the starting position, the second coordinate pair shall be the destination position.
-     * @param elevationRaster Pointer to the @c DemHandler object representing the DEM raster.
-     * @param slopeRaster Pointer to the @c DemHandler object representing the Slope Data raster.
+     * @param elevationRaster
+     * @param slopeRaster
+     * @param startPosition
+     * @param endPosition
      */
-    RoverSimulator::RoverSimulator(const std::pair<std::pair<double, double>, std::pair<double, double>> geoCoords,
-                                   const DemHandler *elevationRaster, const DemHandler *slopeRaster) noexcept
-        : geoStartPos(geoCoords.first), geoEndPos(geoCoords.second),
-          elevationRaster(elevationRaster), slopeRaster(slopeRaster),
-          startPosition(elevationRaster->transformCoordinates(geoStartPos)),
-          endPosition(elevationRaster->transformCoordinates(geoEndPos)),
-          imageResolution(elevationRaster->getImageResolution()),
-          minElevation(elevationRaster->getMinElevation()),
-          maxElevation(elevationRaster->getMaxElevation())
+    RoverSimulator::RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, const std::pair<double, double> startPosition, const std::pair<double, double> endPosition) noexcept
+        : elevationRaster(elevationRaster), slopeRaster(slopeRaster), startPosition(elevationRaster->transformCoordinates(startPosition)), endPosition(elevationRaster->transformCoordinates(endPosition))
     {
-        currentPosition = startPosition;
+        /* The rover should currently be at the start position. */
+        currentPosition = this->startPosition;
+    }
+
+    void RoverSimulator::runSimulator(SearchAlgorithm *pathfinder)
+    {
+        constexpr int READ_BUFFER = 10; /* How much of the raster to be read around the coordinates. */
+        while (currentPosition != endPosition)
+        {
+            std::pair<std::pair<int, int>, std::pair<int, int>> regionCoordinates = std::make_pair(currentPosition, endPosition);                   /* The current position coordinate and the goal. */
+            std::pair<std::pair<int, int>, std::pair<int, int>> vectorCoordinates;                                                                  /* Will be updated to relative (currentPosition, endPosition) coordinates within the vector. */
+            std::vector<std::vector<float>> elevationMap = elevationRaster->readRectangleChunk(regionCoordinates, READ_BUFFER, &vectorCoordinates); /* The elevation data we read from the DemHandler elevationRaster. */
+            std::vector<std::vector<float>> slopeData = slopeRaster->readRectangleChunk(regionCoordinates, READ_BUFFER, nullptr);                   /* Corresponding slope values for each point of elevation data. */
+        }
     }
 }

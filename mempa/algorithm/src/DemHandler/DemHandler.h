@@ -34,9 +34,9 @@ namespace mempa
 
     public:
         explicit DemHandler(const char *pszFilename);
-        std::vector<std::vector<float>> readSquareChunk(std::pair<int, int> imgCoordinate, int radius) const;
-        std::vector<std::vector<float>> readCircleChunk(std::pair<int, int> imgCoordinate, int radius) const;
-        std::vector<std::vector<float>> readRectangleChunk(std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, int radius) const;
+        std::vector<std::vector<float>> readSquareChunk(std::pair<int, int> imgCoordinate, int buffer, std::pair<int, int> *relativeCoordinate = nullptr) const;
+        std::vector<std::vector<float>> readCircleChunk(std::pair<int, int> imgCoordinate, int radius, std::pair<int, int> *relativeCoordinate = nullptr) const;
+        std::vector<std::vector<float>> readRectangleChunk(std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, int buffer, std::pair<std::pair<int, int>, std::pair<int, int>> *relativeCoordinates = nullptr) const;
         std::pair<int, int> transformCoordinates(std::pair<double, double> geoCoordinate) const noexcept;
         double getImageResolution() const;
 
