@@ -19,7 +19,7 @@ void test_calc_flat_index() {
     int row = 2;
     int col = 3;
     int expected = 2 * 5 + 3; // 13
-    int result = dijkstra.calc_flat_index(cols, row, col);
+    int result = dijkstra.get_flat_index(cols, row, col);
     bool passed = (result == expected);
     print_test_result("calc_flat_index", passed);
     assert(passed && "calc_flat_index failed");
@@ -32,7 +32,7 @@ void test_get_neighbor_indexs() {
     int cols = 3;
     int row = 1;
     int col = 1;
-    vector<int> neighbors = dijkstra.get_neighbor_indexs(rows, cols, row, col);
+    vector<int> neighbors = dijkstra.get_neighbors(rows, cols, row, col);
     
     // Expected neighbors for (1,1) in a 3x3 grid (0-based indices):
     // (0,0) -> 0, (0,1) -> 1, (0,2) -> 2
@@ -52,7 +52,7 @@ void test_get_neighbor_indexs() {
     assert(passed && "get_neighbor_indexs_center failed");
 
     // Test a corner case (0,0)
-    neighbors = dijkstra.get_neighbor_indexs(rows, cols, 0, 0);
+    neighbors = dijkstra.get_neighbors(rows, cols, 0, 0);
     expected = {1, 3, 4}; // (0,1), (1,0), (1,1)
     passed = (neighbors.size() == expected.size());
     if (passed) {
@@ -79,7 +79,6 @@ void test_dijkstras_simple() {
     double maxSlope = 45.0;
     double pixelSize = 200.0;
 
-    // Use setters instead of direct member access
     dijkstra.setHeightmap(heightmap);
     dijkstra.setStartPoint(start);
     dijkstra.setEndPoint(end);
@@ -89,7 +88,7 @@ void test_dijkstras_simple() {
     vector<pair<int, int>> path = dijkstra.dijkstras();
     
     // Expected path: (0,0) -> (1,1) (diagonal path, since heights are the same)
-    vector<pair<int, int>> expected = {{1, 1}, {0, 0}};
+    vector<pair<int, int>> expected = {{0, 0}, {1, 1}};
     bool passed = (path.size() == expected.size());
     if (passed) {
         for (size_t i = 0; i < path.size(); ++i) {
@@ -115,7 +114,6 @@ void test_dijkstras_invalid_coords() {
     double maxSlope = 45.0;
     double pixelSize = 200.0;
 
-    // Use setters instead of direct member access
     dijkstra.setHeightmap(heightmap);
     dijkstra.setStartPoint(start);
     dijkstra.setEndPoint(end);
