@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     //DEM
     // MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
-    mepa::DemHandler mars_dem(input_filepath, output_filepath);
+    mempa::DemHandler mars_dem(input_filepath, output_filepath);
 
     config.processCoordinates();
 
