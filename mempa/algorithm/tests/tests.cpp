@@ -1,9 +1,8 @@
+#include "search_algorithms/dijkstras.h"
 #include <cassert>
 #include <iostream>
 #include <vector>
 #include <utility>
-
-#include "search_algorithms/dijkstras.h"
 
 using namespace std;
 
@@ -70,16 +69,15 @@ void test_get_neighbor_indexs() {
 // Test 3: Test dijkstras with a simple 2x2 grid
 void test_dijkstras_simple() {
     Dijkstras dijkstra;
-    vector<vector<double>> heightmap = {
-        {0.0, 0.0},
-        {0.0, 0.0}
+    vector<vector<float>> heightmap = {
+        {0.0f, 0.0f},
+        {0.0f, 0.0f}
     };
     pair<int, int> start = {0, 0};
     pair<int, int> end = {1, 1};
     double maxSlope = 45.0;
     double pixelSize = 200.0;
 
-    // Set up the Dijkstra object
     dijkstra._heightmap = heightmap;
     dijkstra._startPoint = start;
     dijkstra._endPoint = end;
@@ -106,9 +104,9 @@ void test_dijkstras_simple() {
 // Test 4: Test dijkstras with invalid coordinates
 void test_dijkstras_invalid_coords() {
     Dijkstras dijkstra;
-    vector<vector<double>> heightmap = {
-        {0.0, 0.0},
-        {0.0, 0.0}
+    vector<vector<float>> heightmap = {
+        {0.0f, 0.0f},
+        {0.0f, 0.0f}
     };
     pair<int, int> start = {0, 0};
     pair<int, int> end = {2, 2}; // Out of bounds
@@ -130,9 +128,9 @@ void test_dijkstras_invalid_coords() {
 // Test 5: Test get_step functionality
 void test_get_step() {
     Dijkstras dijkstra;
-    vector<vector<double>> heightmap = {
-        {0.0, 0.0},
-        {0.0, 0.0}
+    vector<vector<float>> heightmap = {
+        {0.0f, 0.0f},
+        {0.0f, 0.0f}
     };
     pair<int, int> start = {0, 0};
     pair<int, int> end = {1, 1};
