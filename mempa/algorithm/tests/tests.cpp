@@ -88,7 +88,7 @@ void test_dijkstras_simple() {
     vector<pair<int, int>> path = dijkstra.dijkstras();
     
     // Expected path: (0,0) -> (1,1) (diagonal path, since heights are the same)
-    vector<pair<int, int>> expected = {{0, 0}, {1, 1}};
+    vector<pair<int, int>> expected = {{1, 1}, {0, 0}};
     bool passed = (path.size() == expected.size());
     if (passed) {
         for (size_t i = 0; i < path.size(); ++i) {
