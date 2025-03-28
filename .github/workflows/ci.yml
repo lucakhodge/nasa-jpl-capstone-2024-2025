@@ -20,14 +20,26 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git
 
+    - name: Debug - List directory contents
+      run: |
+        pwd
+        ls -la
+        cd algorithm
+        pwd
+        ls -la
+      working-directory: mempa
+
     - name: Build the main program
       run: |
         make
+      working-directory: mempa/algorithm
 
     - name: Build and run tests
       run: |
         make test
+      working-directory: mempa/algorithm
 
     - name: Clean up
       run: |
         make clean
+      working-directory: mempa/algorithm
