@@ -10,7 +10,7 @@ class Dijkstras : public SearchAlgorithm {
         bool can_get_next_step();
         bool is_path_storage_empty();
 
-    // private:
+    private:
         std::vector<std::pair<int, int>> pathStorage;
         bool pathStoredThanDisplayed = false;
         bool compare_nodes_by_height(Node* node1, Node* node2);
