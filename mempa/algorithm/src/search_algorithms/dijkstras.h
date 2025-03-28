@@ -4,11 +4,19 @@ class Dijkstras;
 
 class Dijkstras : public SearchAlgorithm {
     public:
-        std::vector<std::pair<int, int>> dijkstras();//std::vector<std::vector<double> > &heightmap, std::pair<int, int> startPoint, std::pair<int,int> endPoint, double maxSlope, double pixelSize);
-        std::pair<int, int> get_step();//std::vector<std::vector<double> > &heightmap, std::pair<int, int> startPoint, std::pair<int, int> endPoint, double maxSlope, double pixelSize);//, std::vector<std::pair<int, int>> *pathStorage);
+        std::vector<std::pair<int, int>> dijkstras();
+        std::pair<int, int> get_step();
         void reset_dijkstras();
         bool can_get_next_step();
         bool is_path_storage_empty();
+
+        // Getters
+        std::vector<std::pair<int, int>> get_path_storage() const { return pathStorage; }
+        bool get_path_stored_than_displayed() const { return pathStoredThanDisplayed; }
+
+        // Setters
+        void set_path_storage(const std::vector<std::pair<int, int>>& path) { pathStorage = path; }
+        void set_path_stored_than_displayed(bool value) { pathStoredThanDisplayed = value; }
 
     private:
         std::vector<std::pair<int, int>> pathStorage;
@@ -20,7 +28,6 @@ class Dijkstras : public SearchAlgorithm {
         std::vector<int> get_neighbor_indexs(int rows, int cols, int row, int col);
         void path_trace(Node finalNode);
         std::vector<std::pair<int, int>> path_to_list(Node finalNode);
-
 };
 
 // int calc_flat_index(int cols, int row, int col);
