@@ -19,6 +19,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git
+    
+    - name: Debug directory structure
+      run: |
+        ls -R
+      working-directory: mempa/algorithm
 
     - name: Build the main program
       run: |

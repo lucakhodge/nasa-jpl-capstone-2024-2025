@@ -3,7 +3,7 @@
 #include <vector>
 #include <utility>
 
-#include "src/search_algorithms/dijkstras.h"
+#include "search_algorithms/dijkstras.h"
 
 using namespace std;
 
