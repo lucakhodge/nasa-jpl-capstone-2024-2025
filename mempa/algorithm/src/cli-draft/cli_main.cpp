@@ -25,8 +25,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Program successfully initialized. Proceeding with processing..." << std::endl;
 
     //DEM
-    // MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
-    mempa::DemHandler mars_dem(input_filepath, output_filepath);
+    MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
 
     config.processCoordinates();
 
@@ -37,9 +36,7 @@ int main(int argc, char* argv[]) {
     }
 
     //Simulator
-    // MEMPA::Simulator simulator("Simulator");
-    Simulator simulator("Simulator");
-
+    MEMPA::Simulator simulator("Simulator");
     // ** can pass output file given my user ** or NULL for output into created .txt file
     // should pass coords, DEM handler, and slope?
     simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, config.input_file, 500);
