@@ -79,11 +79,12 @@ void test_dijkstras_simple() {
     double maxSlope = 45.0;
     double pixelSize = 200.0;
 
-    dijkstra._heightmap = heightmap;
-    dijkstra._startPoint = start;
-    dijkstra._endPoint = end;
-    dijkstra._maxSlope = maxSlope;
-    dijkstra._pixelSize = pixelSize;
+    // Use setters instead of direct member access
+    dijkstra.setHeightmap(heightmap);
+    dijkstra.setStartPoint(start);
+    dijkstra.setEndPoint(end);
+    dijkstra.setMaxSlope(maxSlope);
+    dijkstra.setPixelSize(pixelSize);
 
     vector<pair<int, int>> path = dijkstra.dijkstras();
     
@@ -114,11 +115,12 @@ void test_dijkstras_invalid_coords() {
     double maxSlope = 45.0;
     double pixelSize = 200.0;
 
-    dijkstra._heightmap = heightmap;
-    dijkstra._startPoint = start;
-    dijkstra._endPoint = end;
-    dijkstra._maxSlope = maxSlope;
-    dijkstra._pixelSize = pixelSize;
+    // Use setters instead of direct member access
+    dijkstra.setHeightmap(heightmap);
+    dijkstra.setStartPoint(start);
+    dijkstra.setEndPoint(end);
+    dijkstra.setMaxSlope(maxSlope);
+    dijkstra.setPixelSize(pixelSize);
 
     vector<pair<int, int>> path = dijkstra.dijkstras();
     bool passed = path.empty();
