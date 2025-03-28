@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
-INCLUDES = -I/usr/local/include -I/usr/include -I/usr/include/gdal
-LDFLAGS = -L/usr/local/lib -L/usr/lib
+INCLUDES = -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal
+LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
 LIBS = -lgdal -ltiff
 
 TARGET = simulator
@@ -11,15 +11,15 @@ SRC_DIR = src
 TEST_DIR = tests
 TEST_TARGET = run_tests
 
-# Source files for the main program (excluding test files)
+# Source files for the main program (all .cpp files in src)
 SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
-# Exclude simulator.cpp from test sources if it has a main function
-TEST_SOURCES := $(filter-out $(SRC_DIR)/simulator.cpp, $(SOURCES))
-TEST_SOURCES += $(TEST_DIR)/tests.cpp
+
+# Source files for tests (only SearchAlgorithm and dijkstras)
+TEST_SOURCES := $(SRC_DIR)/SearchAlgorithm.cpp $(SRC_DIR)/dijkstras.cpp $(TEST_DIR)/tests.cpp
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
-TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(filter-out $(SRC_DIR)/simulator.cpp, $(SOURCES)))
-TEST_OBJECTS += $(OBJ_DIR)/tests/tests.o
+TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(filter $(SRC_DIR)/SearchAlgorithm.cpp $(SRC_DIR)/dijkstras.cpp, $(TEST_SOURCES)))
+TEST_OBJECTS += $(OBJ_DIR)/tests.o
 
 # Build the main simulator target
 $(TARGET): $(OBJECTS)
@@ -31,7 +31,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Build object file for the test file
-$(OBJ_DIR)/tests/tests.o: $(TEST_DIR)/tests.cpp
+$(OBJ_DIR)/tests.o: $(TEST_DIR)/tests.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
