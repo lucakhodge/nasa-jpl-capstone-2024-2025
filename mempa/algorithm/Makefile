@@ -11,14 +11,16 @@ SRC_DIR = src
 TEST_DIR = tests
 TEST_TARGET = run_tests
 
-# Source files for the main program (excluding test files)
-SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
+# Source files for the main program (excluding test files and src/cli-draft/)
+SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp' -not -path "$(SRC_DIR)/cli-draft/*")
 # Exclude simulator.cpp from test sources if it has a main function
 TEST_SOURCES := $(filter-out $(SRC_DIR)/simulator.cpp, $(SOURCES))
+TEST_SOURCES := $(filter-out $(SRC_DIR)/cli-draft/*.cpp, $(TEST_SOURCES))
 TEST_SOURCES += $(TEST_DIR)/tests.cpp
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(filter-out $(SRC_DIR)/simulator.cpp, $(SOURCES)))
+TEST_OBJECTS := $(filter-out $(OBJ_DIR)/cli-draft/*.o, $(TEST_OBJECTS))
 TEST_OBJECTS += $(OBJ_DIR)/tests/tests.o
 
 # Build the main simulator target
