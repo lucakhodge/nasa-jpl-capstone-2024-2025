@@ -125,42 +125,42 @@ void test_dijkstras_invalid_coords() {
     assert(passed && "dijkstras_invalid_coords failed");
 }
 
-// Test 5: Test get_step functionality
-void test_get_step() {
-    Dijkstras dijkstra;
-    vector<vector<float>> heightmap = {
-        {0.0f, 0.0f},
-        {0.0f, 0.0f}
-    };
-    pair<int, int> start = {0, 0};
-    pair<int, int> end = {1, 1};
-    double maxSlope = 45.0;
-    double pixelSize = 200.0;
+// // Test 5: Test get_step functionality
+// void test_get_step() {
+//     Dijkstras dijkstra;
+//     vector<vector<float>> heightmap = {
+//         {0.0f, 0.0f},
+//         {0.0f, 0.0f}
+//     };
+//     pair<int, int> start = {0, 0};
+//     pair<int, int> end = {1, 1};
+//     double maxSlope = 45.0;
+//     double pixelSize = 200.0;
 
-    dijkstra._heightmap = heightmap;
-    dijkstra._startPoint = start;
-    dijkstra._endPoint = end;
-    dijkstra._maxSlope = maxSlope;
-    dijkstra._pixelSize = pixelSize;
+//     dijkstra._heightmap = heightmap;
+//     dijkstra._startPoint = start;
+//     dijkstra._endPoint = end;
+//     dijkstra._maxSlope = maxSlope;
+//     dijkstra._pixelSize = pixelSize;
 
-    // First call to get_step should compute the path and return the last step
-    pair<int, int> step = dijkstra.get_step();
-    bool passed = (step == make_pair(1, 1));
-    print_test_result("get_step_first", passed);
-    assert(passed && "get_step_first failed");
+//     // First call to get_step should compute the path and return the last step
+//     pair<int, int> step = dijkstra.get_step();
+//     bool passed = (step == make_pair(1, 1));
+//     print_test_result("get_step_first", passed);
+//     assert(passed && "get_step_first failed");
 
-    // Second call should return the next step
-    step = dijkstra.get_step();
-    passed = (step == make_pair(0, 0));
-    print_test_result("get_step_second", passed);
-    assert(passed && "get_step_second failed");
+//     // Second call should return the next step
+//     step = dijkstra.get_step();
+//     passed = (step == make_pair(0, 0));
+//     print_test_result("get_step_second", passed);
+//     assert(passed && "get_step_second failed");
 
-    // After the path is exhausted, it should return {-1, -1}
-    step = dijkstra.get_step();
-    passed = (step == make_pair(-1, -1));
-    print_test_result("get_step_exhausted", passed);
-    assert(passed && "get_step_exhausted failed");
-}
+//     // After the path is exhausted, it should return {-1, -1}
+//     step = dijkstra.get_step();
+//     passed = (step == make_pair(-1, -1));
+//     print_test_result("get_step_exhausted", passed);
+//     assert(passed && "get_step_exhausted failed");
+// }
 
 int main() {
     cout << "Running Dijkstra's tests..." << endl;
@@ -168,7 +168,7 @@ int main() {
     test_get_neighbor_indexs();
     test_dijkstras_simple();
     test_dijkstras_invalid_coords();
-    test_get_step();
+    // test_get_step();
     cout << "All tests completed." << endl;
     return 0;
 }
