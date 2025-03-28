@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
     //Simulator
     // MEMPA::Simulator simulator("Simulator");
-    mempa::Simulator simulator("Simulator");
+    Simulator simulator("Simulator");
 
     // ** can pass output file given my user ** or NULL for output into created .txt file
     // should pass coords, DEM handler, and slope?
