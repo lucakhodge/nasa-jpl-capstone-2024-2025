@@ -28,10 +28,10 @@ class SearchAlgorithm {
         void setUpAlgo(std::vector<std::vector<float> > &heightmap, std::pair<int, int> startPoint, std::pair<int, int> endPoint, float maxSlope, float pixelSize);
         std::pair<int, int> get_step();
     // protected:
-    std::vector<std::vector<float>> _heightmap;
-    std::pair<int, int> _startPoint;
-    std::pair<int, int> _endPoint;
-    double _maxSlope;
-    double _pixelSize;
+        std::vector<std::vector<float>> _heightmap;
+        std::pair<int, int> _startPoint;
+        std::pair<int, int> _endPoint;
+        double _maxSlope;
+        double _pixelSize;
 
 };

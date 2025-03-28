@@ -11,7 +11,3 @@ void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>>& heightmap,
     _maxSlope = maxSlope;
     _pixelSize = pixelSize;
 }
-
-std::pair<int, int> SearchAlgorithm::get_step() {
-    return {-1, -1};
-}
