@@ -30,13 +30,6 @@ example:
 ./simulator 1254 1265 1340 1338
 ```
 
-### Gtest
-```
-#Uses the testing framework gtest.
-
-make test
-```
-
 ### Running Multiple Tests
 ```
 # First build the simulator then:

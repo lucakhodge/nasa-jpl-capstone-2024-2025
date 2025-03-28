@@ -5,7 +5,6 @@
 /* Capstone Project Libraries */
 #include "../DemHandler/DemHandler.h"
 
-
 /**
  * @brief Main function for terminal interface testing.
  *
