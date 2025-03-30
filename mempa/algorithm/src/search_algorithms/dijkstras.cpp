@@ -14,12 +14,12 @@ using namespace std;
 // Constants for Mars terrain analysis
 const double MIN_ELEVATION = -8500.0;    // Hellas Basin (meters)
 const double MAX_ELEVATION = 22500.0;    // Olympus Mons (meters)
-const double MM_TO_M = 0.001;           // Millimeter to meter conversion
+const double MM_TO_M = 0.001;            // Millimeter to meter conversion
 const double NO_DATA_VALUE = -32768.0;   // Common no-data value for DEMs
-const double MAX_SLOPE = 45.0;          // Maximum slope in degrees
+const double MAX_SLOPE = 45.0;           // Maximum slope in degrees
 const double MAX_ELEVATION_CHANGE = 5.0; // Maximum elevation change per pixel (meters)
 const double ELEVATION_EPSILON = 0.01;   // Small elevation difference threshold (meters)
-const double PIXEL_SIZE = 200.0;        // Mars DEM resolution (meters)
+const double PIXEL_SIZE = 200.0;         // Mars DEM resolution (meters)
 
 // Elevation tracking structure
 struct ElevationTracker {
@@ -83,29 +83,25 @@ struct CompareNodes {
     }
 };
 
-vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap, 
-    pair<int, int> startPoint, 
-    pair<int, int> endPoint, 
-    double maxSlope, 
-    double pixelSize)
+std::vector<std::pair<int, int>> Dijkstras::dijkstras()
 {
     elevTracker.reset();
     
-    if (heightmap.empty() || heightmap[0].empty()) {
+    if (_heightmap.empty() || _heightmap[0].empty()) {
         cout << "Error: Empty heightmap provided" << endl;
         return {};
     }
 
-    int rows = heightmap.size();
-    int cols = heightmap[0].size();
+    int rows = _heightmap.size();
+    int cols = _heightmap[0].size();
     elevTracker.initialize(rows, cols);
 
     // Validate coordinates
-    if (startPoint.first < 0 || startPoint.first >= rows ||
-        startPoint.second < 0 || startPoint.second >= cols ||
-        endPoint.first < 0 || endPoint.first >= rows ||
-        endPoint.second < 0 || endPoint.second >= cols) {
-        cout << "Error: Start or end point out of bounds" << endl;
+    if (_startPoint.first < 0 || _startPoint.first >= rows ||
+        _startPoint.second < 0 || _startPoint.second >= cols ||
+        _endPoint.first < 0 || _endPoint.first >= rows ||
+        _endPoint.second < 0 || _endPoint.second >= cols) {
+        cout << "Dijkstras Error: Start or end point out of bounds" << endl;
         return {};
     }
 
@@ -118,7 +114,7 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++) {
             int index = calc_flat_index(cols, row, col);
-            graph[index].height = elevTracker.processElevation(heightmap[row][col], row, col);
+            graph[index].height = elevTracker.processElevation(_heightmap[row][col], row, col);
             graph[index].neighborIndex = get_neighbor_indexs(rows, cols, row, col);
             graph[index].selfIndex = index;
             graph[index].distFromPrevious = DBL_MAX;
@@ -128,12 +124,12 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
     }
 
     // Set start node
-    int startIndex = calc_flat_index(cols, startPoint.first, startPoint.second);
+    int startIndex = calc_flat_index(cols, _startPoint.first, _startPoint.second);
     graph[startIndex].distFromPrevious = 0;
     pq.push({0, &graph[startIndex]});
 
-    cout << "Starting pathfinding from (" << startPoint.first << "," << startPoint.second 
-         << ") to (" << endPoint.first << "," << endPoint.second << ")" << endl;
+    cout << "Starting pathfinding from (" << _startPoint.first << "," << _startPoint.second 
+         << ") to (" << _endPoint.first << "," << _endPoint.second << ")" << endl;
 
     int iteration = 0;
     while (!pq.empty()) {
@@ -144,9 +140,9 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
         visited[current->selfIndex] = true;
 
         // Check destination
-        if (current->x == endPoint.second && current->y == endPoint.first) {
+        if (current->x == _endPoint.second && current->y == _endPoint.first) {
             cout << "Path found after " << iteration << " iterations" << endl;
-            return path_to_list(graph[calc_flat_index(cols, endPoint.first, endPoint.second)]);
+            return path_to_list(graph[calc_flat_index(cols, _endPoint.first, _endPoint.second)]);
         }
 
         // Process neighbors
@@ -166,7 +162,7 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
 
             double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
 
-            if (slope <= maxSlope) {
+            if (slope <= _maxSlope) {
                 double distance = calculate_distance_between_nodes(current, neighbor, 
                                                                 elevChange, PIXEL_SIZE);
                 double newDist = current->distFromPrevious + distance;
@@ -190,6 +186,45 @@ vector<pair<int, int>> Dijkstras::dijkstras(vector<vector<double>>& heightmap,
 
     cout << "No valid path found after " << iteration << " iterations" << endl;
     return {};
+}
+
+pair<int, int> Dijkstras::get_step()//vector<vector<double> > &heightmap, pair<int, int> startPoint, pair<int, int> endPoint, double maxSlope, double pixelSize)//, vector<pair<int, int>> *pathStorage)
+{
+    pair<int, int> out;
+
+    if(pathStoredThanDisplayed)
+    {
+        out = {-1,-1};
+        cout << "You have completed the path, if you want to start over please call reset_dijkstras(), returning -1, -1" << endl;
+        return out;
+    }
+
+    if(pathStorage.empty() && pathStoredThanDisplayed == false)
+    {
+        vector<pair<int, int>> realPath = dijkstras();
+
+        for(int i = 0; i < realPath.size(); i++)
+        {
+            pathStorage.push_back(realPath.at(i));
+        }
+
+        out = pathStorage.back();
+        pathStorage.pop_back();
+
+        return out;
+    }
+    else
+    {
+        out = pathStorage.back();
+        pathStorage.pop_back();
+
+        if(pathStorage.empty())
+        {
+            pathStoredThanDisplayed = true;
+        }
+
+        return out;
+    }
 }
 
 vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row, int col) {
@@ -233,7 +268,7 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
     }
     path.push_back({current->y, current->x});
 
-    reverse(path.begin(), path.end());
+    //reverse(path.begin(), path.end());
     
     // Calculate path metrics
     double totalDistance = 0.0;
@@ -264,7 +299,7 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
     return path;
 }
 
-void Dijkstras::reset_dijkstras() {
+void Dijkstras::reset() {
     pathStorage.clear();
     pathStoredThanDisplayed = false;
     elevTracker.reset();

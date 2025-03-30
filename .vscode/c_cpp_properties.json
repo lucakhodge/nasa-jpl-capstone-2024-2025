@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/gdal"
+                "/usr/include/gdal",
+                "${workspaceFolder}/mempa/algorithm/src/DemHandler"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
