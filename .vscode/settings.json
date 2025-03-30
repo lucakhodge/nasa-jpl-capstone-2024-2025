@@ -77,8 +77,26 @@
         "variant": "cpp",
         "filesystem": "cpp",
         "regex": "cpp",
+        "cassert": "cpp",
+        "__bit_reference": "cpp",
+        "__config": "cpp",
+        "__debug": "cpp",
+        "__errc": "cpp",
         "__hash_table": "cpp",
-        "cassert": "cpp"
+        "__locale": "cpp",
+        "__mutex_base": "cpp",
+        "__node_handle": "cpp",
+        "__split_buffer": "cpp",
+        "__threading_support": "cpp",
+        "__tree": "cpp",
+        "__verbose_abort": "cpp",
+        "any": "cpp",
+        "csignal": "cpp",
+        "forward_list": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "queue": "cpp"
+        "__hash_table": "cpp"
     },
     "[makefile]": {
         "editor.comments.insertSpace": false

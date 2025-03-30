@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git
+
+    - name: Build the main program
+      run: |
+        make
+      working-directory: mempa/algorithm
+
+    - name: Build and run tests
+      run: |
+        make test
+      working-directory: mempa/algorithm
+
+    - name: Clean up
+      run: |
+        make clean
+      working-directory: mempa/algorithm
