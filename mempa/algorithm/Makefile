@@ -40,4 +40,11 @@ test: $(TEST_TARGET)
 clean:
 	rm -rf $(OBJ_DIR) $(TEST_TARGET)
 
-.PHONY: clean test
+.PHONY: clean
+
+
+# If you are getting a segmentation fault or a vtable error while working with the search algorithm strategy pattern implemntation try resaving every cpp file assosicated with it.
+# Currently dijkstras.cpp, SearchAlgorithm.cpp, SearchContext.cpp.  
+# I don't know exactly why this is but because of the pointer/memory stuff associated with the strategy pattern in c++ all of these files must be properly linked and if there ->
+# were no modifications to these files they may not be properly linked.  If anyone has a way to make sure all of these files are recomiped when one is changed I think it will fix this issue.  
+

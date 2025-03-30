@@ -1,12 +1,17 @@
+#pragma once
 #include "SearchAlgorithm.h"
 #include <vector>
 #include <utility>
 
 class Dijkstras : public SearchAlgorithm {
+
 public:
+    Dijkstras() {}
+    virtual ~Dijkstras() {}
+  
     std::vector<std::pair<int, int>> dijkstras();
     std::pair<int, int> get_step();
-    void reset_dijkstras();
+    void reset();
     bool can_get_next_step();
     bool is_path_storage_empty();
 

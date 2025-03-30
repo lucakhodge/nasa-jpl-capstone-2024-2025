@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <cassert>
 #include <vector>
@@ -25,10 +26,12 @@ class Node {
 
 class SearchAlgorithm {
     public:
-        void setUpAlgo(std::vector<std::vector<float> > &heightmap, std::pair<int, int> startPoint, 
-                      std::pair<int, int> endPoint, float maxSlope, float pixelSize);
-        std::pair<int, int> get_step();
-        
+        SearchAlgorithm() {}
+        virtual ~SearchAlgorithm() {}
+        void setUpAlgo(std::vector<std::vector<float> > &heightmap, std::pair<int, int> startPoint, std::pair<int, int> endPoint, float maxSlope, float pixelSize);
+        virtual std::pair<int, int> get_step() {}
+        virtual void reset() {}
+
         // Getters
         std::vector<std::vector<float>> getHeightmap() const { return _heightmap; }
         std::pair<int, int> getStartPoint() const { return _startPoint; }

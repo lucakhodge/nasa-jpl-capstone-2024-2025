@@ -1,6 +1,6 @@
-
 #include "../DemHandler/DemHandler.h"
 #include "../search_algorithms/dijkstras.h"
+#include "../search_algorithms/SearchContext.h"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -658,6 +658,24 @@ private:
     return std::make_tuple(startRow, startCol, endRow, endCol);
   }
 
+  /**
+ * @brief this function caluculates the closest cordinate inside of a square area to an end point
+ *
+ * @author Oscar Mikus
+ */
+  std::pair<int, int> calculateDemNavToHereRadius(int startX, int startY, int endX, int endY, int radius)
+  {
+    int left = startX - radius;
+    int right = startX + radius;
+    int bottom = startY - radius;
+    int top = startY + radius;
+
+    int closestX = std::clamp(endX, left, right);
+    int closestY = std::clamp(endY, bottom, top);
+
+    return std::make_pair(closestX, closestY);
+  }
+
   
   /**
  * @brief this function calulates the cordinates for the closesst postion to the actual goal cordinate within the limitations of the max dem size based on a max number of pixels to represent memory limitations
@@ -721,7 +739,142 @@ public:
  *
  * @author Adam Carlson, Oscar Mikus
  */
-  void run(int startX, int startY, int endX, int endY, std::string inFile, int maxDemRegionPixelCount) {
+std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int endX, int endY, mempa::DemHandler &demHandler, int radius, SearchAlgorithm* searchStratToUse) {
+  displaySimulationHeader(startX, startY, endX, endY);
+
+  /*const std::string demFilePath =
+   * "/Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/"*/
+  /*                                "nasa-jpl-capstone-2024-2025/prototypes/sim/"*/
+  /*                                "Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif";*/
+  /*const std::string outputPath =
+   * "/Users/adamcarlson/Dropbox/Mac/Downloads";*/
+
+  try {
+    logDebug("Initializing simulation");
+    //MEMPA::BUFFDEM demHandler(demFilePath, outputPath);
+    currentPos.first = startX;
+    currentPos.second = startY;
+
+    std::tuple<int, int, int, int> regionCordinates;
+    std::pair<int, int> DemNavToHere;
+    std::vector<std::pair<int,int>> path;
+    std::vector<std::vector<float>> heightmap;
+    SearchContext search;
+
+    search.setStrategy(searchStratToUse);
+
+    //start looping here
+    while(currentPos.first != endX && currentPos.second != endY)
+    {
+
+      // Calculate region with padding
+      DemNavToHere = calculateDemNavToHereRadius(currentPos.first, currentPos.second, endX, endY, radius);
+      regionCordinates = calculateRegionCordinates(currentPos.first, currentPos.second, DemNavToHere.first, DemNavToHere.second);
+
+      //logDebug("Loading heightmap for sqaure area at (" + currentPos.first + ", " + currentPos.second + ") with radius " + radius);
+
+      heightmap = demHandler.readSquareChunk(currentPos, radius);
+
+      if (heightmap.empty() || heightmap[0].empty()) {
+        throw std::runtime_error("Failed to load heightmap data");
+      }
+
+      // Initialize metrics before pathfinding
+      metrics.initialize(heightmap.size(), heightmap[0].size());
+
+      logDebug("Heightmap loaded: " + std::to_string(heightmap.size()) + "x" +
+              std::to_string(heightmap[0].size()));
+
+      auto localStart =
+          convertToLocalCoordinates(currentPos.first, currentPos.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+      auto localEnd = convertToLocalCoordinates(DemNavToHere.first, DemNavToHere.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+
+      if (!isValidCoordinate(localStart, heightmap) ||
+          !isValidCoordinate(localEnd, heightmap)) {
+        throw std::runtime_error("Start or end point out of bounds");
+      }
+
+
+      logDebug("Starting to use strategy");
+      search.executeStrategyReset();
+      logDebug("Did first strategy thing");
+      search.executeStrategySetUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
+      logDebug("Did second strategy thing");
+
+      // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
+      //                                MARS_PIXEL_SIZE);
+
+      std::pair<int,int> localStep;
+      std::pair<int,int> globalStep;
+      while (true)
+      {
+        localStep = search.executeStrategyGetStep();
+        if(localStep == std::make_pair(-1, -1))
+        {
+          break;
+        }
+        globalStep = convertToGlobalCoordinates(localStep.first, localStep.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+        path.push_back(globalStep);
+      }
+
+      //need to set new start cordinates here
+      currentPos = globalStep;
+    }
+
+    if (path.empty()) {
+      throw std::runtime_error("No valid path found between points");
+    }
+
+    regionCordinates = calculateRegionCordinates(startX, startY, endX, endY);
+    heightmap = demHandler.readRectangleChunk(std::make_pair(std::make_pair(std::get<0>(regionCordinates), std::get<1>(regionCordinates)), std::make_pair(std::get<2>(regionCordinates), std::get<3>(regionCordinates))), 0);
+
+    //update path to local cordinates in this final heightmap
+    for(std::pair<int,int>& step : path)
+    {
+      step = convertToLocalCoordinates(step.first, step.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+    }
+
+    updatePathMetrics(path, heightmap);
+    optimizePath(path);
+    writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
+                  endY, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
+
+    // Display summary
+    std::cout << "\nPath Summary:\n";
+    std::cout << "------------\n";
+    std::cout << std::fixed << std::setprecision(2)
+              << "3D Distance: " << metrics.totalDistance << " m\n"
+              << "2D Distance: " << metrics.horizontalDistance << " m\n"
+              << "Total Elevation Change: " << metrics.totalElevationChange
+              << " m\n"
+              << "Net Elevation Change: " << metrics.netElevationChange
+              << " m\n"
+              << "Maximum Slope: " << metrics.maxSlope << "°\n"
+              << "Average Slope: " << metrics.averageSlope << "°\n"
+              << "Energy Cost: " << metrics.energyCost << "\n"
+              << "Base Elevation: " << metrics.baseElevation << " m\n"
+              << "Waypoints: " << metrics.waypointCount << "\n"
+              << "Execution Time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::steady_clock::now() - startTime)
+                     .count()
+              << "ms\n";
+    displayDetailedSummary(startX, startY, endX, endY);
+
+    return path;
+  } catch (const std::exception &e) {
+    logDebug("Error in run: " + std::string(e.what()));
+    throw;
+  }
+  }
+
+
+  /**
+ * @brief Main function to call within the Simulator class.  This will navigate from the startpoint to the endpoint in a given DEM file whie adhearing to the max pixel size constraint
+ *
+ * @author Adam Carlson, Oscar Mikus
+ */
+  std::vector<std::pair<int,int>> run(int startX, int startY, int endX, int endY, mempa::DemHandler &demHandler, int maxDemRegionPixelCount, SearchAlgorithm* searchStratToUse) {
     displaySimulationHeader(startX, startY, endX, endY);
 
     /*const std::string demFilePath =
@@ -731,12 +884,9 @@ public:
     /*const std::string outputPath =
      * "/Users/adamcarlson/Dropbox/Mac/Downloads";*/
 
-    const std::string demFilePath = inFile;
-
     try {
       logDebug("Initializing simulation");
       //MEMPA::BUFFDEM demHandler(demFilePath, outputPath);
-      mempa::DemHandler demHandler = mempa::DemHandler(demFilePath.c_str());
       currentPos.first = startX;
       currentPos.second = startY;
 
@@ -744,6 +894,9 @@ public:
       std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int,int>> path;
       std::vector<std::vector<float>> heightmap;
+      SearchContext search;
+
+      search.setStrategy(searchStratToUse);
 
       //start looping here
       while(currentPos.first != endX && currentPos.second != endY)
@@ -778,10 +931,12 @@ public:
           throw std::runtime_error("Start or end point out of bounds");
         }
 
-        Dijkstras dijkstra;
 
-        dijkstra.reset_dijkstras();
-        dijkstra.setUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
+        logDebug("Starting to use strategy");
+        search.executeStrategyReset();
+        logDebug("Did first strategy thing");
+        search.executeStrategySetUpAlgo(heightmap, localStart, localEnd, MAX_SLOPE, MARS_PIXEL_SIZE);
+        logDebug("Did second strategy thing");
 
         // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd, MAX_SLOPE,
         //                                MARS_PIXEL_SIZE);
@@ -790,7 +945,7 @@ public:
         std::pair<int,int> globalStep;
         while (true)
         {
-          localStep = dijkstra.get_step();
+          localStep = search.executeStrategyGetStep();
           if(localStep == std::make_pair(-1, -1))
           {
             break;
@@ -842,6 +997,8 @@ public:
                        .count()
                 << "ms\n";
       displayDetailedSummary(startX, startY, endX, endY);
+
+      return path;
     } catch (const std::exception &e) {
       logDebug("Error in run: " + std::string(e.what()));
       throw;
@@ -849,6 +1006,92 @@ public:
   }
 };
 
+
+//current way to run and test the Simulator.  
+int main(int argc, char **argv) {
+  // take argus for in an out fixed
+  std::string inputFile;
+  int startX = 1254;
+  int startY = 1265;
+  int endX = 1340;
+  int endY = 1338;
+  int opt;
+
+  while ((opt = getopt(argc, argv, "i:x:y:X:Y:")) != -1) {
+    switch (opt) {
+    case 'i':
+      inputFile = optarg;
+      break;
+    case 'x':
+      startX = std::atoi(optarg);
+      break;
+    case 'y':
+      startY = std::atoi(optarg);
+      break;
+    case 'X':
+      endX = std::atoi(optarg);
+      break;
+    case 'Y':
+      endY = std::atoi(optarg);
+      break;
+    case '?':
+      std::cerr
+          << "Usage: " << argv[0]
+          << " -i <input_file> -x <startX> -y <startY> -X <endX> -Y <endY>\n";
+      return 1;
+    }
+  }
+
+  try {
+    // // Default coordinates for testing
+    // int startX = 1254;
+    // int startY = 1265;
+    // int endX = 1340;
+    // int endY = 1338;
+
+    // if (argc >= 5) {
+    //   // Override defaults with command line arguments
+    //   startX = std::stoi(argv[1]);
+    //   startY = std::stoi(argv[2]);
+    //   endX = std::stoi(argv[3]);
+    //   endY = std::stoi(argv[4]);
+    // } else if (argc > 1) {
+    //   // If some but not all coordinates provided, show usage
+    //   std::cerr << "Usage: " << argv[0] << " <startX> <startY> <endX>
+    //   <endY>\n"
+    //             << "Valid ranges:\n"
+    //             << "  X: 0 to 106,694\n"
+    //             << "  Y: 0 to 53,347\n"
+    //             << "\nOr run without arguments to use default coordinates:\n"
+    //             << "  Start: (" << startX << "," << startY << ")\n"
+    //             << "  End:   (" << endX << "," << endY << ")\n";
+    //   return 1;
+    // }
+
+    // Validate input coordinates
+    if (startX < 0 || startY < 0 || endX < 0 || endY < 0 || startX > 106694 ||
+        endX > 106694 || startY > 53347 || endY > 53347) {
+      throw std::runtime_error("Coordinates out of bounds for Mars DEM");
+    }
+
+    std::cout << "NASA JPL Rover Proxy" << std::endl;
+    std::cout << "Input coordinates: (" << startX << "," << startY << ") to ("
+              << endX << "," << endY << ")" << std::endl;
+
+    Simulator sim("NASA JPL Rover Simulator");
+
+    mempa::DemHandler demHandler = mempa::DemHandler(inputFile.c_str());
+    Dijkstras searchAlgoritm;
+    
+    sim.runWithSquareRadius(startX, startY, endX, endY, demHandler, 20, &searchAlgoritm);
+    return 0;
+
+  } catch (const std::exception &e) {
+    std::cerr << "\n Fatal error: " << e.what() << std::endl;
+    return 1;
+  }
+}
+=======
 // //current way to run and test the Simulator.  
 // int main(int argc, char **argv) {
 //   // take argus for in an out fixed
@@ -929,3 +1172,4 @@ public:
 //     return 1;
 //   }
 // }
+
