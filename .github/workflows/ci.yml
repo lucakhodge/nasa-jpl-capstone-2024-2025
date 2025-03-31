@@ -30,9 +30,9 @@ jobs:
         make test
       working-directory: mempa/algorithm
 
-    - name: Build and run tests
+    - name: Execute run_tests.sh
       run: |
-        echo tests/run_tests.sh
+        ./tests/run_tests.sh
       working-directory: mempa/algorithm
 
     - name: Clean up
