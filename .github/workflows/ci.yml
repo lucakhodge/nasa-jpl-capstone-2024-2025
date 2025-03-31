@@ -22,6 +22,7 @@ jobs:
 
     - name: Download Mars DEM .tif
       run: |
+        touch mempa/tests/mars_dem.tif
         curl -L https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif -o mempa/tests/mars_dem.tif
 
     - name: Build the main program
