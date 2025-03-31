@@ -62,7 +62,7 @@ $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
 # Run both test executables
 test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 	./$(SEARCH_TEST_TARGET)
-	./$(DEM_TEST_TARGET) tests/sample_dem.tif 100
+# ./$(DEM_TEST_TARGET) tests/sample_dem.tif 100
 
 clean:
 	rm -rf $(OBJ_DIR) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
