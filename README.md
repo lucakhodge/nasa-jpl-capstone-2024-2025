@@ -19,6 +19,7 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
 
 - Windows Subsystem for Linux (WSL)
 - GDAL headers: ```sudo apt install libgdal-dev```
+- tiff file: https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m
 
 ## Folder Structure
 ```
