@@ -10,10 +10,10 @@ TEST_DIR = tests
 SEARCH_TEST_TARGET = run_search_tests
 DEM_TEST_TARGET = run_dem_tests
 
-# Source files for search tests (SearchAlgorithm, dijkstras, and tests.cpp)
+# Source files for search tests (SearchAlgorithm, dijkstras, and DijkstrasTester.cpp)
 SEARCH_TEST_SOURCES := $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp \
                        $(SRC_DIR)/search_algorithms/dijkstras.cpp \
-                       $(TEST_DIR)/tests.cpp
+                       $(TEST_DIR)/DijkstrasTester.cpp
 
 SEARCH_TEST_OBJECTS := $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o \
                        $(OBJ_DIR)/search_algorithms/dijkstras.o \
@@ -36,8 +36,8 @@ $(OBJ_DIR)/search_algorithms/dijkstras.o: $(SRC_DIR)/search_algorithms/dijkstras
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Build object file for the search test file (tests.cpp)
-$(OBJ_DIR)/tests.o: $(TEST_DIR)/tests.cpp
+# Build object file for the search test file (DijkstrasTester.cpp)
+$(OBJ_DIR)/tests.o: $(TEST_DIR)/DijkstrasTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -51,7 +51,7 @@ $(OBJ_DIR)/DemHandler/DemTester.o: $(SRC_DIR)/DemHandler/DemTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Build the search test executable (for tests.cpp)
+# Build the search test executable (for DijkstrasTester.cpp)
 $(SEARCH_TEST_TARGET): $(SEARCH_TEST_OBJECTS)
 	$(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
@@ -62,7 +62,7 @@ $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
 # Run both test executables
 test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 	./$(SEARCH_TEST_TARGET)
-	./$(DEM_TEST_TARGET)
+	./$(DEM_TEST_TARGET) tests/sample_dem.tif 100
 
 clean:
 	rm -rf $(OBJ_DIR) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
