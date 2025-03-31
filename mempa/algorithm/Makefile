@@ -9,10 +9,18 @@ SRC_DIR = src
 TEST_DIR = tests
 TEST_TARGET = run_tests
 
-# Source files for tests (only SearchAlgorithm and dijkstras)
-TEST_SOURCES := $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp $(SRC_DIR)/search_algorithms/dijkstras.cpp $(TEST_DIR)/tests.cpp
+# Source files for tests (including SearchAlgorithm, dijkstras, DemHandler, and DemTester)
+TEST_SOURCES := $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp \
+                $(SRC_DIR)/search_algorithms/dijkstras.cpp \
+                $(SRC_DIR)/DemHandler/DemHandler.cpp \
+                $(SRC_DIR)/DemHandler/DemTester.cpp \
+                $(TEST_DIR)/tests.cpp
 
-TEST_OBJECTS := $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o $(OBJ_DIR)/search_algorithms/dijkstras.o $(OBJ_DIR)/tests.o
+TEST_OBJECTS := $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o \
+                $(OBJ_DIR)/search_algorithms/dijkstras.o \
+                $(OBJ_DIR)/DemHandler/DemHandler.o \
+                $(OBJ_DIR)/DemHandler/DemTester.o \
+                $(OBJ_DIR)/tests.o
 
 # Build object files for SearchAlgorithm
 $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o: $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp
@@ -21,6 +29,16 @@ $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o: $(SRC_DIR)/search_algorithms/Sea
 
 # Build object files for dijkstras
 $(OBJ_DIR)/search_algorithms/dijkstras.o: $(SRC_DIR)/search_algorithms/dijkstras.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# Build object files for DemHandler
+$(OBJ_DIR)/DemHandler/DemHandler.o: $(SRC_DIR)/DemHandler/DemHandler.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# Build object files for DemTester
+$(OBJ_DIR)/DemHandler/DemTester.o: $(SRC_DIR)/DemHandler/DemTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -41,10 +59,3 @@ clean:
 	rm -rf $(OBJ_DIR) $(TEST_TARGET)
 
 .PHONY: clean
-
-
-# If you are getting a segmentation fault or a vtable error while working with the search algorithm strategy pattern implemntation try resaving every cpp file assosicated with it.
-# Currently dijkstras.cpp, SearchAlgorithm.cpp, SearchContext.cpp.  
-# I don't know exactly why this is but because of the pointer/memory stuff associated with the strategy pattern in c++ all of these files must be properly linked and if there ->
-# were no modifications to these files they may not be properly linked.  If anyone has a way to make sure all of these files are recomiped when one is changed I think it will fix this issue.  
-
