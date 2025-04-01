@@ -266,11 +266,12 @@ void CLI::validateInputs() {
         std::cerr << "Error: Input file does not exist or cannot be read" << std::endl;
         exit(1);
     }
+    //removed needing an output file as this is no long required.  We Might just want to completly remove this functionality.  
     // check output file
-    if (!file_exist_check(output_file)) {
-        std::cerr << "Error: Output file does not exist or cannot be read" << std::endl;
-        exit(1);
-    }
+    // if (!file_exist_check(output_file)) {
+    //     std::cerr << "Error: Output file does not exist or cannot be read" << std::endl;
+    //     exit(1);
+    // }
     // check iterations
     if (iterations <= 0) {
         std::cerr << "Error: Iterations must be initialized and greater than 0" << std::endl;

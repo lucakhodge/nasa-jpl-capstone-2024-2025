@@ -1008,91 +1008,6 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
 
 
 //current way to run and test the Simulator.  
-int main(int argc, char **argv) {
-  // take argus for in an out fixed
-  std::string inputFile;
-  int startX = 1254;
-  int startY = 1265;
-  int endX = 1340;
-  int endY = 1338;
-  int opt;
-
-  while ((opt = getopt(argc, argv, "i:x:y:X:Y:")) != -1) {
-    switch (opt) {
-    case 'i':
-      inputFile = optarg;
-      break;
-    case 'x':
-      startX = std::atoi(optarg);
-      break;
-    case 'y':
-      startY = std::atoi(optarg);
-      break;
-    case 'X':
-      endX = std::atoi(optarg);
-      break;
-    case 'Y':
-      endY = std::atoi(optarg);
-      break;
-    case '?':
-      std::cerr
-          << "Usage: " << argv[0]
-          << " -i <input_file> -x <startX> -y <startY> -X <endX> -Y <endY>\n";
-      return 1;
-    }
-  }
-
-  try {
-    // // Default coordinates for testing
-    // int startX = 1254;
-    // int startY = 1265;
-    // int endX = 1340;
-    // int endY = 1338;
-
-    // if (argc >= 5) {
-    //   // Override defaults with command line arguments
-    //   startX = std::stoi(argv[1]);
-    //   startY = std::stoi(argv[2]);
-    //   endX = std::stoi(argv[3]);
-    //   endY = std::stoi(argv[4]);
-    // } else if (argc > 1) {
-    //   // If some but not all coordinates provided, show usage
-    //   std::cerr << "Usage: " << argv[0] << " <startX> <startY> <endX>
-    //   <endY>\n"
-    //             << "Valid ranges:\n"
-    //             << "  X: 0 to 106,694\n"
-    //             << "  Y: 0 to 53,347\n"
-    //             << "\nOr run without arguments to use default coordinates:\n"
-    //             << "  Start: (" << startX << "," << startY << ")\n"
-    //             << "  End:   (" << endX << "," << endY << ")\n";
-    //   return 1;
-    // }
-
-    // Validate input coordinates
-    if (startX < 0 || startY < 0 || endX < 0 || endY < 0 || startX > 106694 ||
-        endX > 106694 || startY > 53347 || endY > 53347) {
-      throw std::runtime_error("Coordinates out of bounds for Mars DEM");
-    }
-
-    std::cout << "NASA JPL Rover Proxy" << std::endl;
-    std::cout << "Input coordinates: (" << startX << "," << startY << ") to ("
-              << endX << "," << endY << ")" << std::endl;
-
-    Simulator sim("NASA JPL Rover Simulator");
-
-    mempa::DemHandler demHandler = mempa::DemHandler(inputFile.c_str());
-    Dijkstras searchAlgoritm;
-    
-    sim.runWithSquareRadius(startX, startY, endX, endY, demHandler, 20, &searchAlgoritm);
-    return 0;
-
-  } catch (const std::exception &e) {
-    std::cerr << "\n Fatal error: " << e.what() << std::endl;
-    return 1;
-  }
-}
-=======
-// //current way to run and test the Simulator.  
 // int main(int argc, char **argv) {
 //   // take argus for in an out fixed
 //   std::string inputFile;
@@ -1164,7 +1079,11 @@ int main(int argc, char **argv) {
 //               << endX << "," << endY << ")" << std::endl;
 
 //     Simulator sim("NASA JPL Rover Simulator");
-//     sim.run(startX, startY, endX, endY, inputFile, 500);
+
+//     mempa::DemHandler demHandler = mempa::DemHandler(inputFile.c_str());
+//     Dijkstras searchAlgoritm;
+    
+//     sim.runWithSquareRadius(startX, startY, endX, endY, demHandler, 20, &searchAlgoritm);
 //     return 0;
 
 //   } catch (const std::exception &e) {
@@ -1172,4 +1091,3 @@ int main(int argc, char **argv) {
 //     return 1;
 //   }
 // }
-
