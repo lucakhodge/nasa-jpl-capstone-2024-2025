@@ -33,7 +33,7 @@ const float SIGNIFICANT_CHANGE =
     10.0; // Significant elevation change threshold (meters)
 
 /**
- * @brief Class to hold Terrain Metrics to display information discorved about the path to the user
+ * @brief Class to hold Terrain Metrics to display information discovered about the path to the user
  *
  * @author Adam Carlson
  */
@@ -86,7 +86,7 @@ public:
   }
 
   /**
- * @brief A check to see if the TerrianMetrics calss has been initialized
+ * @brief A check to see if the TerrianMetrics class has been initialized
  *
  * @author Adam Carlson
  */
@@ -95,7 +95,7 @@ public:
   }
 
   /**
- * @brief calculates a value to represent the energy cost of a path.  Takes into account distaance and elavation change
+ * @brief calculates a value to represent the energy cost of a path.  Takes into account distance and elevation change
  *
  * @author Adam Carlson
  */
@@ -118,7 +118,7 @@ private:
 
 public:
   /**
- * @brief function to change the displyed progress spinner
+ * @brief function to change the displayed progress spinner
  *
  * @author Adam Carlson
  */
@@ -140,7 +140,7 @@ public:
 };
 
 /**
- * @brief The Simulator class, this class is used to abstract the starting and goal conditions from the DEM files and search algoritm used to traverse the DEM file
+ * @brief The Simulator class, this class is used to abstract the starting and goal conditions from the DEM files and search algorithm used to traverse the DEM file
  *
  * @author Adam Carlson and Oscar Mikus
  */
@@ -166,7 +166,7 @@ private:
   }
 
   /**
- * @brief Given a cordinate in std::pair<int, int> and a heightmap std::vector<std::vector<float>> retuns a truth value based on if the coodinate pair is within the heightmap.  
+ * @brief Given a coordinate in std::pair<int, int> and a heightmap std::vector<std::vector<float>> retuns a truth value based on if the coordinates pair is within the heightmap.  
  *
  * @author Adam Carlson
  */
@@ -193,7 +193,7 @@ private:
   }
 
   /**
-   * @brief retruns a height value for elavation or 0.0 if a height value of Nan is found.  
+   * @brief retruns a height value for elevation or 0.0 if a height value of Nan is found.  
    *
    * @author Adam Carlson
    */
@@ -271,7 +271,7 @@ private:
   }
 
   /**
- * @brief used to calculate the slope based on the change in x and y coordinates and an absolute elavation change
+ * @brief used to calculate the slope based on the change in x and y coordinates and an absolute elevation change
  *
  * @author Adam Carlson
  */
@@ -302,7 +302,7 @@ private:
   }
 
   /**
- * @brief Used to change local pixel coordintes of a small DEM chunk back to the pixel coordinates of an entire DEM file
+ * @brief Used to change local pixel coordinates of a small DEM chunk back to the pixel coordinates of an entire DEM file
  *
  * @author Oscar Mikus
  */
@@ -318,7 +318,7 @@ private:
   }
 
   /**
- * @brief For displaying the path taken in termianl.  Removes many coordinates from the path to not display too many values in terminal.
+ * @brief For displaying the path taken in terminal. Removes many coordinates from the path to not display too many values in terminal.
  *
  * @author Adam Carlson
  */
@@ -639,7 +639,7 @@ private:
   }
 
   /**
- * @brief calculates the coordiantes needed to create a region by the DEM handeler function
+ * @brief calculates the coordinates needed to create a region by the DEM handler function
  *
  * @author Oscar Mikus, Adam Carlson
  */
@@ -678,7 +678,7 @@ private:
 
   
   /**
- * @brief this function calulates the cordinates for the closesst postion to the actual goal cordinate within the limitations of the max dem size based on a max number of pixels to represent memory limitations
+ * @brief this function calculates the coordinates for the closest postion to the actual goal coordinate within the limitations of the max dem size based on a max number of pixels to represent memory limitations
  *
  * @author Oscar Mikus
  */
@@ -726,7 +726,7 @@ private:
 public:
 
   /**
- * @brief Defualt Constructor for Simulator class.  Intilize the start time for the simulator
+ * @brief Default Constructor for Simulator class. Initialize the start time for the simulator
  *
  * @author Adam Carlson
  */
@@ -771,7 +771,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
       DemNavToHere = calculateDemNavToHereRadius(currentPos.first, currentPos.second, endX, endY, radius);
       regionCordinates = calculateRegionCordinates(currentPos.first, currentPos.second, DemNavToHere.first, DemNavToHere.second);
 
-      //logDebug("Loading heightmap for sqaure area at (" + currentPos.first + ", " + currentPos.second + ") with radius " + radius);
+      //logDebug("Loading heightmap for square area at (" + currentPos.first + ", " + currentPos.second + ") with radius " + radius);
 
       heightmap = demHandler.readSquareChunk(currentPos, radius);
 
@@ -817,7 +817,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
         path.push_back(globalStep);
       }
 
-      //need to set new start cordinates here
+      // need to set new start coordinates here
       currentPos = globalStep;
     }
 
@@ -828,7 +828,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
     regionCordinates = calculateRegionCordinates(startX, startY, endX, endY);
     heightmap = demHandler.readRectangleChunk(std::make_pair(std::make_pair(std::get<0>(regionCordinates), std::get<1>(regionCordinates)), std::make_pair(std::get<2>(regionCordinates), std::get<3>(regionCordinates))), 0);
 
-    //update path to local cordinates in this final heightmap
+    // update path to local coordinates in this final heightmap
     for(std::pair<int,int>& step : path)
     {
       step = convertToLocalCoordinates(step.first, step.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
@@ -870,7 +870,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
 
 
   /**
- * @brief Main function to call within the Simulator class.  This will navigate from the startpoint to the endpoint in a given DEM file whie adhearing to the max pixel size constraint
+ * @brief Main function to call within the Simulator class.  This will navigate from the startpoint to the endpoint in a given DEM file while adhering to the max pixel size constraint
  *
  * @author Adam Carlson, Oscar Mikus
  */
@@ -954,7 +954,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
           path.push_back(globalStep);
         }
 
-        //need to set new start cordinates here
+        //need to set new start coordinates here
         currentPos = globalStep;
       }
 
@@ -965,7 +965,7 @@ std::vector<std::pair<int,int>> runWithSquareRadius(int startX, int startY, int 
       regionCordinates = calculateRegionCordinates(startX, startY, endX, endY);
       heightmap = demHandler.readRectangleChunk(std::make_pair(std::make_pair(std::get<0>(regionCordinates), std::get<1>(regionCordinates)), std::make_pair(std::get<2>(regionCordinates), std::get<3>(regionCordinates))), 0);
 
-      //update path to local cordinates in this final heightmap
+      //update path to local coordinates in this final heightmap
       for(std::pair<int,int>& step : path)
       {
         step = convertToLocalCoordinates(step.first, step.second, std::get<0>(regionCordinates), std::get<1>(regionCordinates));
