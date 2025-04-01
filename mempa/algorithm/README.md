@@ -6,7 +6,7 @@
 - g++ compiler
 - GDAL library
 - TIFF library
-- tiff file: https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m
+- TIFF file: https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m
 
 ### Compilation
 ```bash
