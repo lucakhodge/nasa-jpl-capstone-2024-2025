@@ -6,19 +6,18 @@
 - g++ compiler
 - GDAL library
 - TIFF library
+- tiff file: https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m
 
 ### Compilation
 ```bash
 # Using make (recommended)
 make clean && make
 
-# Manual compilation
-#Depriciated Im pretty sure
-g++ -std=c++17 -o simulator simulator.cpp /file_path/dijkstras.cpp /file_path/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
-
+# Manual compilation (deprecated?)
 example: 
 g++ -std=c++17 -o simulator simulator.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/prototypes/search_algorithms/dijkstras.cpp /Users/adamcarlson/Dropbox/Mac/Desktop/Desktop/nasa-jpl-capstone-2024-2025/algorithm/src/mempa_dem_handler/mempa_dem/buf_dem.cpp -I/usr/local/include -L/usr/local/lib -lgdal -ltiff
 ```
+
 2. Run the code using the following command:
 
 ```
@@ -27,10 +26,13 @@ Use the following command to run the simulator with default coordinates:
 
 Use the following command to run the simulator with specific coordinates:
 ./simulator --input <path/to/demFile> --start-pixel x,y --end-pixel x,y --iterations (int), --slope (double) --radius (int)
+
 example:
 ./simulator --input /mnt/c/Users/Oscar/Desktop/MEMPA_Personal/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif --start-pixel 1,1 --end-pixel 2000,2000 --iterations 1 --slope 45.0 --radius 20
+
 WARNING:
-currently there is a bug that if you are trying to move left or down it breaks so only do -> low,low to high,high.   This will be fixed as ryan and or oscar make the simulator changes 
+currently there is a bug that if you are trying to move left or down it breaks so only do -> low,low to high,high.   
+This will be fixed as ryan and or oscar make the simulator changes 
 ```
 
 ### Running Multiple Tests
