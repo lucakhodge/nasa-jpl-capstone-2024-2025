@@ -27,7 +27,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        echo ls -la tests
+        ls -la
+        ls -la tests
       working-directory: mempa/algorithm
 
     - name: Build the main program
