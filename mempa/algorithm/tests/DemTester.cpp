@@ -1,7 +1,9 @@
-#include "DemHandler.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cstdlib>
+
+#include "DemHandler/DemHandler.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,25 +32,28 @@ int main(int argc, char *argv[])
         std::pair<std::pair<int, int>, std::pair<int, int>> rectCoordinates = std::make_pair(imageCoordinates, imageCoordinates2);
 
         // Read the elevation chunk
-        // std::vector<std::vector<float>> elevationDataChunk = marsRaster.readSquareChunk(imageCoordinates, chunkSize);
         std::vector<std::vector<float>> elevationDataChunk = marsRaster.readRectangleChunk(rectCoordinates, chunkSize);
 
-        // Ensure pixel resolution is 200.
+        // Ensure pixel resolution is 200
         const double sizetest = marsRaster.getImageResolution();
 
-        constexpr int lineWidth = 5;
-        for (auto row : elevationDataChunk)
+        const char* ci_env = std::getenv("CI");
+        if (!ci_env) // If CI variable is not set
         {
-            for (float value : row)
+            constexpr int lineWidth = 5;
+            for (auto row : elevationDataChunk)
             {
-                std::cout << std::setw(lineWidth) << value; // Align values in a neat column
+                for (float value : row)
+                {
+                    std::cout << std::setw(lineWidth) << value; // Align values in a neat column
+                }
+                std::cout << "\n";
             }
-            std::cout << "\n";
-        }
 
-        std::cout << "Image resolution: " << sizetest << "m\n\n"
-                  << marsRaster.getMinElevation() << "\n"
-                  << marsRaster.getMaxElevation() << "\n\n";
+            std::cout << "Image resolution: " << sizetest << "m\n\n"
+                      << marsRaster.getMinElevation() << "\n"
+                      << marsRaster.getMaxElevation() << "\n\n";
+        }
     }
     catch (const std::exception &demError)
     {

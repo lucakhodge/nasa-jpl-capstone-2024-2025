@@ -21,10 +21,10 @@ SEARCH_TEST_OBJECTS := $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o \
 
 # Source files for DEM tests (DemHandler and DemTester.cpp)
 DEM_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
-                    $(SRC_DIR)/DemHandler/DemTester.cpp
+                    $(TEST_DIR)/DemTester.cpp
 
 DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
-                    $(OBJ_DIR)/DemHandler/DemTester.o
+                    $(OBJ_DIR)/tests/DemTester.o
 
 # Build object files for SearchAlgorithm
 $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o: $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp
@@ -47,7 +47,7 @@ $(OBJ_DIR)/DemHandler/DemHandler.o: $(SRC_DIR)/DemHandler/DemHandler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Build object files for DemTester
-$(OBJ_DIR)/DemHandler/DemTester.o: $(SRC_DIR)/DemHandler/DemTester.cpp
+$(OBJ_DIR)/tests/DemTester.o: $(TEST_DIR)/DemTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 

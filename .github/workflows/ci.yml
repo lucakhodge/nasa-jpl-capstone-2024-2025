@@ -40,6 +40,8 @@ jobs:
     - name: Build and run tests
       run: |
         make test
+      env:
+        PRINT_OUTPUT: "false"
       working-directory: mempa/algorithm
 
     - name: Clean up
