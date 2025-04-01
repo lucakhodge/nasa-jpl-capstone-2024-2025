@@ -25,24 +25,33 @@ int main(int argc, char* argv[]) {
     std::cout << "Program successfully initialized. Proceeding with processing..." << std::endl;
 
     //DEM
-    MEMPA::BUFFDEM mars_dem(input_filepath, output_filepath);
+    mempa::DemHandler mars_dem = mempa::DemHandler(config.input_file.c_str());
+    std::cout << "Created dem object" << std::endl;
 
     config.processCoordinates();
+    std::cout << "Processed coordinates" << std::endl;
 
-    if(config.start_pixel && config.end_pixel){
+    if(config.start_set && config.end_set){
         // DEM function to convert from geographic coords to pixel coords
-        config.pixel_coordinates.push_back(mars_dem.transformCoordinates(config.coordinates.front().first, config.coordinates.front().second));
-        config.pixel_coordinates.push_back(mars_dem.transformCoordinates(config.coordinates.back().first, config.coordinates.back().second));
+        std::cout << "enter config start pixel thingy " << std::endl;
+        // std::cout << config.coordinates.front() << std::endl;
+        config.pixel_coordinates.push_back(mars_dem.transformCoordinates(config.coordinates.front()));
+        config.pixel_coordinates.push_back(mars_dem.transformCoordinates(config.coordinates.back()));
     }
+    std::cout << "config pixel coordinates " << std::endl;
 
     //Simulator
-    MEMPA::Simulator simulator("Simulator");
+    Simulator simulator("Simulator");
+    std::cout << "initilized the simulator, old version " << std::endl;
     // ** can pass output file given my user ** or NULL for output into created .txt file
     // should pass coords, DEM handler, and slope?
-    simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, config.input_file, 500);
+    // simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, config.input_file, 500);
 
     Dijkstras searchAlgo;
     // with hardcoded strategy
-    simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, mars_dem, 20, &searchAlgo)
+    std::cout << "Setup complete running simulaotr now" << std::endl;
+    std::vector<std::pair<int,int>> outPath;
+
+    outPath = simulator.runWithSquareRadius(config.pixel_coordinates.front().first, config.pixel_coordinates.front().second, config.pixel_coordinates.back().first, config.pixel_coordinates.back().second, mars_dem, config.radius, &searchAlgo);
     return 0;
 }

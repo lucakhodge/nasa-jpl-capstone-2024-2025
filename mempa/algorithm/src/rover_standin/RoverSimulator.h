@@ -1,6 +1,6 @@
 #pragma once
-#include "DemHandler.h"
-#include "SearchAlgorithm.h"
+#include "../DemHandler/DemHandler.h"
+#include "../search_algorithms/SearchAlgorithm.h"
 #include <cmath>
 #include <utility>
 
