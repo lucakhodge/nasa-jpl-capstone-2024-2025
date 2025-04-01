@@ -20,6 +20,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git
 
+    - name: Download Mars DEM .tif
+      run: |
+        mkdir -p mempa/tests
+        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif -o mars_dem.tif
+      working-directory: mempa/algorithm/tests
+
+    - name: Debug
+      run: |
+        ls -la
+        ls -la tests
+      working-directory: mempa/algorithm
+
     - name: Build the main program
       run: |
         make
@@ -28,6 +40,8 @@ jobs:
     - name: Build and run tests
       run: |
         make test
+      env:
+        PRINT_OUTPUT: "false"
       working-directory: mempa/algorithm
 
     - name: Clean up
