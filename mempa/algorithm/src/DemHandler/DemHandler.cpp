@@ -1,5 +1,10 @@
-#include "DemHandler.h"
+/* Local Header */
+#include "DemHandler.hpp"
+
+/* libgdal-dev */
 #include <gdal_priv.h>
+
+/* C++ Standard Libraries */
 #include <cmath>
 #include <algorithm>
 #include <vector>
@@ -35,11 +40,13 @@ namespace mempa
             throw std::runtime_error("DemHandler: GetRasterBand() error");
         }
 
+#if DEMHANDLER_MINMAX
         /* Calculate the minimum and maximum values in the raster. First parameter is 0 for exact calculation, set to 1 for approximate. Causes a delay in runtime while statistics are calculated. */
         if (poBand->ComputeRasterMinMax(0, elevationMinMax) != CE_None)
         {
             throw std::runtime_error("DemHandler: ComputeRasterMinMax() error");
         }
+#endif
 
         /* Load the GeoTransform metadata from the dataset. */
         if (poDataset->GetGeoTransform(adfGeoTransform) != CE_None)
@@ -139,15 +146,15 @@ namespace mempa
         const int yVec = static_cast<int>(rasterVector.size());         /* Size of each column. */
         const int xCenter = xVec / 2;                                   /* X center ordinate, assuming square chunk. */
         const int yCenter = yVec / 2;                                   /* Y center ordinate, assuming square chunk. */
-        const int radiusSquared = radius * radius;                      /* Hypotenuse for distance formula. */
+        const int radiusSquared = radius * radius;                      /* Hypotenuse for pythagorean theorem. */
 
         /* For each coordinate in the chunk, change to not a number float if outside the radius. */
         for (int row = 0; row < yVec; ++row)
         {
             for (int col = 0; col < xVec; ++col)
             {
-                int xDistance = (col - xCenter) * (col - xCenter); /* First length for distance formula. */
-                int yDistance = (row - yCenter) * (row - yCenter); /* Second length for distance formula. */
+                int xDistance = (col - xCenter) * (col - xCenter); /* First length for pythagorean theorem. */
+                int yDistance = (row - yCenter) * (row - yCenter); /* Second length for pythagorean theorem. */
                 if (xDistance + yDistance > radiusSquared)
                 {
                     rasterVector[row][col] = NAN;
