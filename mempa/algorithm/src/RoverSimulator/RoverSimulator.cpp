@@ -52,7 +52,9 @@ namespace mempa
             std::pair<int, int> algorithmStep = roverRouter.executeStrategyGetStep();
             if (algorithmStep == BREAK_STEP)
             {
-                throw std::runtime_error("runSimulator: reached end of chunk");
+                currentPosition = endPosition;
+                routedRasterPath.push_back(currentPosition);
+                // throw std::runtime_error("runSimulator: reached end of chunk");
             }
 
             std::pair<int, int> stepDifference = coordinateDifference(vectorPosition, algorithmStep);
