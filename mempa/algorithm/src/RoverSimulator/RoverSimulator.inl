@@ -34,4 +34,9 @@ namespace mempa
     {
         return !std::isnan(elevationValue);
     }
+
+    inline std::pair<int, int> RoverSimulator::coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept
+    {
+        return std::pair<int, int>(coordinate2.first - coordinate1.first, coordinate2.second - coordinate1.second);
+    }
 }

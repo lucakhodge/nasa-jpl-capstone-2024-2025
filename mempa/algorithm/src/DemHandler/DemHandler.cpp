@@ -21,7 +21,8 @@ namespace mempa
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
      */
-    DemHandler::DemHandler(const char *const pszFilename) : pszFilename(pszFilename)
+    DemHandler::DemHandler(const char *const pszFilename)
+        : pszFilename(pszFilename)
     {
         /* Initialize all GDAL operations. */
         GDALAllRegister();
@@ -112,7 +113,7 @@ namespace mempa
         /* Modify the input pair to hold the input coordinates as vector indices. */
         if (relativeCoordinate != nullptr)
         {
-            *relativeCoordinate = std::make_pair(xCenter - xOff, yCenter - yOff);
+            *relativeCoordinate = std::pair<int, int>(xCenter - xOff, yCenter - yOff);
         }
 
         /* Return 2D vector of floats. */
@@ -214,8 +215,8 @@ namespace mempa
         /* Modify the input pair to hold the input coordinates as vector indices. */
         if (relativeCoordinates != nullptr)
         {
-            relativeCoordinates->first = std::make_pair(xCenter1 - xOff, yCenter1 - yOff);
-            relativeCoordinates->second = std::make_pair(xCenter2 - xOff, yCenter2 - yOff);
+            relativeCoordinates->first = std::pair<int, int>(xCenter1 - xOff, yCenter1 - yOff);
+            relativeCoordinates->second = std::pair<int, int>(xCenter2 - xOff, yCenter2 - yOff);
         }
 
         /* Return 2D vector of floats. */
@@ -235,7 +236,7 @@ namespace mempa
     {
         const int xPixelCoordinate = static_cast<int>((geoCoordinate.first - adfGeoTransform[0]) / adfGeoTransform[1]);  /* Longitude ordinate minus upper-left pixel X coordinate divided by pixel width. */
         const int yPixelCoordinate = static_cast<int>((geoCoordinate.second - adfGeoTransform[3]) / adfGeoTransform[5]); /* Latitude ordinate minus upper left pixel Y coordinate divided by pixel height. */
-        return std::make_pair(xPixelCoordinate, yPixelCoordinate);
+        return std::pair<int, int>(xPixelCoordinate, yPixelCoordinate);
     }
 
     /**
