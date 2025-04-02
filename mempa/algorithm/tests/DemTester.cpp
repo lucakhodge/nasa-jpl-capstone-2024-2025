@@ -52,9 +52,9 @@ int main(int argc, char *argv[]) {
         std::cout << "\n";
       }
 
-      std::cout << "Image resolution: " << sizetest << "m\n\n"
-                << marsRaster.getMinElevation() << "\n"
-                << marsRaster.getMaxElevation() << "\n\n";
+      std::cout << "Image resolution: " << sizetest << "m\n\n";
+      //           << marsRaster.getMinElevation() << "\n"
+      //           << marsRaster.getMaxElevation() << "\n\n";
     }
   } catch (const std::exception &demError) {
     std::cerr << "Error: " << demError.what() << "\n";
