@@ -32,6 +32,13 @@ namespace mempa
         currentPosition = this->startPosition;
     }
 
+    /**
+     * @brief Run the simulator for sqiare chunk views
+     * 
+     * @param algorithmType @ref SearchAlgorithm class to use for pathfinding.
+     * @param buffer How much to buffer the space around the coordinate by.
+     * @return std::vector<std::pair<int, int>> 
+     */
     std::vector<std::pair<int, int>> RoverSimulator::runSimulator(SearchAlgorithm *algorithmType, const int buffer)
     {
         SearchContext roverRouter(algorithmType); /* Set up the pathfinding algorithm based on input. */

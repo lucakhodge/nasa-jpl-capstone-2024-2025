@@ -35,6 +35,13 @@ namespace mempa
         return !std::isnan(elevationValue);
     }
 
+    /**
+     * @brief Get the difference between two points.
+     * 
+     * @param coordinate1 
+     * @param coordinate2 
+     * @return std::pair<int, int> 
+     */
     inline std::pair<int, int> RoverSimulator::coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept
     {
         return std::pair<int, int>(coordinate2.first - coordinate1.first, coordinate2.second - coordinate1.second);
