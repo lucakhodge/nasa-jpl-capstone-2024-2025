@@ -3,7 +3,7 @@
 #include <iostream>
 
 /* Capstone Project Libraries */
-#include "../DemHandler/DemHandler.h"
+#include "../DemHandler/DemHandler.hpp"
 
 /**
  * @brief Main function for terminal interface testing.
@@ -15,7 +15,8 @@
 /*{*/
 /*    if (argc < 3)*/
 /*    {*/
-/*        std::cerr << "Error: Too few arguments provided.\nUsage: " << argv[0] << " <input_filepath> <output_filepath>" << std::endl;*/
+/*        std::cerr << "Error: Too few arguments provided.\nUsage: " << argv[0]
+ * << " <input_filepath> <output_filepath>" << std::endl;*/
 /*        return 1;*/
 /*    }*/
 /**/
@@ -28,11 +29,13 @@
 /**/
 /*        const std::pair<double, double> starting_coordinate(-7.25, -30.86);*/
 /*        const std::pair<double, double> ending_coordinate(1.08, -28.44);*/
-/*        const std::vector<std::pair<double, double>> coordinates = {starting_coordinate, ending_coordinate};*/
+/*        const std::vector<std::pair<double, double>> coordinates =
+ * {starting_coordinate, ending_coordinate};*/
 /*        mars_dem.demArea(coordinates, 0.0, 0.8);*/
 /*        mars_dem.makeSHP("testshape", true);*/
 /*        mars_dem.demClip("testclip", true);*/
-/*        std::vector<std::vector<double>> myvec = mars_dem.demVector(*mars_dem.getOutput());*/
+/*        std::vector<std::vector<double>> myvec =
+ * mars_dem.demVector(*mars_dem.getOutput());*/
 /*    }*/
 /*    catch (const std::exception &e)*/
 /*    {*/

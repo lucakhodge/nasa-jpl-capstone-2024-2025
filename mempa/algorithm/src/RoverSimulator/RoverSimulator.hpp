@@ -1,15 +1,15 @@
 #pragma once
 
 /* mempa::DemHandler */
-#include "DemHandler.hpp"
+#include "../DemHandler/DemHandler.hpp"
 
 /* mempa::SearchAlgorithm */
-#include "SearchAlgorithm.h"
+#include "../search_algorithms/SearchAlgorithm.h"
 
 /* C++ Standard Libraries */
 #include <cmath>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace mempa
 {
@@ -31,8 +31,8 @@ namespace mempa
         static inline constexpr std::pair<int, int> BREAK_STEP{-1, -1}; /* The value that a pathfinding algorithm returns when it is complete. */
         inline bool validateCoordinate(std::pair<int, int> vecCoordinate, std::vector<std::vector<float>> rasterVector) const noexcept;
 
-    protected:
-        /* RoverSimulator is not designed to be subclassed. */
+protected:
+  /* RoverSimulator is not designed to be subclassed. */
 
     public:
         explicit RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, std::pair<double, double> startPosition, std::pair<double, double> endPosition) noexcept;

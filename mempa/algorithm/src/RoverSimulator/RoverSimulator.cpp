@@ -1,23 +1,16 @@
 /* Local Header */
-#include "RoverSimulator.hpp"
+#include "../RoverSimulator/RoverSimulator.hpp"
 
 /* mempa::DemHandler */
-#include "DemHandler.hpp"
-
-/* SearchAlgorithms */
-#include "SearchContext.h"
-#include "SearchAlgorithm.h"
-#include "dijkstras.h"
+#include "../DemHandler/DemHandler.hpp"
 
 /* C++ Standard Libraries */
-#include <cmath>
 #include <algorithm>
-#include <vector>
+#include <cmath>
 #include <utility>
+#include <vector>
 
-namespace mempa
-{
-
+namespace mempa {
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
@@ -64,4 +57,4 @@ namespace mempa
 
         return routedRasterPath;
     }
-}
+} // namespace mempa
