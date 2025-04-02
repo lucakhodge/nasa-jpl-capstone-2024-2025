@@ -34,7 +34,7 @@ namespace mempa
 
     std::vector<std::pair<int, int>> RoverSimulator::runSimulator(SearchAlgorithm *algorithmType, const int buffer)
     {
-        SearchContext roverRouter(algorithmType);
+        SearchContext roverRouter(algorithmType); /* Set up the pathfinding algorithm based on input. */
         std::vector<std::pair<int, int>> routedRasterPath = {currentPosition}; /* Holds the coordinates of every traversed area of the raster. */
         routedRasterPath.reserve(std::max(std::abs(endPosition.first - startPosition.first), std::abs(endPosition.second - startPosition.second)));
 
