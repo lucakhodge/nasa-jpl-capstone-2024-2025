@@ -36,8 +36,8 @@ export class DEMManager {
     // Calculate the area to read based on the chunk coordinates
     const startX = chunkDescription.coordinate.x;
     const startY = chunkDescription.coordinate.y;
-    const endX = chunkDescription.coordinate.x + chunkDescription.size.width;
-    const endY = chunkDescription.coordinate.y + chunkDescription.size.height;
+    const endX = chunkDescription.coordinate.x + chunkDescription.dimensions.width;
+    const endY = chunkDescription.coordinate.y + chunkDescription.dimensions.height;
 
     try {
       // Get the image and read the rasters for the specified region

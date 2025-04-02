@@ -42,7 +42,7 @@ export const LoadMapChunkFromPath = (props: {}) => {
           x: xCoordinate,
           y: yCoordinate,
         },
-        size: {
+        dimensions: {
           width: width,
           height: height,
         },
