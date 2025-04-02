@@ -53,7 +53,7 @@ namespace mempa
 
             while (true)
             {
-                std::pair<int, int> pathfinderVectorStep = 
+                // std::pair<int, int> pathfinderVectorStep = 
             }
 
 #endif
