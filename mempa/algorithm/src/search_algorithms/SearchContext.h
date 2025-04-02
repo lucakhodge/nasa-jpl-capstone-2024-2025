@@ -10,6 +10,7 @@ class SearchContext
         SearchAlgorithm* strategy;
 
     public:
+        SearchContext(SearchAlgorithm* searchAlgorithm);
         void setStrategy(SearchAlgorithm* strategy);
         std::pair<int, int> executeStrategyGetStep();
         void executeStrategyReset();

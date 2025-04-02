@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdlib>
 
-#include "DemHandler/DemHandler.h"
+#include "DemHandler.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         // Ensure pixel resolution is 200
         const double sizetest = marsRaster.getImageResolution();
 
-        const char* ci_env = std::getenv("CI");
+        const char *ci_env = std::getenv("CI");
         if (!ci_env) // If CI variable is not set
         {
             constexpr int lineWidth = 5;
@@ -50,9 +50,9 @@ int main(int argc, char *argv[])
                 std::cout << "\n";
             }
 
-            std::cout << "Image resolution: " << sizetest << "m\n\n"
-                      << marsRaster.getMinElevation() << "\n"
-                      << marsRaster.getMaxElevation() << "\n\n";
+            std::cout << "Image resolution: " << sizetest << "m\n\n";
+            //   << marsRaster.getMinElevation() << "\n"
+            //   << marsRaster.getMaxElevation() << "\n\n";
         }
     }
     catch (const std::exception &demError)
