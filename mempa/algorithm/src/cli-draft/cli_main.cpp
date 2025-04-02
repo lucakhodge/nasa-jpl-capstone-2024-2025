@@ -1,5 +1,5 @@
 #include "../DemHandler/DemHandler.hpp"
-#include "../rover_standin/simulator.cpp"
+#include "../RoverSimulator/simulator.cpp"
 #include "cli.h"
 #include <iostream>
 
