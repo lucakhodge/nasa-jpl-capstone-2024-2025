@@ -28,17 +28,27 @@ export class DEMManager {
     return this.demInfo;
   }
   async getChunk(chunkDescription: ChunkDescription) {
-    if (!this.geoTiff) {
+    if (!this.geoTiff || !this.demInfo) {
       console.error("DEM data is not loaded");
       return null;
     }
 
+    const maxNumberOfPoints = 1000 * 1000;
+    const numberOfPoints = chunkDescription.dimensions.width * chunkDescription.dimensions.height;
+    let resolutionScaling = 0;
+    while (maxNumberOfPoints < numberOfPoints / 2 ** (1 + resolutionScaling)) {
+      resolutionScaling++;
+    }
+
+    let incrementAmmount = 2 ** resolutionScaling;
+
     console.log("in get chunk", chunkDescription)
     // Calculate the area to read based on the chunk coordinates
-    const startX = chunkDescription.coordinate.x;
-    const startY = chunkDescription.coordinate.y;
-    const endX = chunkDescription.coordinate.x + chunkDescription.dimensions.width;
-    const endY = chunkDescription.coordinate.y + chunkDescription.dimensions.height;
+    const buffer = 20 * incrementAmmount;
+    const startX = Math.max(0, chunkDescription.coordinate.x - buffer);
+    const startY = Math.max(0, chunkDescription.coordinate.y - buffer);
+    const endX = Math.min(this.demInfo.width, chunkDescription.coordinate.x + chunkDescription.dimensions.width + 2 * buffer);
+    const endY = Math.min(this.demInfo.height, chunkDescription.coordinate.y + chunkDescription.dimensions.height + 2 * buffer);
 
     try {
       // Get the image and read the rasters for the specified region
@@ -57,8 +67,6 @@ export class DEMManager {
 
       console.log("elevationData", elevationData.length);
 
-      let resolutionScaling = 8;
-      let incrementAmmount = 2 ** resolutionScaling;
       console.log("INCREMNT", incrementAmmount)
       // Convert the raw raster data into a 2D array
       const chunkData: number[][] = [];
@@ -73,7 +81,10 @@ export class DEMManager {
       }
 
       const chunk: Chunk = {
-        description: chunkDescription,
+        description: {
+          coordinate: { x: startX, y: startY },
+          dimensions: { width: endX - startX, height: endY - startY }
+        },
         resolutionScaling: resolutionScaling,
         data: chunkData,
       };
