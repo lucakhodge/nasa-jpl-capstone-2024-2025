@@ -132,6 +132,6 @@ int main() {
     test_get_neighbor_indexs();
     test_dijkstras_simple();
     test_dijkstras_invalid_coords();
-    cout << "All tests PASSED!" << endl;
+    cout << "All Dijkstra tests PASSED!" << endl;
     return 0;
 }

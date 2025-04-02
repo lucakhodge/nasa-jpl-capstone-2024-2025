@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // display what was recieved and initialized
+    // display what was received and initialized
     config.displayInputs();
 
     std::cout << "Program successfully initialized. Proceeding with processing..." << std::endl;
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
     //Simulator
     Simulator simulator("Simulator");
-    std::cout << "initilized the simulator, old version " << std::endl;
+    std::cout << "initialized the simulator, old version " << std::endl;
     // ** can pass output file given my user ** or NULL for output into created .txt file
     // should pass coords, DEM handler, and slope?
     // simulator.run(config.coordinates.front().first, config.coordinates.front().second, config.coordinates.back().first, config.coordinates.back().second, config.input_file, 500);

@@ -36,15 +36,10 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
 │   │   ├── Doxyfile
 │   │   ├── Makefile
 │   │   ├── README.md
-│   │   ├── build
-│   │   │   └── search_algorithms
-│   │   │       ├── SearchAlgorithm.o
-│   │   │       └── dijkstras.o
 │   │   ├── src
 │   │   │   ├── DemHandler
 │   │   │   │   ├── DemHandler.cpp
 │   │   │   │   ├── DemHandler.h
-│   │   │   │   └── DemTester.cpp
 │   │   │   ├── buf_main
 │   │   │   │   └── buf_main.cpp
 │   │   │   ├── cli-draft
@@ -66,9 +61,10 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
 │   │   │       └── dijkstras.h
 │   │   ├── test_results
 │   │   └── tests
-│   │       ├── run_tests.sh
-│   │       ├── test_coordinates.json
-│   │       └── tests.cpp
+│   │   │   ├── DemTester.cpp
+│   │   │   ├── DijkstrasTester.cpp
+│   │   │   ├── run_tests.sh
+│   │   │   └── test_coordinates.json
 │   ├── gui
 │   └── mars-pathfinding-gui
 └── prototypes

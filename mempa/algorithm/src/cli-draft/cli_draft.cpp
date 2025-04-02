@@ -114,7 +114,7 @@ std::pair<std::pair<double, double>, std::pair<double, double> > CLI::parseArea(
 }
 
 /**
- * @brief Makes sure that CLI recieved only 1 start coordinate and 1 end coordinate.
+ * @brief Makes sure that CLI received only 1 start coordinate and 1 end coordinate.
  * 
  * @return true 
  * @return false 
@@ -153,8 +153,8 @@ bool CLI::file_exist_check(std::string filename) {
 }
 
 /**
- * @brief Using switch staements to parse inputs given through POSIX flags from user and set internal
- * flags for which type of coordinates recieved
+ * @brief Using switch statements to parse inputs given through POSIX flags from user and set internal
+ * flags for which type of coordinates received
  * 
  * @param argc 
  * @param argv 
@@ -290,7 +290,7 @@ void CLI::validateInputs() {
 }
 
 /**
- * @brief Display inputs recieved and intialized from user 
+ * @brief Display inputs received and initialized from user 
  * 
  * @author Brock Hoos
  * 
