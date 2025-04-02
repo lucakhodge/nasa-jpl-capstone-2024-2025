@@ -798,7 +798,7 @@ public:
       std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int, int>> path;
       std::vector<std::vector<float>> heightmap;
-      SearchContext search;
+      SearchContext search(searchStratToUse);
 
       search.setStrategy(searchStratToUse);
 
@@ -951,7 +951,7 @@ public:
       std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int, int>> path;
       std::vector<std::vector<float>> heightmap;
-      SearchContext search;
+      SearchContext search(searchStratToUse);
 
       search.setStrategy(searchStratToUse);
 
