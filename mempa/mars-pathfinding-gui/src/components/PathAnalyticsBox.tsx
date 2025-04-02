@@ -35,7 +35,7 @@ export const PathAnalyticsBox: React.FC<PathAnalyticsBoxProps> = ({
       <div className="space-y-3">
         <div className="border-b pb-2">
           <h3 className="text-sm font-semibold text-gray-700">Distance</h3>
-          <p className="text-lg">{totalDistance.toFixed(2)} km</p>
+          <p className="text-lg">{totalDistance.toFixed(2)} m</p>
         </div>
         
         <div className="border-b pb-2">
