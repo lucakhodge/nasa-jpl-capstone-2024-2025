@@ -143,7 +143,9 @@ export default class RegularThree {
     const path_offset = 0.01
     const path_positions = [];
     for (let i = 0; i < path.length; i++) {
-      if (i % resolutionScale == 0) {
+      //TODO: have a better way to get the path to confrom to teh downscaled
+      if ((path[i].y - chunk.description.coordinate.y) % resolutionScale == 0 && (path[i].x - chunk.description.coordinate.x) % resolutionScale == 0) {
+
         let x_pos = path[i].x * this.scale;
         let x_data_location = (path[i].y - chunk.description.coordinate.y) / resolutionScale;
         let y_data_location = (path[i].x - chunk.description.coordinate.x) / resolutionScale;

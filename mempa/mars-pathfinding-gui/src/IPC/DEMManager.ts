@@ -57,7 +57,7 @@ export class DEMManager {
 
       console.log("elevationData", elevationData.length);
 
-      let resolutionScaling = 4;
+      let resolutionScaling = 8;
       let incrementAmmount = 2 ** resolutionScaling;
       console.log("INCREMNT", incrementAmmount)
       // Convert the raw raster data into a 2D array
