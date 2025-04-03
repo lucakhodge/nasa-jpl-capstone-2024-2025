@@ -12,6 +12,7 @@ public:
     int iterations;
     double slope_tolerance, radius;
     bool start_area_set, end_area_set, start_set, end_set, start_pixel, end_pixel;
+    bool json_flag = false;
     std::vector<std::pair<double, double> > coordinates;
     std::vector<std::pair<int, int> > pixel_coordinates;
 

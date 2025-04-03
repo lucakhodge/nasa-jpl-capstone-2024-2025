@@ -174,6 +174,7 @@ void CLI::parseArgs(int argc, char* argv[]) {
         {"iterations", required_argument, nullptr, 'n'},
         {"slope", required_argument, nullptr, 'p'},
         {"radius", required_argument, nullptr, 'r'},
+        {"json", required_argument, nullptr, 'j'},
         {"help", no_argument, nullptr, 'h'},
         {nullptr, 0, nullptr, 0}
     };
@@ -220,6 +221,9 @@ void CLI::parseArgs(int argc, char* argv[]) {
             case 'r': 
                 radius = std::stod(optarg); 
                 break;
+            case 'j':
+                json_flag = true;
+                break;
             case 'h': 
                 print_helper(); 
                 return;
@@ -249,6 +253,7 @@ void CLI::print_helper() {
               << "  --iterations     Number of iterations\n"
               << "  --slope          Slope tolerances (e.g., 10,20,30)\n"
               << "  --radius         Visibility Radius of Rover (in meters)\n"
+              << "  --json           Print output into JSON format\n"
               << "  --help           Print help message\n";
 }
 
