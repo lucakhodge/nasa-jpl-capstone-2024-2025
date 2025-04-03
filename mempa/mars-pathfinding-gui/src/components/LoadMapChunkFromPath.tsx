@@ -29,11 +29,11 @@ export const LoadMapChunkFromPath = (props: {}) => {
           minY: Infinity,
         })
 
-      const xCoordinate = Math.max(0, limits.minX - buffer);
-      const yCoordinate = Math.max(0, limits.minY - buffer);
+      const xCoordinate = Math.max(0, limits.minX);
+      const yCoordinate = Math.max(0, limits.minY);
 
-      const width = Math.min(demInfo.width, limits.maxX + buffer) - xCoordinate
-      const height = Math.min(demInfo.height, limits.maxY + buffer) - yCoordinate
+      const width = Math.min(demInfo.width, limits.maxX) - xCoordinate
+      const height = Math.min(demInfo.height, limits.maxY) - yCoordinate
 
       console.log("coord width ", xCoordinate, yCoordinate, width, height);
 
@@ -42,7 +42,7 @@ export const LoadMapChunkFromPath = (props: {}) => {
           x: xCoordinate,
           y: yCoordinate,
         },
-        size: {
+        dimensions: {
           width: width,
           height: height,
         },

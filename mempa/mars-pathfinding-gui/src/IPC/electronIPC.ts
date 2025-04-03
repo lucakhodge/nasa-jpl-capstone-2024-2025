@@ -10,18 +10,19 @@ export interface ChunkCoordinate {
   y: number;
 }
 
-export interface ChunkSize {
+export interface ChunkDimensions {
   width: number;
   height: number;
 }
 
 export interface ChunkDescription {
   coordinate: ChunkCoordinate;
-  size: ChunkSize;
+  dimensions: ChunkDimensions;
 }
 
 export interface Chunk {
   description: ChunkDescription;
+  resolutionScaling: number;
   data: number[][];
 }
 

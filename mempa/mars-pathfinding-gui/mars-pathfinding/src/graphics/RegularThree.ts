@@ -126,14 +126,14 @@ export default class RegularThree {
     //add controls for obiting
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(
-      (chunk.description.coordinate.x + chunk.description.size.width / 2) * this.scale,
+      (chunk.description.coordinate.x + chunk.description.dimensions.width / 2) * this.scale,
       0,
-      (chunk.description.coordinate.y + chunk.description.size.height / 2) * this.scale,
+      (chunk.description.coordinate.y + chunk.description.dimensions.height / 2) * this.scale,
     );
     const offset = new THREE.Vector3(
-      chunk.description.size.width * this.scale,
-      chunk.description.size.width * this.scale,
-      chunk.description.size.width * this.scale,
+      chunk.description.dimensions.width * this.scale,
+      chunk.description.dimensions.width * this.scale,
+      chunk.description.dimensions.width * this.scale,
     );
     camera.position.copy(controls.target).add(offset);
     controls.update();
