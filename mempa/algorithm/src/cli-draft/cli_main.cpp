@@ -75,7 +75,6 @@ int main(int argc, char *argv[]) {
       j["data"].push_back({{"x", point.first}, {"y", point.second}});
     }
 
-    std::cout << "about to open " << config.output_file << std::endl;
     std::ofstream jsonFile(config.output_file);
     if (jsonFile.is_open()) {
       jsonFile << j.dump();
