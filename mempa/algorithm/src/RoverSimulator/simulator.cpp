@@ -888,9 +888,9 @@ public:
 
       updatePathMetrics(path, heightmap);
       optimizePath(path);
-      writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
-                    endY, std::get<0>(regionCordinates),
-                    std::get<1>(regionCordinates));
+      // writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
+      //               endY, std::get<0>(regionCordinates),
+      //               std::get<1>(regionCordinates));
 
       // Display summary
       std::cout << "\nPath Summary:\n";
