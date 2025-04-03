@@ -2,6 +2,7 @@
 #include "../RoverSimulator/simulator.cpp"
 #include "cli.h"
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 int main(int argc, char *argv[]) {
   // instantiate CLI
@@ -63,5 +64,25 @@ int main(int argc, char *argv[]) {
                                     config.pixel_coordinates.back().first,
                                     config.pixel_coordinates.back().second,
                                     mars_dem, config.radius, &searchAlgo);
+
+  if (config.json_flag) {
+    // print outPath in JSON format to file for GUI to read
+    nlohmann::json j;
+    j["data"] = nlohmann::json::array();
+
+    // convert pair<int, int> in outPath to JSON format
+    for (const auto &point : outPath) {
+      j["data"].push_back({{"x", point.first}, {"y", point.second}});
+    }
+
+    std::ofstream jsonFile("rover_path.json");
+    if (jsonFile.is_open()) {
+      jsonFile << j.dump();
+      jsonFile.close();
+      std::cout << "Path saved to rover_path.json" << std::endl;
+    } else {
+      std::cerr << "Error: Could not open file to write JSON." << std::endl;
+    }
+  }
   return 0;
 }
