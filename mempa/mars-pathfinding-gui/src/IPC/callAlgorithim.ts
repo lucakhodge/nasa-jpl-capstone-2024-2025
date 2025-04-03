@@ -32,7 +32,7 @@ const getFlags = (parameters: Parameters, inputPath: string, outputPath: string)
   flagsStr += " --radius " + 100
   flagsStr += " --iterations " + 1
   flagsStr += " --slope " + 5
-  flagsStr += " --json true "
+  flagsStr += " --json"
   return flagsStr;
 }
 
