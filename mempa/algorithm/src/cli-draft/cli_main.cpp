@@ -75,11 +75,12 @@ int main(int argc, char *argv[]) {
       j["data"].push_back({{"x", point.first}, {"y", point.second}});
     }
 
-    std::ofstream jsonFile("rover_path.json");
+    std::cout << "about to open " << config.output_file << std::endl;
+    std::ofstream jsonFile(config.output_file);
     if (jsonFile.is_open()) {
       jsonFile << j.dump();
       jsonFile.close();
-      std::cout << "Path saved to rover_path.json" << std::endl;
+      std::cout << "Path saved to " << config.output_file << std::endl;
     } else {
       std::cerr << "Error: Could not open file to write JSON." << std::endl;
     }
