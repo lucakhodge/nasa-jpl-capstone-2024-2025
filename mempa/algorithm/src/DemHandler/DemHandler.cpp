@@ -228,7 +228,7 @@ namespace mempa
      *
      * @param geoCoordinate Coordinate pair of doubles.
      *
-     * @return @c std::pair<int, @c int> Pixel-based image coordinates.
+     * @return std::pair<int, int> Pixel-based image coordinates.
      *
      * @note For more information on Geotransform, see: https://gdal.org/en/stable/tutorials/geotransforms_tut.html
      */
@@ -239,6 +239,12 @@ namespace mempa
         return std::pair<int, int>(xPixelCoordinate, yPixelCoordinate);
     }
 
+    /**
+     * @brief Transform a pair of integer coordinates into the corresponding latitide, longitude (x, y) pair of double geographical coordinates.
+     *
+     * @param imgCoordinate Coordinate pair of integers.
+     * @return std::pair<double, double> Georeferenced coordinates.
+     */
     std::pair<double, double> DemHandler::revertCoordinates(std::pair<int, int> imgCoordinate) const noexcept
     {
         const double xGeoCoordinate = (static_cast<double>(imgCoordinate.first) * adfGeoTransform[1]) + adfGeoTransform[0];
