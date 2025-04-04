@@ -50,9 +50,9 @@ namespace mempa
     /**
      * @brief Get the top left coordiante of a vector in global coordinate space.
      *
-     * @param globalCoordinate
-     * @param buffer
-     * @return std::pair<int, int>
+     * @param globalCoordinate Current coordinate (must be center of 2D vector chunk).
+     * @param buffer Buffer used for vector chunk.
+     * @return std::pair<int, int> Top left corner of vector chunk in global coordinates.
      */
     inline std::pair<int, int> RoverSimulator::globalVectorCorner(const std::pair<int, int> globalCoordinate, const int buffer) const noexcept
     {
