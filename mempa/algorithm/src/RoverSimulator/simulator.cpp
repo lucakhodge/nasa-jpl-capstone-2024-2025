@@ -329,9 +329,9 @@ private:
                                                  uint32_t startCol) {
     int globalX = localX + startCol;
     int globalY = localY + startRow;
-    // logDebug("Converting local (" + std::to_string(localX) + "," +
-    //     std::to_string(localY) + ") to global (" + std::to_string(globalX) +
-    //     "," + std::to_string(globalY) + ")");
+    logDebug("Converting local (" + std::to_string(localX) + "," +
+        std::to_string(localY) + ") to global (" + std::to_string(globalX) +
+        "," + std::to_string(globalY) + ")");
     return {globalX, globalY};
   }
 
@@ -880,14 +880,14 @@ public:
           0);
 
       // update path to local coordinates in this final heightmap
-      for (std::pair<int, int> &step : path) {
-        step = convertToLocalCoordinates(step.first, step.second,
-                                         std::get<0>(regionCordinates),
-                                         std::get<1>(regionCordinates));
-      }
+      // for (std::pair<int, int> &step : path) {
+      //   step = convertToLocalCoordinates(step.first, step.second,
+      //                                    std::get<0>(regionCordinates),
+      //                                    std::get<1>(regionCordinates));
+      // }
 
-      updatePathMetrics(path, heightmap);
-      optimizePath(path);
+      // updatePathMetrics(path, heightmap);
+      // optimizePath(path);
       // writePathData("rover_path.txt", path, heightmap, startX, startY, endX,
       //               endY, std::get<0>(regionCordinates),
       //               std::get<1>(regionCordinates));
