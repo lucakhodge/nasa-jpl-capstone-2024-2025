@@ -76,7 +76,7 @@ namespace mempa
      * @param buffer The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -129,7 +129,7 @@ namespace mempa
      * @param radius The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throw Failure to read raster values.
      */
@@ -176,7 +176,7 @@ namespace mempa
      * @param buffer The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinates Optional parameter to reflect the local vector index of each image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -255,7 +255,7 @@ namespace mempa
     /**
      * @brief Gets the spatial resolution of the raster.
      *
-     * @return @c double Pixel resolution in meters.
+     * @return double Pixel resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
