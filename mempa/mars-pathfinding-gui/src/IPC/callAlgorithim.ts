@@ -25,12 +25,14 @@ const getExecutablePath = () => {
 
 const getFlags = (parameters: Parameters, inputPath: string, outputPath: string) => {
   let flagsStr = ""
-  flagsStr += " -x " + parameters.startCoordinate.x
-  flagsStr += " -y " + parameters.startCoordinate.y
-  flagsStr += " -X " + parameters.endCoordinate.x
-  flagsStr += " -Y " + parameters.endCoordinate.y
-  flagsStr += " -i " + inputPath
-  flagsStr += " -o " + outputPath
+  flagsStr += " --start-pixel " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
+  flagsStr += " --end-pixel " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
+  flagsStr += " --input " + inputPath
+  flagsStr += " --output " + outputPath
+  flagsStr += " --radius " + 100
+  flagsStr += " --iterations " + 1
+  flagsStr += " --slope " + 5
+  flagsStr += " --json"
   return flagsStr;
 }
 
@@ -45,13 +47,16 @@ ipcMain.handle(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
 
     const { stderr } = await execPromise(executableCall);
     if (stderr) {
+      console.log("IN STDERR");
       throw new Error(stderr);
     }
   } catch (error) {
+    console.log("IN a ERROR");
     // TODO: what should happen on error?
     return undefined;
   }
 
   const data = fs.readFileSync(outputPath, "utf-8");
+  console.log("FILE data", data)
   return data;
 });
