@@ -17,6 +17,7 @@
 namespace mempa
 {
 
+#if PREPROCESS_SLOPE
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
@@ -31,10 +32,33 @@ namespace mempa
         /* The rover should currently be at the start position. */
         currentPosition = this->startPosition;
     }
+#else
+    /**
+     * @brief Construct a new Rover Simulator:: Rover Simulator object
+     *
+     * @param elevationRaster Pointer to the DemHandler object for the elevation raster.
+     * @param slopeRaster Pointer to the DemHandler object for the slope raster.
+     * @param startPosition Pair of doubles for the geographic coordinate of the starting position.
+     * @param endPosition Pair of doubles for the geographic coordinate of the destination.
+     */
+    RoverSimulator::RoverSimulator(const DemHandler *elevationRaster, const std::pair<double, double> startPosition, const std::pair<double, double> endPosition) noexcept
+        : elevationRaster(elevationRaster), imageResolution(elevationRaster->getImageResolution()), startPosition(elevationRaster->transformCoordinates(startPosition)), endPosition(elevationRaster->transformCoordinates(endPosition))
+    {
+        /* The rover should currently be at the start position. */
+        currentPosition = this->startPosition;
+    }
+#endif
 
+    /**
+     * @brief Run the simulator for sqiare chunk views
+     *
+     * @param algorithmType @ref SearchAlgorithm class to use for pathfinding.
+     * @param buffer How much to buffer the space around the coordinate by.
+     * @return std::vector<std::pair<int, int>>
+     */
     std::vector<std::pair<int, int>> RoverSimulator::runSimulator(SearchAlgorithm *algorithmType, const int buffer)
     {
-        SearchContext roverRouter(algorithmType);
+        SearchContext roverRouter(algorithmType);                              /* Set up the pathfinding algorithm based on input. */
         std::vector<std::pair<int, int>> routedRasterPath = {currentPosition}; /* Holds the coordinates of every traversed area of the raster. */
         routedRasterPath.reserve(std::max(std::abs(endPosition.first - startPosition.first), std::abs(endPosition.second - startPosition.second)));
 
@@ -53,12 +77,13 @@ namespace mempa
             {
                 currentPosition = endPosition;
                 routedRasterPath.push_back(currentPosition);
-                // throw std::runtime_error("runSimulator: reached end of chunk");
             }
-
-            std::pair<int, int> stepDifference = coordinateDifference(vectorPosition, algorithmStep);
-            currentPosition = std::pair<int, int>(currentPosition.first + stepDifference.first, currentPosition.second + stepDifference.second);
-            routedRasterPath.push_back(currentPosition);
+            else
+            {
+                std::pair<int, int> stepDifference = coordinateDifference(vectorPosition, algorithmStep);
+                currentPosition = std::pair<int, int>(currentPosition.first + stepDifference.first, currentPosition.second + stepDifference.second);
+                routedRasterPath.push_back(currentPosition);
+            }
         } while (currentPosition != endPosition);
 
         return routedRasterPath;
