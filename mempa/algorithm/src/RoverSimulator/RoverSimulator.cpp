@@ -17,6 +17,7 @@
 namespace mempa
 {
 
+#if PREPROCESS_SLOPE
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
@@ -31,6 +32,22 @@ namespace mempa
         /* The rover should currently be at the start position. */
         currentPosition = this->startPosition;
     }
+#else
+    /**
+     * @brief Construct a new Rover Simulator:: Rover Simulator object
+     *
+     * @param elevationRaster Pointer to the DemHandler object for the elevation raster.
+     * @param slopeRaster Pointer to the DemHandler object for the slope raster.
+     * @param startPosition Pair of doubles for the geographic coordinate of the starting position.
+     * @param endPosition Pair of doubles for the geographic coordinate of the destination.
+     */
+    RoverSimulator::RoverSimulator(const DemHandler *elevationRaster, const std::pair<double, double> startPosition, const std::pair<double, double> endPosition) noexcept
+        : elevationRaster(elevationRaster), imageResolution(elevationRaster->getImageResolution()), startPosition(elevationRaster->transformCoordinates(startPosition)), endPosition(elevationRaster->transformCoordinates(endPosition))
+    {
+        /* The rover should currently be at the start position. */
+        currentPosition = this->startPosition;
+    }
+#endif
 
     /**
      * @brief Run the simulator for sqiare chunk views

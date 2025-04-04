@@ -38,9 +38,9 @@ namespace mempa
     /**
      * @brief Get the difference between two points.
      * 
-     * @param coordinate1 
-     * @param coordinate2 
-     * @return std::pair<int, int> 
+     * @param coordinate1 Image based coordinate one.
+     * @param coordinate2 Image based coordinate two.
+     * @return std::pair<int, int> X difference, Y difference.
      */
     inline std::pair<int, int> RoverSimulator::coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept
     {
