@@ -37,13 +37,25 @@ namespace mempa
 
     /**
      * @brief Get the difference between two points.
-     * 
+     *
      * @param coordinate1 Image based coordinate one.
      * @param coordinate2 Image based coordinate two.
      * @return std::pair<int, int> X difference, Y difference.
      */
-    inline std::pair<int, int> RoverSimulator::coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept
+    inline std::pair<int, int> RoverSimulator::coordinateDifference(const std::pair<int, int> coordinate1, const std::pair<int, int> coordinate2) const noexcept
     {
         return std::pair<int, int>(coordinate2.first - coordinate1.first, coordinate2.second - coordinate1.second);
+    }
+
+    /**
+     * @brief Get the top left coordiante of a vector in global coordinate space.
+     *
+     * @param globalCoordinate Current coordinate (must be center of 2D vector chunk).
+     * @param buffer Buffer used for vector chunk.
+     * @return std::pair<int, int> Top left corner of vector chunk in global coordinates.
+     */
+    inline std::pair<int, int> RoverSimulator::globalVectorCorner(const std::pair<int, int> globalCoordinate, const int buffer) const noexcept
+    {
+        return std::pair<int, int>(globalCoordinate.first - buffer, globalCoordinate.second - buffer);
     }
 }

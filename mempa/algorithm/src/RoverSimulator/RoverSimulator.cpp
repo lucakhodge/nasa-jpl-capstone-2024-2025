@@ -16,7 +16,6 @@
 
 namespace mempa
 {
-
 #if PREPROCESS_SLOPE
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
@@ -58,31 +57,33 @@ namespace mempa
      */
     std::vector<std::pair<int, int>> RoverSimulator::runSimulator(SearchAlgorithm *algorithmType, const int buffer)
     {
-        SearchContext roverRouter(algorithmType);                              /* Set up the pathfinding algorithm based on input. */
-        std::vector<std::pair<int, int>> routedRasterPath = {currentPosition}; /* Holds the coordinates of every traversed area of the raster. */
-        routedRasterPath.reserve(std::max(std::abs(endPosition.first - startPosition.first), std::abs(endPosition.second - startPosition.second)));
+        SearchContext roverRouter(algorithmType);                                                                                                   /* Set up the pathfinding algorithm based on input. */
+        std::vector<std::pair<int, int>> routedRasterPath = {currentPosition};                                                                      /* Holds the coordinates of every traversed area of the raster. */
+        routedRasterPath.reserve(std::max(std::abs(endPosition.first - startPosition.first), std::abs(endPosition.second - startPosition.second))); /* Reserve enough memory in the vector for a straight line. */
 
         do
         {
             std::pair<int, int> vectorPosition;                                                                                        /* Will be updated to relative (currentPosition, endPosition) coordinates within the vector. */
             std::vector<std::vector<float>> elevationMap = elevationRaster->readSquareChunk(currentPosition, buffer, &vectorPosition); /* The elevation data we read from the DemHandler elevationRaster. */
-            std::pair<int, int> currentDistance = coordinateDifference(currentPosition, endPosition);
-            std::pair<int, int> vectorGoal(std::max(-buffer, std::min(buffer, endPosition.first)), std::max(-buffer, std::min(buffer, endPosition.second)));
+            std::pair<int, int> currentDistance = coordinateDifference(currentPosition, endPosition);                                  /* Get the offset from the current position to the end position. */
+            std::pair<int, int> vectorGoal(std::max(-buffer, std::min(buffer, vectorPosition.first + currentDistance.first)), std::max(-buffer, std::min(buffer, vectorPosition.second + currentDistance.second)));
 
+            /* Initialize a new setup for the pathfinding algorithm. */
             roverRouter.executeStrategyReset();
             roverRouter.executeStrategySetUpAlgo(elevationMap, vectorPosition, vectorGoal, MAX_SLOPE, imageResolution);
 
-            std::pair<int, int> algorithmStep = roverRouter.executeStrategyGetStep();
-            if (algorithmStep == BREAK_STEP)
+            /* Get one single step from the algorithm. */
+            std::pair<int, int> algorithmStep = roverRouter.executeStrategyGetStep(); /* The algorithm should return the new position within the vector. */
+            if (algorithmStep == BREAK_STEP)                                          /* If the algorithm returns {-1, -1}, it has reached its destination. */
             {
-                currentPosition = endPosition;
-                routedRasterPath.push_back(currentPosition);
+                currentPosition = endPosition;               /* We should set the current position to the destination, rather than setting it to {-1, -1}. */
+                routedRasterPath.push_back(currentPosition); /* Push the final position onto the route. The loop should now end. */
             }
             else
             {
-                std::pair<int, int> stepDifference = coordinateDifference(vectorPosition, algorithmStep);
-                currentPosition = std::pair<int, int>(currentPosition.first + stepDifference.first, currentPosition.second + stepDifference.second);
-                routedRasterPath.push_back(currentPosition);
+                std::pair<int, int> stepDifference = coordinateDifference(vectorPosition, algorithmStep);                                            /* Get the change in position from the initial position in the vector to the new position in the vector. */
+                currentPosition = std::pair<int, int>(currentPosition.first + stepDifference.first, currentPosition.second + stepDifference.second); /* Update the current position based on that change in position. */
+                routedRasterPath.push_back(currentPosition);                                                                                         /* Push the new current position onto the route. */
             }
         } while (currentPosition != endPosition);
 

@@ -46,6 +46,7 @@ namespace mempa
         std::vector<std::pair<int, int>> runSimulator(SearchAlgorithm *algorithmType, int buffer);
         inline bool validateElevation(float elevationValue) const noexcept;
         inline std::pair<int, int> coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept;
+        inline std::pair<int, int> globalVectorCorner(std::pair<int, int> globalCoordinate, int buffer) const noexcept;
     };
 }
 
