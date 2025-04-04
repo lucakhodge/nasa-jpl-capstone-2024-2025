@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "end": [
+      1530,
+      1550
+    ],
+    "start": [
+      1450,
+      1460
+    ],
+    "timestamp": 1743729341
+  },
+  "metrics": {
+    "averageSlope": 0.0,
+    "baseElevation": -4.52,
+    "energyCost": 28284.74,
+    "energyPerMeter": 1.0,
+    "executionTime": 87,
+    "horizontalDistance": 28284.23,
+    "maxSlope": 0.05,
+    "netElevationChange": 0.25,
+    "pathEfficiency": 100.0,
+    "totalDistance": 28284.24,
+    "totalElevationChange": 0.25,
+    "waypointCount": 23
+  },
+  "path": [
+    {
+      "elevation": -4.27,
+      "x": 15,
+      "y": 15
+    },
+    {
+      "elevation": -4.27,
+      "x": 20,
+      "y": 20
+    },
+    {
+      "elevation": -4.27,
+      "x": 25,
+      "y": 25
+    },
+    {
+      "elevation": -4.27,
+      "x": 30,
+      "y": 30
+    },
+    {
+      "elevation": -4.27,
+      "x": 35,
+      "y": 35
+    },
+    {
+      "elevation": -4.27,
+      "x": 40,
+      "y": 40
+    },
+    {
+      "elevation": -4.27,
+      "x": 45,
+      "y": 45
+    },
+    {
+      "elevation": -4.27,
+      "x": 50,
+      "y": 50
+    },
+    {
+      "elevation": -4.27,
+      "x": 55,
+      "y": 55
+    },
+    {
+      "elevation": -4.27,
+      "x": 60,
+      "y": 60
+    },
+    {
+      "elevation": -4.27,
+      "x": 65,
+      "y": 65
+    },
+    {
+      "elevation": -4.27,
+      "x": 65,
+      "y": 65
+    },
+    {
+      "elevation": -4.27,
+      "x": 65,
+      "y": 67
+    },
+    {
+      "elevation": -4.27,
+      "x": 67,
+      "y": 69
+    },
+    {
+      "elevation": -4.27,
+      "x": 72,
+      "y": 74
+    },
+    {
+      "elevation": -4.27,
+      "x": 77,
+      "y": 79
+    },
+    {
+      "elevation": -4.27,
+      "x": 79,
+      "y": 81
+    },
+    {
+      "elevation": -4.27,
+      "x": 79,
+      "y": 84
+    },
+    {
+      "elevation": -4.27,
+      "x": 79,
+      "y": 89
+    },
+    {
+      "elevation": -4.27,
+      "x": 84,
+      "y": 94
+    },
+    {
+      "elevation": -4.27,
+      "x": 89,
+      "y": 99
+    },
+    {
+      "elevation": -4.27,
+      "x": 94,
+      "y": 104
+    },
+    {
+      "elevation": -4.27,
+      "x": 95,
+      "y": 105
+    }
+  ]
+}
