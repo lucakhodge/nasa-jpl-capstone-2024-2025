@@ -239,6 +239,13 @@ namespace mempa
         return std::pair<int, int>(xPixelCoordinate, yPixelCoordinate);
     }
 
+    std::pair<double, double> DemHandler::revertCoordinates(std::pair<int, int> imgCoordinate) const noexcept
+    {
+        const double xGeoCoordinate = (static_cast<double>(imgCoordinate.first) * adfGeoTransform[1]) + adfGeoTransform[0];
+        const double yGeoCoordinate = (static_cast<double>(imgCoordinate.second) * adfGeoTransform[5]) + adfGeoTransform[3];
+        return std::pair<double, double>(xGeoCoordinate, yGeoCoordinate);
+    }
+
     /**
      * @brief Gets the spatial resolution of the raster.
      *

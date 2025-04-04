@@ -45,6 +45,7 @@ namespace mempa
         std::vector<std::vector<float>> readCircleChunk(std::pair<int, int> imgCoordinate, int radius, std::pair<int, int> *relativeCoordinate = nullptr) const;
         std::vector<std::vector<float>> readRectangleChunk(std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, int buffer, std::pair<std::pair<int, int>, std::pair<int, int>> *relativeCoordinates = nullptr) const;
         std::pair<int, int> transformCoordinates(std::pair<double, double> geoCoordinate) const noexcept;
+        std::pair<double, double> revertCoordinates(std::pair<int, int> imgCoordinate) const noexcept;
         double getImageResolution() const;
         inline int getXSize() const noexcept;
         inline int getYSize() const noexcept;
