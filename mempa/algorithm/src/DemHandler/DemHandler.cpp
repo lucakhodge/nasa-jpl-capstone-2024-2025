@@ -76,7 +76,7 @@ namespace mempa
      * @param buffer The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -129,7 +129,7 @@ namespace mempa
      * @param radius The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinate Optional parameter to reflect the local vector index of the image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throw Failure to read raster values.
      */
@@ -176,7 +176,7 @@ namespace mempa
      * @param buffer The value used for the general size of the output chunk of elevation data.
      * @param relativeCoordinates Optional parameter to reflect the local vector index of each image coordinate.
      *
-     * @return @c std::vector<std::vector<float>> Elevation values.
+     * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
      */
@@ -228,7 +228,7 @@ namespace mempa
      *
      * @param geoCoordinate Coordinate pair of doubles.
      *
-     * @return @c std::pair<int, @c int> Pixel-based image coordinates.
+     * @return std::pair<int, int> Pixel-based image coordinates.
      *
      * @note For more information on Geotransform, see: https://gdal.org/en/stable/tutorials/geotransforms_tut.html
      */
@@ -240,9 +240,22 @@ namespace mempa
     }
 
     /**
+     * @brief Transform a pair of integer coordinates into the corresponding latitide, longitude (x, y) pair of double geographical coordinates.
+     *
+     * @param imgCoordinate Coordinate pair of integers.
+     * @return std::pair<double, double> Georeferenced coordinates.
+     */
+    std::pair<double, double> DemHandler::revertCoordinates(std::pair<int, int> imgCoordinate) const noexcept
+    {
+        const double xGeoCoordinate = (static_cast<double>(imgCoordinate.first) * adfGeoTransform[1]) + adfGeoTransform[0];
+        const double yGeoCoordinate = (static_cast<double>(imgCoordinate.second) * adfGeoTransform[5]) + adfGeoTransform[3];
+        return std::pair<double, double>(xGeoCoordinate, yGeoCoordinate);
+    }
+
+    /**
      * @brief Gets the spatial resolution of the raster.
      *
-     * @return @c double Pixel resolution in meters.
+     * @return double Pixel resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
      */
