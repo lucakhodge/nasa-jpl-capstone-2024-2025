@@ -31,7 +31,7 @@ const getFlags = (parameters: Parameters, inputPath: string, outputPath: string)
   flagsStr += " --output " + outputPath
   flagsStr += " --radius " + 100
   flagsStr += " --iterations " + 1
-  flagsStr += " --slope " + 5
+  flagsStr += " --slope " + parameters.slope
   flagsStr += " --json"
   return flagsStr;
 }
@@ -41,10 +41,16 @@ ipcMain.handle(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
   console.log("in call algo handle, was passed:", parameters);
   const outputPath = path.join(app.getPath("temp"), 'path-result');
 
+  console.log("RM: ", "rm " + outputPath)
+  try {
+    await execPromise("rm " + outputPath);
+  }
+  catch {
+
+  }
   try {
     const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
     console.log("EC: ", executableCall)
-
     const { stderr } = await execPromise(executableCall);
     if (stderr) {
       console.log("IN STDERR");
