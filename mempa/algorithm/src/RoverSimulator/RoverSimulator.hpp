@@ -1,4 +1,5 @@
 #pragma once
+#define PREPROCESS_SLOPE false /* Enable (true) or disable (false) the use of a preprocessed slope raster. */
 
 /* mempa::DemHandler */
 #include "../DemHandler/DemHandler.hpp"
@@ -21,8 +22,10 @@ namespace mempa
     class RoverSimulator
     {
     private:
-        const DemHandler *elevationRaster;                              /* Handler for the DEM file containing elevation data. */
-        const DemHandler *slopeRaster;                                  /* Handler for the Slope raster derived from the DEM data. */
+        const DemHandler *elevationRaster; /* Handler for the DEM file containing elevation data. */
+#if PREPROCESS_SLOPE
+        const DemHandler *slopeRaster; /* Handler for the Slope raster derived from the DEM data. */
+#endif
         const double imageResolution;                                   /* Raster image resolution in meters. */
         const std::pair<int, int> startPosition;                        /* The rover's initial image-based coordinate position. */
         const std::pair<int, int> endPosition;                          /* The rover's image-based coordinate desination. */
@@ -35,8 +38,12 @@ namespace mempa
         /* RoverSimulator is not designed to be subclassed. */
 
     public:
+#if PREPROCESS_SLOPE
         explicit RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, std::pair<double, double> startPosition, std::pair<double, double> endPosition) noexcept;
-        std::vector<std::pair<int, int>> runSimulator(SearchAlgorithm *pathfinder, int buffer);
+#else
+        explicit RoverSimulator(const DemHandler *elevationRaster, std::pair<double, double> startPosition, std::pair<double, double> endPosition) noexcept;
+#endif
+        std::vector<std::pair<int, int>> runSimulator(SearchAlgorithm *algorithmType, int buffer);
         inline bool validateElevation(float elevationValue) const noexcept;
         inline std::pair<int, int> coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept;
     };
