@@ -16,7 +16,6 @@
 
 namespace mempa
 {
-
 #if PREPROCESS_SLOPE
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
