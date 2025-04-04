@@ -245,7 +245,7 @@ namespace mempa
      * @param imgCoordinate Coordinate pair of integers.
      * @return std::pair<double, double> Georeferenced coordinates.
      */
-    std::pair<double, double> DemHandler::revertCoordinates(std::pair<int, int> imgCoordinate) const noexcept
+    std::pair<double, double> DemHandler::revertCoordinates(const std::pair<int, int> imgCoordinate) const noexcept
     {
         const double xGeoCoordinate = (static_cast<double>(imgCoordinate.first) * adfGeoTransform[1]) + adfGeoTransform[0];
         const double yGeoCoordinate = (static_cast<double>(imgCoordinate.second) * adfGeoTransform[5]) + adfGeoTransform[3];
