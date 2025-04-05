@@ -29,7 +29,7 @@ Required flags:
 ** Use --help for printing out input formats with each flag **
 */
 
-#include "cli.h"
+#include "Cli.hpp"
 #include <fstream>
 #include <getopt.h>
 #include <iostream>

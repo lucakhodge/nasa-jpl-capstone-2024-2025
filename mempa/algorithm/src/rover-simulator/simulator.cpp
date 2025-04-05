@@ -1,6 +1,6 @@
-#include "../DemHandler/DemHandler.hpp"
-#include "../search_algorithms/SearchContext.h"
-#include "../search_algorithms/dijkstras.h"
+#include "../dem-handler/DemHandler.hpp"
+#include "../rover-pathfinding-module/SearchContext.h"
+#include "../rover-pathfinding-module/dijkstras.h"
 #include <algorithm>
 #include <chrono>
 #include <cmath>

@@ -1,6 +1,6 @@
-#include "../DemHandler/DemHandler.hpp"
-#include "../RoverSimulator/simulator.cpp"
-#include "cli.h"
+#include "../dem-handler/DemHandler.hpp"
+#include "../rover-simulator/simulator.cpp"
+#include "Cli.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
 
