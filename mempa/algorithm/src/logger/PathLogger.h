@@ -27,10 +27,7 @@ public:
    * @param metrics Terrain metrics calculated for the path
    */
   virtual void logPath(const std::string &filename,
-                       const std::vector<std::pair<int, int>> &path,
-                       std::pair<int, int> startPoint,
-                       std::pair<int, int> endPoint,
-                       const TerrainMetrics &metrics) = 0;
+                       const std::vector<std::pair<int, int>> &path) = 0;
 
   static std::unique_ptr<PathLogger> createLogger(bool useJson);
 };
