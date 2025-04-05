@@ -282,7 +282,7 @@ public:
       std::pair<int, int> chunkLocation;
 
       // start looping here
-      while (currentPos.first != endX && currentPos.second != endY) {
+      while (currentPos.first != endX || currentPos.second != endY) {
 
         chunkLocation = std::make_pair(currentPos.first - radius,
                                        currentPos.second - radius);

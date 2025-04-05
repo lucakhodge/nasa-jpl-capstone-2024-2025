@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
+#include <ios>
 #include <iostream>
 #include <limits>
 #include <queue>
@@ -140,7 +141,7 @@ std::vector<std::pair<int, int>> Dijkstras::dijkstras() {
   }
 
   // Set start node
-  int startIndex = calc_flat_index(cols, _startPoint.first, _startPoint.second);
+  int startIndex = calc_flat_index(cols, localStart.first, localStart.second);
   graph[startIndex].distFromPrevious = 0;
   pq.push({0, &graph[startIndex]});
 
@@ -158,7 +159,7 @@ std::vector<std::pair<int, int>> Dijkstras::dijkstras() {
     visited[current->selfIndex] = true;
 
     // Check destination
-    if (current->x == localEnd.second && current->y == localEnd.first) {
+    if (current->x == localEnd.first && current->y == localEnd.second) {
       cout << "Path found after " << iteration << " iterations" << endl;
       return path_to_list(
           graph[calc_flat_index(cols, localEnd.first, localEnd.second)]);
@@ -217,19 +218,23 @@ std::pair<int, int> Dijkstras::get_step(
                   pixelSize);
   pair<int, int> out;
 
-  if (pathStoredThanDisplayed) {
-    out = {-1, -1};
-    cout << "You have completed the path, if you want to start over please "
-            "call reset_dijkstras(), returning -1, -1"
-         << endl;
-    return out;
-  }
+  // if (pathStoredThanDisplayed) {
+  //   out = {-1, -1};
+  //   cout << "You have completed the path, if you want to start over please "
+  //           "call reset_dijkstras(), returning -1, -1"
+  //        << endl;
+  //   return out;
+  // }
 
-  if (pathStorage.empty() && pathStoredThanDisplayed == false) {
+  if (pathStorage.empty()) {
     vector<pair<int, int>> realPath = dijkstras();
 
     for (int i = 0; i < realPath.size(); i++) {
-      pathStorage.push_back(realPath.at(i));
+      std::pair<int, int> localLocation = realPath.at(i);
+      std::pair<int, int> globalLocation =
+          std::make_pair(localLocation.first + chunkLocation.first,
+                         localLocation.second + chunkLocation.second);
+      pathStorage.push_back(globalLocation);
     }
 
     out = pathStorage.back();
