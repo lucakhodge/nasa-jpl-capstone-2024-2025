@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "DemHandler/DemHandler.hpp"
+#include "dem-handler/DemHandler.hpp"
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
