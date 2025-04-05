@@ -96,6 +96,12 @@ int main(int argc, char *argv[])
             {
                 std::cout << "(" << pathCoordinate.first << ", " << pathCoordinate.second << ")\n";
             }
+            std::cout << '\n';
+            for (std::pair<int, int> pathCoordinate : routedPath)
+            {
+                std::pair<double, double> geoCoordinate = marsRaster.revertCoordinates(pathCoordinate);
+                std::cout << std::fixed << std::setprecision(4) << "(" << geoCoordinate.first << ", " << geoCoordinate.second << ")\n";
+            }
         }
     }
     catch (const std::exception &demError)
