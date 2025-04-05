@@ -66,7 +66,9 @@ namespace mempa
             std::pair<int, int> vectorPosition;                                                                                        /* Will be updated to relative (currentPosition, endPosition) coordinates within the vector. */
             std::vector<std::vector<float>> elevationMap = elevationRaster->readSquareChunk(currentPosition, buffer, &vectorPosition); /* The elevation data we read from the DemHandler elevationRaster. */
             std::pair<int, int> currentDistance = coordinateDifference(currentPosition, endPosition);                                  /* Get the offset from the current position to the end position. */
-            std::pair<int, int> vectorGoal(std::max(-buffer, std::min(buffer, vectorPosition.first + currentDistance.first)), std::max(-buffer, std::min(buffer, vectorPosition.second + currentDistance.second)));
+            std::pair<int, int> vectorGoal(
+                std::min(static_cast<int>(elevationMap.size()) - 1, std::max(0, vectorPosition.first + currentDistance.first)),
+                std::max(0, std::min(static_cast<int>(elevationMap.front().size()) - 1, vectorPosition.second + currentDistance.second)));
 
             /* Initialize a new setup for the pathfinding algorithm. */
             roverRouter.executeStrategyReset();

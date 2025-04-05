@@ -13,13 +13,13 @@ namespace mempa
      *
      * @param vecCoordinate Coordinate of vector indices requested. Should be in (x, y) format.
      * @param rasterVector The vector to check if vecCoordinate is valid within.
-     * @return @c true Coordinate is within the vector.
-     * @return @c false Coordinate is outside the vector, would segfault.
+     * @return  true Coordinate is within the vector.
+     * @return  false Coordinate is outside the vector, would segfault.
      */
     inline bool RoverSimulator::validateCoordinate(const std::pair<int, int> vecCoordinate, const std::vector<std::vector<float>> rasterVector) const noexcept
     {
-        return ((vecCoordinate.first >= 0) && (static_cast<size_t>(vecCoordinate.first) < rasterVector.front().size())) &&
-               ((vecCoordinate.second >= 0) && (static_cast<size_t>(vecCoordinate.second) < rasterVector.size()));
+        return ((vecCoordinate.first >= 0) && (static_cast<size_t>(vecCoordinate.first) <= rasterVector.front().size() - 1)) &&
+               ((vecCoordinate.second >= 0) && (static_cast<size_t>(vecCoordinate.second) <= rasterVector.size() - 1));
     }
 
     /**
@@ -27,8 +27,8 @@ namespace mempa
      *
      * @param elevationValue The elevation value to be checked.
      *
-     * @return @c true The elevation is valid.
-     * @return @c false The elevation is not a number.
+     * @return  true The elevation is valid.
+     * @return  false The elevation is not a number.
      */
     inline bool RoverSimulator::validateElevation(const float elevationValue) const noexcept
     {
