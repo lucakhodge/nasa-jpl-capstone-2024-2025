@@ -3,6 +3,8 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <utility>
+#include <vector>
 
 void JsonPathLogger::logPath(const std::string &filename,
                              const std::vector<std::pair<int, int>> &path) {

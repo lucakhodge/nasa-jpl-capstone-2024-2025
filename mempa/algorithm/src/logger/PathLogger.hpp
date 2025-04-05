@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 /**
  * @brief Abstract base class for path logging functionality

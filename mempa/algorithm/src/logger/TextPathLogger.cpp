@@ -1,6 +1,8 @@
 #include "TextPathLogger.hpp"
 #include <fstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 void TextPathLogger::logPath(const std::string &filename,
                              const std::vector<std::pair<int, int>> &path) {

@@ -3,6 +3,8 @@
 #include "JsonPathLogger.hpp"
 #include "PathLogger.hpp"
 #include <string>
+#include <utility>
+#include <vector>
 
 /**
  * @brief Outputs path data in JSON format with separate files for analytics and

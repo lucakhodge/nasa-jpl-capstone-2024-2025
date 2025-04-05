@@ -1,6 +1,10 @@
 #pragma once
 
 #include "PathLogger.hpp"
+#include <string>
+#include <utility>
+#include <vector>
+
 /**
  * @brief Outputs path data in text format (original format)
  */
