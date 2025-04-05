@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PathLogger.h"
+#include "PathLogger.hpp"
 /**
  * @brief Outputs path data in text format (original format)
  */

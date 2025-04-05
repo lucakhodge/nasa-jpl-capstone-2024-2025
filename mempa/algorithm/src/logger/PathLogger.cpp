@@ -1,6 +1,6 @@
-#include "PathLogger.h"
-#include "JsonPathLogger.h"
-#include "TextPathLogger.h"
+#include "PathLogger.hpp"
+#include "JsonPathLogger.hpp"
+#include "TextPathLogger.hpp"
 #include <memory>
 
 std::unique_ptr<PathLogger> PathLogger::createLogger(bool useJson) {

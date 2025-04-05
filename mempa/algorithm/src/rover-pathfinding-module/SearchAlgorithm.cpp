@@ -1,4 +1,4 @@
-#include "SearchAlgorithm.h"
+#include "SearchAlgorithm.hpp"
 
 void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>> &heightmap,
                                 std::pair<int, int> chunkLocation,

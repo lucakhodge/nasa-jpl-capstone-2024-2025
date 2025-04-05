@@ -1,5 +1,5 @@
 #pragma once
-#include "SearchAlgorithm.h"
+#include "SearchAlgorithm.hpp"
 #include <iostream>
 
 class SearchContext;

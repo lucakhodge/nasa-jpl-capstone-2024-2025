@@ -1,4 +1,4 @@
-#include "dijkstras.h"
+#include "dijkstras.hpp"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>

@@ -1,4 +1,4 @@
-#include "JsonPathLogger.h"
+#include "JsonPathLogger.hpp"
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>

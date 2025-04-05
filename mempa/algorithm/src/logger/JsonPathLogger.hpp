@@ -1,7 +1,7 @@
 #pragma once
 
-#include "JsonPathLogger.h"
-#include "PathLogger.h"
+#include "JsonPathLogger.hpp"
+#include "PathLogger.hpp"
 #include <string>
 
 /**

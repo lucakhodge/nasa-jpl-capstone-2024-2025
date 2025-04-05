@@ -1,4 +1,4 @@
-#include "SearchContext.h"
+#include "SearchContext.hpp"
 
 /* We can just use a constructor instead of needing a setStrategy function. */
 SearchContext::SearchContext(SearchAlgorithm *algorithmStrategy)

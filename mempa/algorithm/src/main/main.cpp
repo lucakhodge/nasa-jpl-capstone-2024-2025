@@ -1,5 +1,5 @@
 #include "../dem-handler/DemHandler.hpp"
-#include "../logger/PathLogger.h"
+#include "../logger/PathLogger.hpp"
 #include "../rover-simulator/simulator.cpp"
 #include "Cli.hpp"
 #include <iostream>
