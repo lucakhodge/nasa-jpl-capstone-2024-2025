@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#include <iostream>
 
 namespace mempa
 {
@@ -75,6 +76,7 @@ namespace mempa
             roverRouter.executeStrategySetUpAlgo(elevationMap, vectorPosition, vectorGoal, MAX_SLOPE, imageResolution);
 
             /* Get one single step from the algorithm. */
+            roverRouter.executeStrategyGetStep();                                     /* Because the Dijkstra's algorithm will first pop the current input position, it must be removed before the first move can be read. */
             std::pair<int, int> algorithmStep = roverRouter.executeStrategyGetStep(); /* The algorithm should return the new position within the vector. */
             if (algorithmStep == BREAK_STEP)                                          /* If the algorithm returns {-1, -1}, it has reached its destination. */
             {
