@@ -1,6 +1,7 @@
-#include "../DemHandler/DemHandler.hpp"
-#include "../RoverSimulator/simulator.cpp"
-#include "cli.h"
+#include "../dem-handler/DemHandler.hpp"
+#include "../logger/PathLogger.hpp"
+#include "../rover-simulator/simulator.cpp"
+#include "Cli.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
 
@@ -56,33 +57,16 @@ int main(int argc, char *argv[]) {
   Dijkstras searchAlgo;
   // with hardcoded strategy
   std::cout << "Setup complete running simulaotr now" << std::endl;
-  std::vector<std::pair<int, int>> outPath;
-
-  outPath =
+  std::vector<std::pair<int, int>> path =
       simulator.runWithSquareRadius(config.pixel_coordinates.front().first,
                                     config.pixel_coordinates.front().second,
                                     config.pixel_coordinates.back().first,
                                     config.pixel_coordinates.back().second,
                                     mars_dem, config.radius, &searchAlgo);
 
-  if (config.json_flag) {
-    // print outPath in JSON format to file for GUI to read
-    nlohmann::json j;
-    j["data"] = nlohmann::json::array();
+  std::unique_ptr<PathLogger> logger =
+      PathLogger::createLogger(config.json_flag);
+  logger->logPath(config.output_file, path);
 
-    // convert pair<int, int> in outPath to JSON format
-    for (const auto &point : outPath) {
-      j["data"].push_back({{"x", point.first}, {"y", point.second}});
-    }
-
-    std::ofstream jsonFile(config.output_file);
-    if (jsonFile.is_open()) {
-      jsonFile << j.dump();
-      jsonFile.close();
-      std::cout << "Path saved to " << config.output_file << std::endl;
-    } else {
-      std::cerr << "Error: Could not open file to write JSON." << std::endl;
-    }
-  }
   return 0;
 }
