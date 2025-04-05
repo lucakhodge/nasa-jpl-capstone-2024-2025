@@ -15,6 +15,7 @@
 #include <tuple>
 #include <typeinfo>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 
 /**
@@ -235,77 +236,6 @@ private:
     return std::make_tuple(startRow, startCol, endRow, endCol);
   }
 
-  /**
-   * @brief this function caluculates the closest cordinate inside of a square
-   * area to an end point
-   *
-   * @author Oscar Mikus
-   */
-  std::pair<int, int> calculateDemNavToHereRadius(int startX, int startY,
-                                                  int endX, int endY,
-                                                  int radius) {
-    int left = startX - radius;
-    int right = startX + radius;
-    int bottom = startY - radius;
-    int top = startY + radius;
-
-    int closestX = std::clamp(endX, left, right);
-    int closestY = std::clamp(endY, bottom, top);
-
-    return std::make_pair(closestX, closestY);
-  }
-
-  /**
-   * @brief this function calculates the coordinates for the closest postion to
-   * the actual goal coordinate within the limitations of the max dem size based
-   * on a max number of pixels to represent memory limitations
-   *
-   * @author Oscar Mikus
-   */
-  std::pair<int, int> calculateDemNavToHere(int startX, int startY, int endX,
-                                            int endY,
-                                            int maxDemRegionPixelCount) {
-    if (maxDemRegionPixelCount < (TERRAIN_PADDING * TERRAIN_PADDING)) {
-      throw std::runtime_error("maxDemRegionPixelCount is too low");
-    }
-
-    int width = endX - startX;
-    int height = endY - startY;
-    int closestX;
-    int closestY;
-
-    // Calculate the desired area of the rectangle
-    int desiredArea = width * height;
-
-    // If the area exceeds the max pixel limit, adjust the dimensions
-    if (desiredArea > maxDemRegionPixelCount) {
-      // Try adjusting the width or height while keeping the area under the
-      // limit
-      float aspectRatio = static_cast<float>(width) / height;
-
-      // Try adjusting the width first
-      int newWidth = std::min(
-          width, static_cast<int>(sqrt(maxDemRegionPixelCount * aspectRatio)));
-      int newHeight = maxDemRegionPixelCount / newWidth;
-
-      if (newWidth * newHeight > maxDemRegionPixelCount) {
-        // If the new width and height do not satisfy the constraint, adjust
-        // height
-        newHeight = std::min(height, maxDemRegionPixelCount / width);
-        newWidth = maxDemRegionPixelCount / newHeight;
-      }
-
-      closestX = startX + newWidth;
-      closestY = startY + newHeight;
-    } else {
-      // If the area is within the limit, return the original end point
-      closestX = endX;
-      closestY = endY;
-    }
-
-    return std::make_pair(closestX, closestY);
-  }
-
 public:
   /**
    * @brief Default Constructor for Simulator class. Initialize the start time
@@ -343,27 +273,19 @@ public:
       currentPos.first = startX;
       currentPos.second = startY;
 
+      std::pair<int, int> goalPos = std::make_pair(endX, endY);
+
       std::tuple<int, int, int, int> regionCordinates;
       std::pair<int, int> DemNavToHere;
       std::vector<std::pair<int, int>> path;
       std::vector<std::vector<float>> heightmap;
-      SearchContext search(searchStratToUse);
-
-      search.setStrategy(searchStratToUse);
+      std::pair<int, int> chunkLocation;
 
       // start looping here
       while (currentPos.first != endX && currentPos.second != endY) {
 
-        // Calculate region with padding
-        DemNavToHere = calculateDemNavToHereRadius(
-            currentPos.first, currentPos.second, endX, endY, radius);
-        regionCordinates =
-            calculateRegionCordinates(currentPos.first, currentPos.second,
-                                      DemNavToHere.first, DemNavToHere.second);
-
-        // logDebug("Loading heightmap for square area at (" + currentPos.first
-        // + ", " + currentPos.second + ") with radius " + radius);
-
+        chunkLocation = std::make_pair(currentPos.first - radius,
+                                       currentPos.second - radius);
         heightmap = demHandler.readSquareChunk(currentPos, radius);
 
         if (heightmap.empty() || heightmap[0].empty()) {
@@ -373,41 +295,11 @@ public:
         logDebug("Heightmap loaded: " + std::to_string(heightmap.size()) + "x" +
                  std::to_string(heightmap[0].size()));
 
-        auto localStart = convertToLocalCoordinates(
-            currentPos.first, currentPos.second, std::get<0>(regionCordinates),
-            std::get<1>(regionCordinates));
-        auto localEnd = convertToLocalCoordinates(
-            DemNavToHere.first, DemNavToHere.second,
-            std::get<0>(regionCordinates), std::get<1>(regionCordinates));
-
-        if (!isValidCoordinate(localStart, heightmap) ||
-            !isValidCoordinate(localEnd, heightmap)) {
-          throw std::runtime_error("Start or end point out of bounds");
-        }
-
-        logDebug("Starting to use strategy");
-        search.executeStrategyReset();
-        logDebug("Did first strategy thing");
-        search.executeStrategySetUpAlgo(heightmap, localStart, localEnd,
-                                        MAX_SLOPE, MARS_PIXEL_SIZE);
-        logDebug("Did second strategy thing");
-
-        // auto path = dijkstra.dijkstras(heightmap, localStart, localEnd,
-        // MAX_SLOPE,
-        //                                MARS_PIXEL_SIZE);
-
-        std::pair<int, int> localStep;
         std::pair<int, int> globalStep;
-        while (true) {
-          localStep = search.executeStrategyGetStep();
-          if (localStep == std::make_pair(-1, -1)) {
-            break;
-          }
-          globalStep = convertToGlobalCoordinates(
-              localStep.first, localStep.second, std::get<0>(regionCordinates),
-              std::get<1>(regionCordinates));
-          path.push_back(globalStep);
-        }
+        globalStep =
+            searchStratToUse->get_step(heightmap, chunkLocation, currentPos,
+                                       goalPos, MAX_SLOPE, MARS_PIXEL_SIZE);
+        path.push_back(globalStep);
 
         // need to set new start coordinates here
         currentPos = globalStep;
