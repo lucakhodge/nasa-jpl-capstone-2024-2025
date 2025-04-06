@@ -2,10 +2,10 @@
 #define PREPROCESS_SLOPE false /* Enable (true) or disable (false) the use of a preprocessed slope raster. */
 
 /* mempa::DemHandler */
-#include "../DemHandler/DemHandler.hpp"
+#include "../dem-handler/DemHandler.hpp"
 
 /* mempa::SearchAlgorithm */
-#include "../search_algorithms/SearchAlgorithm.h"
+#include "../rover-pathfinding-module/SearchAlgorithm.hpp"
 
 /* C++ Standard Libraries */
 #include <cmath>
