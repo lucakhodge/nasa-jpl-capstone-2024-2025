@@ -26,8 +26,9 @@ public:
 
 class SearchAlgorithm {
 public:
+  // Add the constructor declaration
+  SearchAlgorithm() noexcept;
   virtual ~SearchAlgorithm() = default; // Ensure virtual destructor is declared and defined  
-  ~SearchAlgorithm();
   void setUpAlgo(std::vector<std::vector<float>> &heightmap,
                  std::pair<int, int> chunkLocation,
                  std::pair<int, int> startPoint, std::pair<int, int> endPoint,
