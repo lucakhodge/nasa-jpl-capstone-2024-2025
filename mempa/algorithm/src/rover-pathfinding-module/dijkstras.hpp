@@ -8,15 +8,15 @@ public:
     Dijkstras() = default;
     ~Dijkstras() override = default; // Ensure the destructor overrides the base class destructor
 
-    std::vector<std::pair<int, int>> dijkstras();
+    std::vector<std::pair<int, int>> dijkstras() override; // Ensure this overrides a virtual function
     std::pair<int, int> get_step(std::vector<std::vector<float>> &heightmap,
                                  std::pair<int, int> chunkLocation,
                                  std::pair<int, int> startPoint,
                                  std::pair<int, int> endPoint, float maxSlope,
-                                 float pixelSize);
-    void reset();
-    bool can_get_next_step();
-    bool is_path_storage_empty();
+                                 float pixelSize) override;
+    void reset() override;
+    bool can_get_next_step() override;
+    bool is_path_storage_empty() override;
 
     // Getters
     std::vector<std::pair<int, int>> get_path_storage() const {
