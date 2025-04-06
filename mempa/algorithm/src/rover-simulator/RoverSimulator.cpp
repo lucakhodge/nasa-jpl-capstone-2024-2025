@@ -20,13 +20,10 @@ namespace mempa
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
-     * @param elevationRaster Pointer to the DemHandler object for the elevation
-     * raster.
+     * @param elevationRaster Pointer to the DemHandler object for the elevation raster.
      * @param slopeRaster Pointer to the DemHandler object for the slope raster.
-     * @param startPosition Pair of doubles for the geographic coordinate of the
-     * starting position.
-     * @param endPosition Pair of doubles for the geographic coordinate of the
-     * destination.
+     * @param startPosition Pair of doubles for the geographic coordinate of the starting position.
+     * @param endPosition Pair of doubles for the geographic coordinate of the destination.
      */
     RoverSimulator::RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, const std::pair<double, double> startPosition, const std::pair<double, double> endPosition) noexcept
         : elevationRaster(elevationRaster), slopeRaster(slopeRaster), imageResolution(elevationRaster->getImageResolution()),
@@ -39,13 +36,9 @@ namespace mempa
     /**
      * @brief Construct a new Rover Simulator:: Rover Simulator object
      *
-     * @param elevationRaster Pointer to the DemHandler object for the elevation
-     * raster.
-     * @param slopeRaster Pointer to the DemHandler object for the slope raster.
-     * @param startPosition Pair of doubles for the geographic coordinate of the
-     * starting position.
-     * @param endPosition Pair of doubles for the geographic coordinate of the
-     * destination.
+     * @param elevationRaster Pointer to the DemHandler object for the elevation raster.
+     * @param startPosition Pair of doubles for the geographic coordinate of the starting position.
+     * @param endPosition Pair of doubles for the geographic coordinate of the destination.
      */
     RoverSimulator::RoverSimulator(const DemHandler *elevationRaster, const std::pair<double, double> startPosition, const std::pair<double, double> endPosition) noexcept
         : elevationRaster(elevationRaster), imageResolution(elevationRaster->getImageResolution()),
