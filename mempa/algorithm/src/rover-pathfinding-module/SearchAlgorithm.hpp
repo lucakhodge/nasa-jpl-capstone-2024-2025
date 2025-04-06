@@ -25,14 +25,14 @@ public:
 };
 
 class SearchAlgorithm {
-public:
-  // Add the constructor declaration
+  public:
   SearchAlgorithm() noexcept;
-  virtual ~SearchAlgorithm() = default; // Ensure virtual destructor is declared and defined  
-  void setUpAlgo(std::vector<std::vector<float>> &heightmap,
-                 std::pair<int, int> chunkLocation,
-                 std::pair<int, int> startPoint, std::pair<int, int> endPoint,
-                 float maxSlope, float pixelSize);
+  virtual ~SearchAlgorithm() = default;
+
+  virtual std::vector<std::pair<int, int>> dijkstras() = 0; // Add this line
+  virtual bool can_get_next_step() = 0; // Add this line
+  virtual bool is_path_storage_empty() = 0; // Add this line
+
   virtual std::pair<int, int>
   get_step(std::vector<std::vector<float>> &heightmap,
            std::pair<int, int> chunkLocation, std::pair<int, int> startPoint,
