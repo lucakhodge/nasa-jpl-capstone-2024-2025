@@ -26,6 +26,7 @@ public:
 
 class SearchAlgorithm {
 public:
+  virtual ~SearchAlgorithm() = default; // Ensure virtual destructor is declared and defined  
   SearchAlgorithm();
   ~SearchAlgorithm();
   void setUpAlgo(std::vector<std::vector<float>> &heightmap,
