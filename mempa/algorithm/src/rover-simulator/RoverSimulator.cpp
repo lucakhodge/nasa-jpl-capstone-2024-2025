@@ -81,6 +81,8 @@ namespace mempa
             roverRouter.executeStrategySetUpAlgo(elevationMap, chunkLocation, currentPosition, endPosition, MAX_SLOPE, imageResolution);                              /* Set up the algorithm for the new view. */
             roverRouter.executeStrategyGetStep(elevationMap, chunkLocation, currentPosition, endPosition, MAX_SLOPE, imageResolution);                                /* It still does the thing where it returns the currentPosition first. */
             std::pair<int, int> pathStep = roverRouter.executeStrategyGetStep(elevationMap, chunkLocation, currentPosition, endPosition, MAX_SLOPE, imageResolution); /* Get the first step made by the algorithm. */
+
+            /* Add the step made to the route and update current position. */
             routedRasterPath.push_back(pathStep);
             currentPosition = pathStep;
         } while (currentPosition != endPosition);

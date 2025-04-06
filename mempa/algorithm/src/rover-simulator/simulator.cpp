@@ -112,6 +112,8 @@ private:
   /**
    * @brief retruns a height value for elevation or 0.0 if a height value of Nan
    * is found.
+   * 
+   * @note Why return 0.0? 0 is a legitimate elevation value. NAN indicates there is no knowledge of the value. 
    *
    * @author Adam Carlson
    */
