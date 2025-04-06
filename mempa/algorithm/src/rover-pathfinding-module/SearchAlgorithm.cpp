@@ -14,5 +14,3 @@ void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>> &heightmap,
 }
 
 SearchAlgorithm::SearchAlgorithm() {}
-
-SearchAlgorithm::~SearchAlgorithm() {}
