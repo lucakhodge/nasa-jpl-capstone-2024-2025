@@ -54,7 +54,7 @@ namespace mempa
      *
      * @param algorithmType @ref SearchAlgorithm class to use for pathfinding.
      * @param buffer How much to buffer the space around the coordinate by.
-     * @return std::vector<std::pair<int, int>>
+     * @return std::vector<std::pair<int, int>> Route taken from start coordinate to destination. 
      */
     std::vector<std::pair<int, int>>
     RoverSimulator::runSimulator(SearchAlgorithm *algorithmType, const int buffer)
