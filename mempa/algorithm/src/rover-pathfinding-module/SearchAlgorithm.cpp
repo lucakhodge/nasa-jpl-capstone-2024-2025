@@ -13,6 +13,4 @@ void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>> &heightmap,
   _pixelSize = pixelSize;
 }
 
-SearchAlgorithm::SearchAlgorithm() {}
-
-SearchAlgorithm::~SearchAlgorithm() {}
+SearchAlgorithm::SearchAlgorithm() noexcept {}

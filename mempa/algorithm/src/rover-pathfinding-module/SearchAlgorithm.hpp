@@ -26,17 +26,24 @@ public:
 
 class SearchAlgorithm {
 public:
-  SearchAlgorithm();
-  ~SearchAlgorithm();
-  void setUpAlgo(std::vector<std::vector<float>> &heightmap,
-                 std::pair<int, int> chunkLocation,
-                 std::pair<int, int> startPoint, std::pair<int, int> endPoint,
-                 float maxSlope, float pixelSize);
+  SearchAlgorithm() noexcept;
+  virtual ~SearchAlgorithm() = default;
+
+  virtual std::vector<std::pair<int, int>> dijkstras() = 0;
+  virtual bool can_get_next_step() = 0;
+  virtual bool is_path_storage_empty() = 0;
   virtual std::pair<int, int>
   get_step(std::vector<std::vector<float>> &heightmap,
            std::pair<int, int> chunkLocation, std::pair<int, int> startPoint,
            std::pair<int, int> endPoint, float maxSlope, float pixelSize) = 0;
   virtual void reset() {}
+
+  // Add the missing declaration here
+  void setUpAlgo(std::vector<std::vector<float>> &heightmap,
+                 std::pair<int, int> chunkLocation,
+                 std::pair<int, int> startPoint,
+                 std::pair<int, int> endPoint, float maxSlope,
+                 float pixelSize);
 
   // Getters
   std::vector<std::vector<float>> getHeightmap() const { return _heightmap; }
