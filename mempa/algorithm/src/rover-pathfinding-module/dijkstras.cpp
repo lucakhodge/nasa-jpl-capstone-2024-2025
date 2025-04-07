@@ -249,7 +249,7 @@ std::pair<int, int> Dijkstras::get_step(
   {
     vector<pair<int, int>> realPath = dijkstras();
 
-    for (size_t i = 0uz; i < realPath.size(); i++)
+    for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++)
     {
       std::pair<int, int> localLocation = realPath.at(i);
       std::pair<int, int> globalLocation =
