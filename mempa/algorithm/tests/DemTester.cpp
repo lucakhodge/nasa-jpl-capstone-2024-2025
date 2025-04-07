@@ -1,5 +1,6 @@
 #include "../src/dem-handler/DemHandler.hpp"
 #include "../src/rover-simulator/RoverSimulator.hpp"
+#include "../src/rover-pathfinding-module/SearchAlgorithm.hpp"
 #include "../src/rover-pathfinding-module/dijkstras.hpp"
 
 #include <cstdlib>
