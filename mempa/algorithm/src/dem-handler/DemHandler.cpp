@@ -5,6 +5,7 @@
 #include <gdal_priv.h>
 
 /* C++ Standard Libraries */
+#include <limits>
 #include <cmath>
 #include <algorithm>
 #include <vector>
@@ -158,7 +159,7 @@ namespace mempa
                 int yDistance = (row - yCenter) * (row - yCenter); /* Second length for pythagorean theorem. */
                 if (xDistance + yDistance > radiusSquared)
                 {
-                    rasterVector[row][col] = NAN;
+                    rasterVector[row][col] = std::numeric_limits<float>::quiet_NaN();
                 }
             }
         }
