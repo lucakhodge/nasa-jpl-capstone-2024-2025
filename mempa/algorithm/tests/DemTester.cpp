@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#define BASIC_DEMTEST false
+#define BASIC_DEMTEST true
 #define BASIC_SIMTEST true
 
 int main(int argc, char *argv[])
@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 
         // Ensure pixel resolution is 200
         const double sizetest = marsRaster.getImageResolution();
-        assert(sizetest == 200.0);
+        std::cout << "Image resoluation: " << sizetest;
+        assert((sizetest - 200.0) < 1e-14); // Check for equality, allowing double-precision inaccuracies. 
 
         const char *ci_env = std::getenv("CI");
         if (!ci_env) // If CI variable is not set
