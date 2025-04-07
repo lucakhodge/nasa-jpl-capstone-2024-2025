@@ -18,7 +18,6 @@ class Analyitics {
       10.0; // Significant elevation change threshold (meters)
 private:
   TerrainMetrics metrics;
-
   std::string name;
   std::chrono::steady_clock::time_point startTime;
   std::pair<int, int> currentPos;

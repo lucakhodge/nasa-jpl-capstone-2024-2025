@@ -5,7 +5,8 @@
 #include <vector>
 
 void TextPathLogger::logPath(const std::string &filename,
-                             const std::vector<std::pair<int, int>> &path) {
+                             const std::vector<std::pair<int, int>> &path,
+                             Metrics metrics) {
 
   // Original text output implementation
   std::ofstream outFile(filename);
@@ -19,10 +20,12 @@ void TextPathLogger::logPath(const std::string &filename,
   // outFile << "# Start: (" << startPoint.first << "," << startPoint.second
   //         << ")\n";
   // outFile << "# End: (" << endPoint.first << "," << endPoint.second << ")\n";
-  // outFile << "# Metrics:\n";
+  outFile << "# Metrics:\n";
   // outFile << "#   Total Distance: " << metrics.totalDistance << " m\n";
-  // outFile << "#   Horizontal Distance: " << metrics.horizontalDistance
-  //         << " m\n";
+  outFile << "#   Horizontal Distance: " << metrics.horizontalDistance
+          << " m\n";
+  outFile << "#   As The Crow Flys Distance: " << metrics.asTheCrowFlysDistance
+          << " m\n";
   // outFile << "#   Total Elevation Change: " << metrics.totalElevationChange
   //         << " m\n";
   // outFile << "#   Net Elevation Change: " << metrics.netElevationChange

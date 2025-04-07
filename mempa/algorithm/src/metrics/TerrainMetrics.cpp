@@ -1,3 +1,4 @@
+#include "TerrainMetrics.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cmath>

@@ -7,7 +7,8 @@
 #include <vector>
 
 void JsonPathLogger::logPath(const std::string &filename,
-                             const std::vector<std::pair<int, int>> &path) {
+                             const std::vector<std::pair<int, int>> &path,
+                             Metrics metrics) {
   // print outPath in JSON format to file for GUI to read
   nlohmann::json j;
   j["data"] = nlohmann::json::array();
@@ -16,6 +17,10 @@ void JsonPathLogger::logPath(const std::string &filename,
   for (const auto &point : path) {
     j["data"].push_back({{"x", point.first}, {"y", point.second}});
   }
+
+  j["metrics"].push_back(
+      {{"horizontalDistance", metrics.horizontalDistance},
+       {"asTheCrowFlysDistance", metrics.asTheCrowFlysDistance}});
 
   std::ofstream jsonFile(filename);
   if (jsonFile.is_open()) {

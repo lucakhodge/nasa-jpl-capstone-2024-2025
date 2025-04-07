@@ -1,5 +1,6 @@
 #include "../dem-handler/DemHandler.hpp"
 #include "../logger/PathLogger.hpp"
+#include "../metrics/Metrics.hpp"
 #include "../rover-simulator/simulator.cpp"
 #include "Cli.hpp"
 #include <iostream>
@@ -64,9 +65,12 @@ int main(int argc, char *argv[]) {
                                     config.pixel_coordinates.back().second,
                                     mars_dem, config.radius, &searchAlgo);
 
+  Metrics metrics;
+  metrics.analizePath(path);
+
   std::unique_ptr<PathLogger> logger =
       PathLogger::createLogger(config.json_flag);
-  logger->logPath(config.output_file, path);
+  logger->logPath(config.output_file, path, metrics);
 
   return 0;
 }
