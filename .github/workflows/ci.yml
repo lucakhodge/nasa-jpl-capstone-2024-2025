@@ -20,16 +20,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
 
+    - name: Build the main program
+      run: |
+        make
+      working-directory: mempa/algorithm
+
     - name: Download Mars DEM .tif
       run: |
         mkdir -p mempa/tests
         curl -L https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif -o mars_dem.tif
       working-directory: mempa/algorithm/tests
-
-    - name: Build the main program
-      run: |
-        make
-      working-directory: mempa/algorithm
 
     - name: Build and run tests
       run: |
