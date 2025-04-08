@@ -105,13 +105,17 @@ namespace mempa
      */
     inline void CLI::displayInputs() const noexcept
     {
-        std::cout << "Start: " << geoStrStartCoordinate << "\nEnd: " << geoStrGoalCoordinate
-                  << "\nStart Area: " << geoStrStartArea << "\nEnd Area: " << geoStrGoalArea
+        std::cout << "Start: " << geoStrStartCoordinate
+                  << "\nEnd: " << geoStrGoalCoordinate
+                  << "\nStart Area: " << geoStrStartArea
+                  << "\nEnd Area: " << geoStrGoalArea
                   << "\nStart (Pixel): " << imgStrStartCoordinate
                   << "\nEnd (Pixel): " << imgStrGoalCoordinate
-                  << "\nInput File: " << geotiffFilepath << "\nOutput File: " << outputFilename
+                  << "\nInput File: " << geotiffFilepath
+                  << "\nOutput File: " << outputFilename
                   << "\nIterations: " << numIterations
-                  << "\nSlope Tolerance: " << maxSlopeTolerance << "\nRadius: " << pixelBuffer
+                  << "\nSlope Tolerance: " << maxSlopeTolerance
+                  << "\nRadius: " << pixelBuffer
                   << std::endl;
     }
 
