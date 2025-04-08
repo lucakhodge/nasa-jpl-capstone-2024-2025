@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             imgStartCoordinates = marsDemHandler.transformCoordinates(geoCoordinates.first);
             imgGoalCoordinates = marsDemHandler.transformCoordinates(geoCoordinates.second);
         }
-        elif (commandLineInterface.isImgCRS())
+        else if (commandLineInterface.isImgCRS())
         {
             const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates = commandLineInterface.getImgCoordinates();
             imgStartCoordinates = imgCoordinates.first;
