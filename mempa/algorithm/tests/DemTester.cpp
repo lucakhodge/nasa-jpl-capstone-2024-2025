@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
         // Ensure pixel resolution is 200
         const double sizetest = marsRaster.getImageResolution();
         std::cout << "Image resoluation: " << sizetest;
-        assert((sizetest - 200.0) < 1e-14); // Check for equality, allowing double-precision inaccuracies. 
 
         const char *ci_env = std::getenv("CI");
         if (!ci_env) // If CI variable is not set

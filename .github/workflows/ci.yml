@@ -20,10 +20,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
 
+    - name: Verify GDAL installation
+      run: gdalinfo --version
+
     - name: Download Mars DEM .tif
       run: |
         mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif -o mars_dem.tif
+        curl -L https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif -o mars_dem.tif
       working-directory: mempa/algorithm/tests
 
     - name: Build the main program
