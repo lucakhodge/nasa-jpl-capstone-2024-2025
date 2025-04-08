@@ -35,7 +35,7 @@ jobs:
     - name: Clip DEM to test region
       run: |
         # Clip to Olympus Mons region for even faster testing
-        gdal_translate -projwin -140 30 -130 20 mars_dem.tif mars_clipped.tif
+        gdal_translate -projwin 0 0 480 560 mars_dem.tif mars_clipped.tif
         # Replace original with smaller clipped version
         mv mars_clipped.tif mars_dem.tif
       working-directory: mempa/algorithm/tests
