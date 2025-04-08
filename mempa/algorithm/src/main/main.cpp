@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
             imgStartCoordinates = marsDemHandler.transformCoordinates(geoCoordinates.first);
             imgGoalCoordinates = marsDemHandler.transformCoordinates(geoCoordinates.second);
         }
-        else
+        elif (commandLineInterface.isImgCRS())
         {
-            if (!commandLineInterface.isImgCRS())
-            {
-                throw std::runtime_error("Input CRS must be geospatial or image based.");
-            }
             const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates = commandLineInterface.getImgCoordinates();
             imgStartCoordinates = imgCoordinates.first;
             imgGoalCoordinates = imgCoordinates.second;
+        }
+        else
+        {
+            throw std::runtime_error("Input CRS must be geospatial or image based.");
         }
 
         mempa::RoverSimulator marsSimulator(&marsDemHandler, imgStartCoordinates, imgGoalCoordinates);
