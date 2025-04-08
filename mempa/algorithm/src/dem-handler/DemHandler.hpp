@@ -11,6 +11,7 @@
 /**
  * @brief Namespace for CU Boulder Mars Elevation Model Pathfinding Algorithm.
  *
+ * @author Ryan Wagster <ryan.wagster@colorado.edu>
  */
 namespace mempa
 {
@@ -23,16 +24,16 @@ namespace mempa
     {
     private:
         const char *const pszFilename;                     /* Filepath to the input DEM.tif file. */
-        static inline constexpr int ELEVATION_BAND = 1;    /* For a DEM, the Elevation Band should be at indice 1. For a slope raster, Band 1 is used for slope values. */
-        static inline constexpr double DEM_180 = 180.0;    /* Used to convert degrees to meters for spatial resolution. Only used for DEM data. */
+        inline static constexpr int ELEVATION_BAND = 1;    /* For a DEM, the Elevation Band should be at indice 1. For a slope raster, Band 1 is used for slope values. */
+        inline static constexpr double DEM_180 = 180.0;    /* Used to convert degrees to meters for spatial resolution. Only used for DEM data. */
         GDALDatasetUniquePtr poDataset;                    /* Pointer to the GDAL Dataset. Not actually a pointer. */
         GDALRasterBand *poBand;                            /* Pointer to the first band of the raster. */
-        static inline constexpr int GEOTRANSFORM_SIZE = 6; /* GDAL Geotransforms are sets of 6 coefficients. */
+        inline static constexpr int GEOTRANSFORM_SIZE = 6; /* GDAL Geotransforms are sets of 6 coefficients. */
         double adfGeoTransform[GEOTRANSFORM_SIZE];         /* Array to store all Geotransform values. */
         const char *poProjection;                          /* Name of CRS projection used by the raster. */
         OGRSpatialReference CRS;                           /* Coordinate Reference System of the raster. */
 #if DEMHANDLER_MINMAX
-        static inline constexpr int MINMAX_SIZE = 2; /* Size of the array to hold min and max raster values. */
+        inline static constexpr int MINMAX_SIZE = 2; /* Size of the array to hold min and max raster values. */
         double elevationMinMax[MINMAX_SIZE];         /* Minimum: Index 0, Maximum: Index 1 */
 #endif
 

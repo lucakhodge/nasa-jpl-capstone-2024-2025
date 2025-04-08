@@ -28,23 +28,22 @@ namespace mempa
 #endif
         const double imageResolution;                                   /* Raster image resolution in meters. */
         const std::pair<int, int> startPosition;                        /* The rover's initial image-based coordinate position. */
-        const std::pair<int, int> endPosition;                          /* The rover's image-based coordinate desination. */
+        const std::pair<int, int> goalPosition;                         /* The rover's image-based coordinate desination. */
         std::pair<int, int> currentPosition;                            /* The rover's current image-based coordinate position. */
-        static inline constexpr float MAX_SLOPE = 35.0f;                /* Maximum tolerable slope for the rover.*/
-        static inline constexpr std::pair<int, int> BREAK_STEP{-1, -1}; /* The value that a pathfinding algorithm returns when it is complete. */
-        inline bool validateCoordinate(std::pair<int, int> vecCoordinate, std::vector<std::vector<float>> rasterVector) const noexcept;
+        inline static constexpr std::pair<int, int> BREAK_STEP{-1, -1}; /* The value that a pathfinding algorithm returns when it is complete. */
 
     protected:
         /* RoverSimulator is not designed to be subclassed. */
 
     public:
 #if PREPROCESS_SLOPE
-        explicit RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, std::pair<double, double> startPosition, std::pair<double, double> endPosition) noexcept;
+        explicit RoverSimulator(const DemHandler *elevationRaster, const DemHandler *slopeRaster, std::pair<double, double> startPosition, std::pair<double, double> goalPosition) noexcept;
 #else
-        explicit RoverSimulator(const DemHandler *elevationRaster, std::pair<double, double> startPosition, std::pair<double, double> endPosition) noexcept;
+        explicit RoverSimulator(const DemHandler *elevationRaster, std::pair<double, double> startPosition, std::pair<double, double> goalPosition) noexcept;
 #endif
-        std::vector<std::pair<int, int>> runSimulator(SearchAlgorithm *algorithmType, int buffer);
+        std::vector<std::pair<int, int>> runSimulator(SearchAlgorithm *algorithmType, float max_slope, int buffer);
         inline bool validateElevation(float elevationValue) const noexcept;
+        inline bool validateCoordinate(std::pair<int, int> vecCoordinate, std::vector<std::vector<float>> rasterVector) const noexcept;
         inline std::pair<int, int> coordinateDifference(std::pair<int, int> coordinate1, std::pair<int, int> coordinate2) const noexcept;
         inline std::pair<int, int> globalVectorCorner(std::pair<int, int> globalCoordinate, int buffer) const noexcept;
     };

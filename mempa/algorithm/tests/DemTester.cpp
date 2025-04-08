@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
         mempa::DemHandler marsRaster(demFilepath);
 
         // Example coordinates (latitude, longitude)
-        std::pair<double, double> userCoordinates1(-150., 40.);
-        std::pair<double, double> userCoordinates2(-151., 39.);
+        std::pair<double, double> userCoordinates1(-150.0, 40.0);
+        std::pair<double, double> userCoordinates2(-155.0, 35.0);
 
         // Make the siulator object.
         mempa::RoverSimulator marsSimulator(&marsRaster, userCoordinates1, userCoordinates2);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         // Create a new pathfinding algorithm object.
         Dijkstras marsDisjkstrasAlgorithm;
 
-        std::vector<std::pair<int, int>> routedPath = marsSimulator.runSimulator(&marsDisjkstrasAlgorithm, chunkSize);
+        std::vector<std::pair<int, int>> routedPath = marsSimulator.runSimulator(&marsDisjkstrasAlgorithm, 35.0f, chunkSize);
 
         const char *ci_env = std::getenv("CI");
         if (!ci_env) // If CI variable is not set
