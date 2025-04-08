@@ -20,8 +20,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y g++ libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
 
-    - name: Verify GDAL installation
-      run: gdalinfo --version
+    - name: Set GDAL path
+      run: |
+        export PATH=$PATH:/usr/local/bin:/usr/bin
+        echo "GDAL tools are located in the following directories: /usr/local/bin, /usr/bin"
+        gdalinfo --version
+      shell: bash
 
     - name: Download Mars DEM .tif
       run: |
