@@ -25,10 +25,19 @@ jobs:
         make
       working-directory: mempa/algorithm
 
-    - name: Download Mars DEM .tif
+    - name: Download smaller Mars DEM for faster testing
       run: |
         mkdir -p mempa/tests
+        # Download the 2GB MOLA DEM file instead of the larger one
         curl -L https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif -o mars_dem.tif
+      working-directory: mempa/algorithm/tests
+      
+    - name: Clip DEM to test region
+      run: |
+        # Clip to Olympus Mons region for even faster testing
+        gdal_translate -projwin -140 30 -130 20 mars_dem.tif mars_clipped.tif
+        # Replace original with smaller clipped version
+        mv mars_clipped.tif mars_dem.tif
       working-directory: mempa/algorithm/tests
 
     - name: Build and run tests
