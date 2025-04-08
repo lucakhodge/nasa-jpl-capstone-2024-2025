@@ -125,7 +125,7 @@ namespace mempa
 
         imgCRS = isCoordinateSet(imgStartPosition) && isCoordinateSet(imgGoalPosition);
         geoCRS = isCoordinateSet(geoStartPosition) && isCoordinateSet(geoGoalPosition);
-        if (!(imgCRS && geoCRS))
+        if (!(imgCRS || geoCRS))
         {
             throw std::invalid_argument("Invalid coordinate system mismatch. Start and goal coordinates must be (lat, long) geospatial or (x, y) image based.");
         }
