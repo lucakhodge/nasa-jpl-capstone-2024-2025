@@ -25,6 +25,18 @@ jobs:
         mkdir -p mempa/tests
         curl -L https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif -o mars_dem.tif
       working-directory: mempa/algorithm/tests
+      
+    - name: Clip Mars DEM for faster testing
+      run: |
+        # Print info about the full DEM
+        gdalinfo mars_dem.tif | grep "Size is"
+        # Clip a small region around Olympus Mons (lon/lat coordinates)
+        gdal_translate -projwin -140 30 -130 20 mars_dem.tif mars_clipped.tif
+        # Verify the smaller size
+        gdalinfo mars_clipped.tif | grep "Size is"
+        # Replace the original with the clipped version to save space
+        mv mars_clipped.tif mars_dem.tif
+      working-directory: mempa/algorithm/tests
 
     - name: Build the main program
       run: |
