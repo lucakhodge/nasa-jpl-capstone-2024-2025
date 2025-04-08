@@ -129,6 +129,11 @@ namespace mempa
         {
             throw std::invalid_argument("Invalid coordinate system mismatch. Start and goal coordinates must be (lat, long) geospatial or (x, y) image based.");
         }
+
+        if (std::isnan(numIterations) || std::isnan(maxSlopeTolerance) || std::isnan(pixelBuffer))
+        {
+            throw std::invalid_argument("Iterations, Slope, and Radius must all be declared.");
+        }
     }
 
     /**
