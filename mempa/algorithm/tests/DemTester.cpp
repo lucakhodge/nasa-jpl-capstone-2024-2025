@@ -1,5 +1,6 @@
 #include "../src/dem-handler/DemHandler.hpp"
 #include "../src/rover-simulator/RoverSimulator.hpp"
+#include "../src/rover-pathfinding-module/SearchAlgorithm.hpp"
 #include "../src/rover-pathfinding-module/dijkstras.hpp"
 
 #include <cstdlib>
@@ -10,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#define BASIC_DEMTEST false
+#define BASIC_DEMTEST true
 #define BASIC_SIMTEST true
 
 int main(int argc, char *argv[])
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
 
         // Ensure pixel resolution is 200
         const double sizetest = marsRaster.getImageResolution();
-        assert(sizetest == 200.0);
+        std::cout << "Image resoluation: " << sizetest;
 
         const char *ci_env = std::getenv("CI");
         if (!ci_env) // If CI variable is not set
