@@ -4,12 +4,12 @@ INCLUDES = -Isrc -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
 LIBS = -lgdal -ltiff
 
-TARGET = simulator
+TARGET = simulator.out
 OBJ_DIR = build
 SRC_DIR = src
 TEST_DIR = tests
-SEARCH_TEST_TARGET = run_search_tests
-DEM_TEST_TARGET = run_dem_tests
+SEARCH_TEST_TARGET = run_search_tests.out
+DEM_TEST_TARGET = run_dem_tests.out
 
 # Main program sources and objects
 SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
