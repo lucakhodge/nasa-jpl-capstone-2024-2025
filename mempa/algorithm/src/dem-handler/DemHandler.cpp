@@ -3,6 +3,7 @@
 
 /* libgdal-dev */
 #include <gdal_priv.h>
+#include <ogr_spatialref.h>
 
 /* C++ Standard Libraries */
 #include <limits>
@@ -10,6 +11,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#include <stdexcept>
 
 namespace mempa
 {
@@ -21,6 +23,8 @@ namespace mempa
      * @throws Failure to perform GDAL functions.
      *
      * @note For more information on GDAL Raster API, see: https://gdal.org/en/stable/tutorials/raster_api_tut.html
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     DemHandler::DemHandler(const char *const pszFilename)
         : pszFilename(pszFilename)
@@ -80,6 +84,8 @@ namespace mempa
      * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     std::vector<std::vector<float>> DemHandler::readSquareChunk(const std::pair<int, int> imgCoordinate, const int buffer, std::pair<int, int> *relativeCoordinate) const
     {
@@ -133,6 +139,8 @@ namespace mempa
      * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throw Failure to read raster values.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     std::vector<std::vector<float>> DemHandler::readCircleChunk(const std::pair<int, int> imgCoordinate, const int radius, std::pair<int, int> *relativeCoordinate) const
     {
@@ -180,6 +188,8 @@ namespace mempa
      * @return std::vector<std::vector<float>> Elevation values.
      *
      * @throws Failure to allocate memory or read raster values.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     std::vector<std::vector<float>> DemHandler::readRectangleChunk(const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates, const int buffer, std::pair<std::pair<int, int>, std::pair<int, int>> *relativeCoordinates) const
     {
@@ -232,6 +242,8 @@ namespace mempa
      * @return std::pair<int, int> Pixel-based image coordinates.
      *
      * @note For more information on Geotransform, see: https://gdal.org/en/stable/tutorials/geotransforms_tut.html
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     std::pair<int, int> DemHandler::transformCoordinates(const std::pair<double, double> geoCoordinate) const noexcept
     {
@@ -245,6 +257,8 @@ namespace mempa
      *
      * @param imgCoordinate Coordinate pair of integers.
      * @return std::pair<double, double> Georeferenced coordinates.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     std::pair<double, double> DemHandler::revertCoordinates(const std::pair<int, int> imgCoordinate) const noexcept
     {
@@ -259,6 +273,8 @@ namespace mempa
      * @return double Pixel resolution in meters.
      *
      * @throw Non-Square pixels (inequal height and width) are invalid.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     double DemHandler::getImageResolution() const
     {
