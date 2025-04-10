@@ -13,5 +13,5 @@
 class JsonPathLogger : public PathLogger {
 public:
   void logPath(const std::string &filename,
-               const std::vector<std::pair<int, int>> &path);
+               const std::vector<std::pair<int, int>> &path, Metrics metrics);
 };

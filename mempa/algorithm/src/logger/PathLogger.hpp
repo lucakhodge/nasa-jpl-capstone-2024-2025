@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../metrics/Metrics.hpp"
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,7 +30,8 @@ public:
    * @param metrics Terrain metrics calculated for the path
    */
   virtual void logPath(const std::string &filename,
-                       const std::vector<std::pair<int, int>> &path) = 0;
+                       const std::vector<std::pair<int, int>> &path,
+                       const Metrics metrics) = 0;
 
   static std::unique_ptr<PathLogger> createLogger(bool useJson);
 };
