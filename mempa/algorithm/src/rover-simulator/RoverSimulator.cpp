@@ -6,7 +6,6 @@
 
 /* SearchAlgorithms */
 #include "../rover-pathfinding-module/SearchAlgorithm.hpp"
-#include "../rover-pathfinding-module/SearchContext.hpp"
 
 /* C++ Standard Libraries */
 #include <algorithm>
@@ -102,13 +101,20 @@ RoverSimulator::runSimulator(SearchAlgorithm *algorithm, const float max_slope,
         currentPosition, buffer); /* Contains the (0, 0) position in the vector
                                      as a globally spaced coordinate. */
 
-    std::pair<int, int> pathStep =
+    std::cout << "BEFORE GET STEP" << std::endl;
+    std::vector<std::pair<int, int>> pathSegment =
         algorithm->get_step(elevationMap, chunkLocation, currentPosition,
                             goalPosition, max_slope, imageResolution);
+    std::cout << "AFTER GET STEP " << pathSegment.size() << std::endl;
 
-    /* Add the step made to the route and update current position. */
-    routedRasterPath.push_back(pathStep);
-    currentPosition = pathStep;
+    for (auto &pathStep : pathSegment) {
+      /* Add the step made to the route and update current position. */
+      routedRasterPath.push_back(pathStep);
+      currentPosition = pathStep;
+      std::cout << "CURRENT POS: (" << currentPosition.first << ","
+                << currentPosition.second << ")" << std::endl;
+    }
+
   } while (currentPosition != goalPosition);
 
   return routedRasterPath;
