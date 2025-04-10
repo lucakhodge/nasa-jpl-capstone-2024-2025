@@ -1,76 +1,92 @@
+/* mempa::CLI */
+#include "CLI.hpp"
+
+/* mempa::DemHandler */
 #include "../dem-handler/DemHandler.hpp"
+
+/* mempa::RoverSimulator */
+#include "../rover-simulator/RoverSimulator.hpp"
+
+/* Dijkstras */
+#include "../src/rover-pathfinding-module/dijkstras.hpp"
+
+/* PathLogger */
 #include "../logger/PathLogger.hpp"
 #include "../metrics/Metrics.hpp"
 #include "../rover-simulator/simulator.cpp"
 #include "Cli.hpp"
 #include <iostream>
+
+/* nlohmann-json3-dev */
 #include <nlohmann/json.hpp>
 
+/* C++ Standard Libraries */
+#include <iostream>
+#include <stdexcept>
+
+/**
+ * @brief Main function to run the MEMPA project.
+ *
+ * @param argc
+ * @param argv
+ * @return int
+ *
+ * @author Brock Hoos <brock.hoos@colorado.edu>
+ * @author Ryan Wagster <rywa2447@colorado.edu>
+ */
 int main(int argc, char *argv[]) {
-  // instantiate CLI
-  CLI config;
+  try {
+    /* Initialize Command Line Interface */
+    mempa::CLI commandLineInterface(argc, argv); /* CLI.cpp Object */
+    commandLineInterface.displayInputs();
 
-  // parse arguments from user
-  config.parseArgs(argc, argv);
+    mempa::DemHandler marsDemHandler(
+        commandLineInterface.getGeotiffFilepath()); /* DemHandler.cpp Object */
 
-  // validate all inputs besides coordinates
-  config.validateInputs();
+    std::pair<int, int>
+        imgStartCoordinates; /* Start coordinate for RoverSimulator */
+    std::pair<int, int>
+        imgGoalCoordinates; /* Goal coordinate for RoverSimulator */
+    if (commandLineInterface.isGeoCRS()) {
+      const std::pair<std::pair<double, double>, std::pair<double, double>>
+          geoCoordinates =
+              commandLineInterface
+                  .getGeoCoordinates(); /* Geospatial double coordinates for
+                                           transforming. */
+      imgStartCoordinates =
+          marsDemHandler.transformCoordinates(geoCoordinates.first);
+      imgGoalCoordinates =
+          marsDemHandler.transformCoordinates(geoCoordinates.second);
+    } else if (commandLineInterface.isImgCRS()) {
+      const std::pair<std::pair<int, int>, std::pair<int, int>> imgCoordinates =
+          commandLineInterface.getImgCoordinates();
+      imgStartCoordinates = imgCoordinates.first;
+      imgGoalCoordinates = imgCoordinates.second;
+    } else {
+      throw std::runtime_error("Input CRS must be geospatial or image based.");
+    }
 
-  // validate coordinates
-  if (!config.coordinate_check()) {
-    std::cerr << "Error: Invalid coordinate configurations" << std::endl;
+    mempa::RoverSimulator marsSimulator(&marsDemHandler, imgStartCoordinates,
+                                        imgGoalCoordinates);
+
+    /* TODO: Change this out for D* Lite Algorithm! */
+    Dijkstras roverRoutingAlgorithm; /* Dijkstra's Algorithm */
+    std::vector<std::pair<int, int>> routedPath = marsSimulator.runSimulator(
+        &roverRoutingAlgorithm, commandLineInterface.getSlopeTolerance(),
+        commandLineInterface.getBufferSize());
+
+    // DEM
+
+    Metrics metrics;
+    metrics.analizePath(routedPath);
+
+    std::unique_ptr<PathLogger> roverPathLogger =
+        PathLogger::createLogger(commandLineInterface.getJSONFlag());
+    roverPathLogger->logPath(commandLineInterface.getOutputFilename(),
+                             routedPath, metrics);
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
     return 1;
   }
-
-  // display what was received and initialized
-  config.displayInputs();
-
-  std::cout << "Program successfully initialized. Proceeding with processing..."
-            << std::endl;
-
-  // DEM
-  mempa::DemHandler mars_dem = mempa::DemHandler(config.input_file.c_str());
-  std::cout << "Created dem object" << std::endl;
-
-  config.processCoordinates();
-  std::cout << "Processed coordinates" << std::endl;
-
-  if (config.start_set && config.end_set) {
-    // DEM function to convert from geographic coords to pixel coords
-    std::cout << "enter config start pixel thingy " << std::endl;
-    // std::cout << config.coordinates.front() << std::endl;
-    config.pixel_coordinates.push_back(
-        mars_dem.transformCoordinates(config.coordinates.front()));
-    config.pixel_coordinates.push_back(
-        mars_dem.transformCoordinates(config.coordinates.back()));
-  }
-  std::cout << "config pixel coordinates " << std::endl;
-
-  // Simulator
-  Simulator simulator("Simulator");
-  std::cout << "initialized the simulator, old version " << std::endl;
-  // ** can pass output file given my user ** or NULL for output into created
-  // .txt file should pass coords, DEM handler, and slope?
-  // simulator.run(config.coordinates.front().first,
-  // config.coordinates.front().second, config.coordinates.back().first,
-  // config.coordinates.back().second, config.input_file, 500);
-
-  Dijkstras searchAlgo;
-  // with hardcoded strategy
-  std::cout << "Setup complete running simulaotr now" << std::endl;
-  std::vector<std::pair<int, int>> path =
-      simulator.runWithSquareRadius(config.pixel_coordinates.front().first,
-                                    config.pixel_coordinates.front().second,
-                                    config.pixel_coordinates.back().first,
-                                    config.pixel_coordinates.back().second,
-                                    mars_dem, config.radius, &searchAlgo);
-
-  Metrics metrics;
-  metrics.analizePath(path);
-
-  std::unique_ptr<PathLogger> logger =
-      PathLogger::createLogger(config.json_flag);
-  logger->logPath(config.output_file, path, metrics);
-
   return 0;
 }

@@ -15,6 +15,8 @@ namespace mempa
      * @param rasterVector The vector to check if vecCoordinate is valid within.
      * @return true Coordinate is within the vector.
      * @return false Coordinate is outside the vector, would segfault.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     inline bool RoverSimulator::validateCoordinate(const std::pair<int, int> vecCoordinate, const std::vector<std::vector<float>> rasterVector) const noexcept
     {
@@ -29,6 +31,8 @@ namespace mempa
      *
      * @return true The elevation is valid.
      * @return false The elevation is not a number.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     inline bool RoverSimulator::validateElevation(const float elevationValue) const noexcept
     {
@@ -41,6 +45,8 @@ namespace mempa
      * @param coordinate1 Image based coordinate one.
      * @param coordinate2 Image based coordinate two.
      * @return std::pair<int, int> X difference, Y difference.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     inline std::pair<int, int> RoverSimulator::coordinateDifference(const std::pair<int, int> coordinate1, const std::pair<int, int> coordinate2) const noexcept
     {
@@ -53,6 +59,8 @@ namespace mempa
      * @param globalCoordinate Current coordinate (must be center of 2D vector chunk).
      * @param buffer Buffer used for vector chunk.
      * @return std::pair<int, int> Top left corner of vector chunk in global coordinates.
+     * 
+     * @author Ryan Wagster <rywa2447@colorado.edu>
      */
     inline std::pair<int, int> RoverSimulator::globalVectorCorner(const std::pair<int, int> globalCoordinate, const int buffer) const noexcept
     {

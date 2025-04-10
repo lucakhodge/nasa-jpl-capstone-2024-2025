@@ -1,10 +1,13 @@
 #include "SearchAlgorithm.hpp"
 
+SearchAlgorithm::SearchAlgorithm() noexcept {}
+
 void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>> &heightmap,
                                 std::pair<int, int> chunkLocation,
                                 std::pair<int, int> startPoint,
                                 std::pair<int, int> endPoint, float maxSlope,
-                                float pixelSize) {
+                                float pixelSize)
+{
   _heightmap = heightmap;
   _chunkLocaiton = chunkLocation;
   _startPoint = startPoint;
@@ -12,5 +15,3 @@ void SearchAlgorithm::setUpAlgo(std::vector<std::vector<float>> &heightmap,
   _maxSlope = maxSlope;
   _pixelSize = pixelSize;
 }
-
-SearchAlgorithm::SearchAlgorithm() noexcept {}
