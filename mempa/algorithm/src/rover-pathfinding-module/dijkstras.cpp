@@ -219,61 +219,61 @@ std::vector<std::pair<int, int>> Dijkstras::get_step(
   this->setUpAlgo(heightmap, chunkLocation, startPoint, endPoint, maxSlope,
                   pixelSize);
 
-  // std::cout << "AT: start dijkstras" << std::endl;
-  // vector<pair<int, int>> realPath = dijkstras();
-  // vector<pair<int, int>> globalPath;
-  // std::cout << "AT: after dijkstras" << std::endl;
-  //
-  // // for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++) {
-  // for (int i = realPath.size() - 1; i >= 0; i--) {
-  //   std::pair<int, int> localLocation = realPath.at(i);
-  //   std::pair<int, int> globalLocation =
-  //       std::make_pair(localLocation.first + chunkLocation.first,
-  //                      localLocation.second + chunkLocation.second);
-  //   globalPath.push_back(globalLocation);
-  // }
-  //
-  // std::cout << "AT: after global loop" << std::endl;
-  //
-  // return globalPath;
+  std::cout << "AT: start dijkstras" << std::endl;
+  vector<pair<int, int>> realPath = dijkstras();
+  vector<pair<int, int>> globalPath;
+  std::cout << "AT: after dijkstras" << std::endl;
 
-  pair<int, int> out;
-
-  // if (pathStoredThanDisplayed) {
-  //   out = {-1, -1};
-  //   cout << "You have completed the path, if you want to start over please
-  // "
-  //           "call reset_dijkstras(), returning -1, -1"
-  //        << endl;
-  //   return out;
-  // }
-
-  if (pathStorage.empty()) {
-    vector<pair<int, int>> realPath = dijkstras();
-
-    for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++) {
-      std::pair<int, int> localLocation = realPath.at(i);
-      std::pair<int, int> globalLocation =
-          std::make_pair(localLocation.first + chunkLocation.first,
-                         localLocation.second + chunkLocation.second);
-      pathStorage.push_back(globalLocation);
-    }
-
-    out = pathStorage.back();
-    pathStorage.pop_back();
-
-    return std::vector(1, out);
-  } else {
-    out = pathStorage.back();
-    pathStorage.pop_back();
-
-    if (pathStorage.empty()) {
-      pathStoredThanDisplayed = true;
-    }
-
-    // return out;
-    return std::vector(1, out);
+  // for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++) {
+  for (int i = realPath.size() - 1; i >= 0; i--) {
+    std::pair<int, int> localLocation = realPath.at(i);
+    std::pair<int, int> globalLocation =
+        std::make_pair(localLocation.first + chunkLocation.first,
+                       localLocation.second + chunkLocation.second);
+    globalPath.push_back(globalLocation);
   }
+
+  std::cout << "AT: after global loop" << std::endl;
+
+  return globalPath;
+
+  // pair<int, int> out;
+  //
+  // // if (pathStoredThanDisplayed) {
+  // //   out = {-1, -1};
+  // //   cout << "You have completed the path, if you want to start over please
+  // // "
+  // //           "call reset_dijkstras(), returning -1, -1"
+  // //        << endl;
+  // //   return out;
+  // // }
+  //
+  // if (pathStorage.empty()) {
+  //   vector<pair<int, int>> realPath = dijkstras();
+  //
+  //   for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++) {
+  //     std::pair<int, int> localLocation = realPath.at(i);
+  //     std::pair<int, int> globalLocation =
+  //         std::make_pair(localLocation.first + chunkLocation.first,
+  //                        localLocation.second + chunkLocation.second);
+  //     pathStorage.push_back(globalLocation);
+  //   }
+  //
+  //   out = pathStorage.back();
+  //   pathStorage.pop_back();
+  //
+  //   return std::vector(1, out);
+  // } else {
+  //   out = pathStorage.back();
+  //   pathStorage.pop_back();
+  //
+  //   if (pathStorage.empty()) {
+  //     pathStoredThanDisplayed = true;
+  //   }
+  //
+  //   // return out;
+  //   return std::vector(1, out);
+  // }
 }
 
 vector<int> Dijkstras::get_neighbor_indexs(int rows, int cols, int row,
