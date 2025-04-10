@@ -14,7 +14,6 @@
 #include "../logger/PathLogger.hpp"
 #include "../metrics/Metrics.hpp"
 #include "../rover-simulator/simulator.cpp"
-#include "Cli.hpp"
 #include <iostream>
 
 /* nlohmann-json3-dev */
