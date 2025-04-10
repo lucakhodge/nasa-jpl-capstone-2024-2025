@@ -78,10 +78,8 @@ RoverSimulator::RoverSimulator(
  * @author Ryan Wagster <rywa2447@colorado.edu>
  */
 std::vector<std::pair<int, int>>
-RoverSimulator::runSimulator(SearchAlgorithm *algorithmType,
-                             const float max_slope, const int buffer) {
-  SearchContext roverRouter(
-      algorithmType); /* Set up the pathfinding algorithm based on input. */
+RoverSimulator::runSimulator(SearchAlgorithm *algorithm, const float max_slope,
+                             const int buffer) {
   std::vector<std::pair<int, int>> routedRasterPath = {
       currentPosition}; /* Holds the coordinates of every traversed area of the
                            raster. */
@@ -104,18 +102,9 @@ RoverSimulator::runSimulator(SearchAlgorithm *algorithmType,
         currentPosition, buffer); /* Contains the (0, 0) position in the vector
                                      as a globally spaced coordinate. */
 
-    /* Initialize a new setup for the pathfinding algorithm. */
-    roverRouter.executeStrategyReset(); /* Reset the algorithm. */
-    roverRouter.executeStrategySetUpAlgo(
-        elevationMap, chunkLocation, currentPosition, goalPosition, max_slope,
-        imageResolution); /* Set up the algorithm for the new view. */
-    roverRouter.executeStrategyGetStep(
-        elevationMap, chunkLocation, currentPosition, goalPosition, max_slope,
-        imageResolution); /* It still does the thing where it returns the
-                             currentPosition first. */
-    std::pair<int, int> pathStep = roverRouter.executeStrategyGetStep(
-        elevationMap, chunkLocation, currentPosition, goalPosition, max_slope,
-        imageResolution); /* Get the first step made by the algorithm. */
+    std::pair<int, int> pathStep =
+        algorithm->get_step(elevationMap, chunkLocation, currentPosition,
+                            goalPosition, max_slope, imageResolution);
 
     /* Add the step made to the route and update current position. */
     routedRasterPath.push_back(pathStep);
