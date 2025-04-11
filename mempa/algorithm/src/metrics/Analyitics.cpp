@@ -121,8 +121,7 @@ public:
         metrics.totalElevationChange += elevChange;
         metrics.maxSlope = std::max(metrics.maxSlope, slope);
         metrics.slopes.push_back(slope);
-        metrics.energyCost +=
-            metrics.calculateEnergyCost(distance, elevChange, slope);
+        
 
         if (i % 10 == 0 || i == path.size() - 1) {
           std::stringstream ss;

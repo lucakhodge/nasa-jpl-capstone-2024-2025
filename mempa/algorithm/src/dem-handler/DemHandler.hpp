@@ -50,6 +50,16 @@ namespace mempa
         double getImageResolution() const;
         inline int getXSize() const noexcept;
         inline int getYSize() const noexcept;
+        
+        /**
+         * @brief Get the elevation value at a specific (x,y) pixel coordinate
+         * 
+         * @param x The x-coordinate (column)
+         * @param y The y-coordinate (row)
+         * @return float The elevation value at the specified coordinate
+         */
+        float getValue(int x, int y) const;
+        
 #if DEMHANDLER_MINMAX
         inline double getMinElevation() const noexcept;
         inline double getMaxElevation() const noexcept;
