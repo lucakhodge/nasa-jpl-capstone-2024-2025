@@ -95,11 +95,6 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
             double distanceBetweenNodeAndNeighbor = calculate_distance_between_nodes(currentNode, currentNeighbor, rise, _pixelSize);
             currentNeighbor->distFromNeighbor = distanceBetweenNodeAndNeighbor;
             
-            if(slope >= 1.0){
-                std::cout << currentNode->x << "," << currentNode->y << std::endl;
-                std::cout << slope << std::endl;
-            }
-            
 
             if (slope <= _maxSlope)
             {
