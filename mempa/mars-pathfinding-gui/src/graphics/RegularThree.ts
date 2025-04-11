@@ -144,16 +144,16 @@ export default class RegularThree {
     const path_positions = [];
     for (let i = 0; i < path.length; i++) {
       //TODO: have a better way to get the path to confrom to teh downscaled
-      if ((path[i].y - chunk.description.coordinate.y) % resolutionScale == 0 && (path[i].x - chunk.description.coordinate.x) % resolutionScale == 0) {
+      // if ((path[i].y - chunk.description.coordinate.y) % resolutionScale == 0 && (path[i].x - chunk.description.coordinate.x) % resolutionScale == 0) {
 
-        let x_pos = path[i].x * this.scale;
-        let x_data_location = (path[i].y - chunk.description.coordinate.y) / resolutionScale;
-        let y_data_location = (path[i].x - chunk.description.coordinate.x) / resolutionScale;
-        let y_pos = normalizedData[x_data_location][y_data_location] + path_offset;
-        // let y_pos = 0;
-        let z_pos = path[i].y * this.scale;
-        path_positions.push(new THREE.Vector3(x_pos, y_pos, z_pos));
-      }
+      let x_pos = path[i].x * this.scale;
+      let x_data_location = Math.round((path[i].y - chunk.description.coordinate.y) / resolutionScale);
+      let y_data_location = Math.round((path[i].x - chunk.description.coordinate.x) / resolutionScale);
+      let y_pos = normalizedData[x_data_location][y_data_location] + path_offset;
+      // let y_pos = 0;
+      let z_pos = path[i].y * this.scale;
+      path_positions.push(new THREE.Vector3(x_pos, y_pos, z_pos));
+      // }
     }
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(path_positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });

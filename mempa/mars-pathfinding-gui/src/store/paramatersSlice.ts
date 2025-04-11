@@ -6,7 +6,7 @@ interface ParamatersState {
   startCoordinate: Coordinate,
   endCoordinate: Coordinate,
   slope: number | null
-
+  radius: number | null
 }
 
 interface Coordinate {
@@ -17,7 +17,8 @@ interface Coordinate {
 const initialState: ParamatersState = {
   startCoordinate: { x: null, y: null },
   endCoordinate: { x: null, y: null },
-  slope: null
+  slope: null,
+  radius: null
 }
 
 export const paramaterSlice = createSlice({
@@ -32,16 +33,19 @@ export const paramaterSlice = createSlice({
     },
     setSlope: (state, action: PayloadAction<number | null>) => {
       state.slope = action.payload
+    },
+    setRadius: (state, action: PayloadAction<number | null>) => {
+      state.radius = action.payload
     }
-
   },
 })
 
-export const { setStartCoordinate, setEndCoordinate, setSlope } = paramaterSlice.actions
+export const { setStartCoordinate, setEndCoordinate, setSlope, setRadius } = paramaterSlice.actions
 
 export const selectStartCoordinate = (state: RootState) => state.paramaters.startCoordinate
 export const selectEndCoordinate = (state: RootState) => state.paramaters.endCoordinate
 export const selectSlope = (state: RootState) => state.paramaters.slope
+export const selectRadius = (state: RootState) => state.paramaters.radius
 export const selectParameters = (state: RootState) => state.paramaters
 
 export default paramaterSlice.reducer

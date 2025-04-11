@@ -13,7 +13,7 @@ export const LoadMapChunkFromPath = (props: {}) => {
   const buffer = 50;
 
   useEffect(() => {
-    if (path !== null) {
+    if (path !== null || undefined) {
       const limits = path.reduce((acc, coordinate) => {
         return {
           maxX: Math.max(acc.maxX, coordinate.x),
@@ -51,6 +51,9 @@ export const LoadMapChunkFromPath = (props: {}) => {
     }
   }, [path])
   return (
-    <Map3d chunk={chunk} path={path}></Map3d>
+    path ?
+      <Map3d chunk={chunk} path={path}></Map3d>
+      :
+      <div>Loading</div>
   )
 }

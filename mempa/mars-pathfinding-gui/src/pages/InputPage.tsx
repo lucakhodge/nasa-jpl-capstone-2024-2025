@@ -1,11 +1,12 @@
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { MyButton } from "../components/MyButton";
-import { selectEndCoordinate, selectSlope, selectStartCoordinate, setEndCoordinate, setSlope, setStartCoordinate } from "../store/paramatersSlice";
+import { selectEndCoordinate, selectRadius, selectStartCoordinate, setEndCoordinate, setRadius, setSlope, setStartCoordinate } from "../store/paramatersSlice";
 import { MyNumberInput } from "../components/MyNumberInput";
 import LoadFileButton from "../components/LoadFileButton";
 import GeneratePathButton from "../components/GeneratePathButton";
 import { selectDemInfo } from "../store/demSlice";
 import FileStatus from "../components/FileStatus";
+import { selectSlope } from "../store/paramatersSlice";
 
 interface InputPagePropsI {
   onNext: () => void;
@@ -18,6 +19,7 @@ export default function (props: InputPagePropsI) {
   const startCoordinate = useAppSelector(selectStartCoordinate);
   const endCoordinate = useAppSelector(selectEndCoordinate);
   const slope = useAppSelector(selectSlope);
+  const radius = useAppSelector(selectRadius);
 
   const isFileLoaded = useAppSelector(selectDemInfo) !== null;
 
@@ -58,6 +60,12 @@ export default function (props: InputPagePropsI) {
         <div className='mr-2'>{"Slope tolerance: "}</div>
         <MyNumberInput disabled={!isFileLoaded} value={slope} onChange={(val) => {
           dispatch(setSlope(val))
+        }}></MyNumberInput>
+      </div>
+      <div className='flex flex-row text-black'>
+        <div className='mr-2'>{"Vision radius: "}</div>
+        <MyNumberInput disabled={!isFileLoaded} value={radius} onChange={(val) => {
+          dispatch(setRadius(val))
         }}></MyNumberInput>
       </div>
       <div className="mt-auto flex justify-between">
