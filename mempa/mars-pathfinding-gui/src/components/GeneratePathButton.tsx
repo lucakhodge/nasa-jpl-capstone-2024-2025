@@ -24,10 +24,13 @@ export default function GeneratePathButton(props: GeneratePathButtonPropsI) {
 
   const generatePath = async () => {
     // call algorithim, set path
+    dispatch(setPath(null));
     let algorithimResult = await window.electronIPC.callAlgorithim(paramaters)
     console.log("algorithimResult", algorithimResult)
-    let path = JSON.parse(algorithimResult).data;
-    dispatch(setPath(path));
+    if (algorithimResult) {
+      let path = JSON.parse(algorithimResult).data;
+      dispatch(setPath(path));
+    }
   }
 
   return (
