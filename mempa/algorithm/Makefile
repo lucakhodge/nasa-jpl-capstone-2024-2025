@@ -18,14 +18,12 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 # Source files for search tests (SearchAlgorithm, dijkstras, and DijkstrasTester.cpp)
 SEARCH_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 					   $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-					   $(SRC_DIR)/rover-pathfinding-module/SearchContext.cpp \
 					   $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp \
                        $(SRC_DIR)/search_algorithms/dijkstras.cpp \
                        $(TEST_DIR)/DijkstrasTester.cpp
 
 SEARCH_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
 					   $(OBJ_DIR)/rover-simulator/RoverSimulator.o \
-					   $(OBJ_DIR)/rover-pathfinding-module/SearchContext.o \
 					   $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o \
                        $(OBJ_DIR)/search_algorithms/dijkstras.o \
                        $(OBJ_DIR)/tests.o
@@ -33,7 +31,6 @@ SEARCH_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
 # Source files for DEM tests (DemHandler and DemTester.cpp)
 DEM_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 					$(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-					$(SRC_DIR)/rover-pathfinding-module/SearchContext.cpp \
 					$(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
 					$(SRC_DIR)/rover-pathfinding-module/dijkstras.cpp \
                     $(TEST_DIR)/DemTester.cpp
