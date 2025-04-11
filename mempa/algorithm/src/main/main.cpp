@@ -13,7 +13,6 @@
 /* PathLogger */
 #include "../logger/PathLogger.hpp"
 #include "../metrics/Metrics.hpp"
-#include "../rover-simulator/simulator.cpp"
 #include <iostream>
 
 /* nlohmann-json3-dev */
