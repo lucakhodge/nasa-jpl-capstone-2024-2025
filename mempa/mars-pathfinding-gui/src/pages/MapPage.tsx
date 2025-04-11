@@ -7,6 +7,19 @@ interface MapPagePropsI {
 }
 
 export default function (props: MapPagePropsI) {
+  // Hardcoded sample metrics
+  const samplePathData = {
+    totalDistance: 6.13,  // in km
+    elevationGain: 3025.0,
+    elevationLoss: 0,
+    maxElevation: 3025.0,
+    minElevation: 0,
+    maxSlope: 89.1,
+    averageSlope: 41.8,
+    baseElevation: 0,
+    waypointCount: 201
+  };
+
   return (
     <div className="w-screen h-screen flex flex-col gap-4" style={{ backgroundColor: '#D1945A' }} >
       <div className="flex flex-1">
@@ -14,7 +27,7 @@ export default function (props: MapPagePropsI) {
           <LoadMapChunkFromPath></LoadMapChunkFromPath>
         </div>
         <div className="w-80 p-4">
-          <PathAnalyticsBox />
+          <PathAnalyticsBox pathData={samplePathData} />
         </div>
       </div>
       <div className="mt-auto flex justify-between p-4">

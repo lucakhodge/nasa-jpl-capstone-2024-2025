@@ -300,4 +300,16 @@ namespace mempa
         /* Return the resolution. */
         return metersResolution;
     }
+
+    float mempa::DemHandler::getValue(int x, int y) const {
+        // Implement your method here
+        // Example implementation:
+        if (x >= 0 && x < poBand->GetXSize() && y >= 0 && y < poBand->GetYSize()) {
+            float value;
+            if (poBand->RasterIO(GF_Read, x, y, 1, 1, &value, 1, 1, GDT_Float32, 0, 0) == CE_None) {
+                return value;
+            }
+        }
+        return 0.0f; // Default value or error handling
+    }
 }
