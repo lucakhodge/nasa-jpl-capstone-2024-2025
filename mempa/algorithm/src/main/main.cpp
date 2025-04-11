@@ -75,10 +75,15 @@ int main(int argc, char *argv[]) {
         &roverRoutingAlgorithm, commandLineInterface.getSlopeTolerance(),
         commandLineInterface.getBufferSize());
 
-    // DEM
-
+    // Calculate metrics WITH elevation data using the DEM handler
     Metrics metrics;
-    metrics.analizePath(routedPath);
+    
+    std::cout << "\n===== CALCULATING PATH METRICS WITH ELEVATION =====" << std::endl;
+    std::cout << "DEM handler address: " << (void*)&marsDemHandler << std::endl;
+    std::cout << "Path size: " << routedPath.size() << " points" << std::endl;
+    
+    // Use analyzePath instead of analizePath to include elevation data
+    metrics.analyzePath(routedPath, &marsDemHandler);
 
     std::unique_ptr<PathLogger> roverPathLogger =
         PathLogger::createLogger(commandLineInterface.getJSONFlag());
