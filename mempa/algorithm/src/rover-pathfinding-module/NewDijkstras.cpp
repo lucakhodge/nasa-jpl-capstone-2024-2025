@@ -91,7 +91,16 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
             currentNeighbor->distFromNeighbor = DBL_MAX;
 
             double rise = abs(currentNode->height - currentNeighbor->height);
-            double slope = rise/_pixelSize;
+            double run = 0.0;
+            if(currentNode->x == currentNeighbor->x || currentNode->y == currentNeighbor->y){
+                run = _pixelSize;
+            }
+            else{
+                run = sqrt(pow(_pixelSize,1)+pow(_pixelSize,1));
+            }
+
+            double slope = rise/run;
+            slope = std::atan(slope)*180/M_PI;
             double distanceBetweenNodeAndNeighbor = calculate_distance_between_nodes(currentNode, currentNeighbor, rise, _pixelSize);
             currentNeighbor->distFromNeighbor = distanceBetweenNodeAndNeighbor;
             

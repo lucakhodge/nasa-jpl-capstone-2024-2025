@@ -35,11 +35,11 @@
  */
 int main(int argc, char *argv[]) {
 
-  std::vector<std::vector<float>> heightmap2 = {  {0,0,45,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}, 
-                                        {0,0,46,0,0}};
+  std::vector<std::vector<float>> heightmap2 = {  {0,0,1,0,0}, 
+                                        {0,0,2,0,0}, 
+                                        {0,0,2,0,0}, 
+                                        {0,0,2,0,0}, 
+                                        {0,0,2,0,0}};
                                     
 
   std::cout << std::endl << "Starting Dijkstras test case" << std::endl;   
