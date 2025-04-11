@@ -37,7 +37,6 @@ DEM_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 
 DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
 					$(OBJ_DIR)/rover-simulator/RoverSimulator.o \
-					$(OBJ_DIR)/rover-pathfinding-module/SearchContext.o \
 					$(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o \
 					$(OBJ_DIR)/search_algorithms/dijkstras.o \
                     $(OBJ_DIR)/tests/DemTester.o
