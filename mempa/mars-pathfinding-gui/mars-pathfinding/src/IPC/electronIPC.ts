@@ -1,5 +1,12 @@
 import { ipcRenderer } from "electron";
 
+// Add these new exports
+export const getTempDirectory = () => ipcRenderer.invoke('get-temp-directory');
+export const findMetricsFile = () => ipcRenderer.invoke('find-metrics-file');
+
+export const READ_FILE = "read-file";
+export const readFile = (filePath: string) => ipcRenderer.invoke(READ_FILE, filePath);
+
 export interface DEMInfo {
   width: number;
   height: number;

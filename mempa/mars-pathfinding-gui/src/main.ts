@@ -4,6 +4,8 @@ import path from 'node:path';
 import "./IPC/mainProcDEMFileHandlers";
 import "./IPC/callAlgorithim";
 import "./IPC/FilePathStore";
+import "./IPC/fileReader";
+import os from 'os';
 
 // I added browser window so I can have getRendererWindow
 let browserWindow: BrowserWindow | undefined = undefined;

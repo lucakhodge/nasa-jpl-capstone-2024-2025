@@ -5,6 +5,7 @@ import "./IPC/mainProcDEMFileHandlers";
 import "./IPC/runCpp";
 import "./IPC/callAlgorithim";
 import "./IPC/FilePathStore";
+import "./IPC/fileReader"; 
 
 // I added browser window so I can have getRendererWindow
 let browserWindow: BrowserWindow | undefined = undefined;
