@@ -35,42 +35,6 @@
  */
 int main(int argc, char *argv[]) {
 
-  std::vector<std::vector<float>> heightmap2 = {  {0,0,1,0,0}, 
-                                        {0,0,2,0,0}, 
-                                        {0,0,2,0,0}, 
-                                        {0,0,2,0,0}, 
-                                        {0,0,2,0,0}};
-                                    
-
-  std::cout << std::endl << "Starting Dijkstras test case" << std::endl;   
-  
-  Dijkstras my_dijkstras;
-  my_dijkstras.setUpAlgo(heightmap2, std::make_pair(0,0), std::make_pair(4,4), std::make_pair(0,0), 45.0, 1.0);
-  std::vector<std::pair<int, int>> dijkstrasPath = my_dijkstras.dijkstras();
-
-  for(int i = 0; i < dijkstrasPath.size(); i++)
-  {
-    std::cout << dijkstrasPath[i].first << " " << dijkstrasPath[i].second << std::endl;
-  }
-
-  std::cout << "Dijkstras test case completed" << std::endl << std::endl << "starting NewDijkstras test case" << std::endl;
-
-  NewDijkstras my_new_dijkstras;
-
-  my_new_dijkstras.setUpAlgo(heightmap2, std::make_pair(0,0), std::make_pair(4,4), std::make_pair(0,0), 45.0, 1.0);
-  std::vector<std::pair<int, int>> testPath = my_new_dijkstras.newDijkstras();
-
-  for(int i = 0; i < testPath.size(); i++)
-  {
-    std::cout << testPath[i].first << " " << testPath[i].second << std::endl;
-  }
-
-
-  std::cout << "After taking a look at heightmap2 note the differance in how the first and second case navigate, it is clear that Dijkstras does not account for slope correctly" << std::endl;
-  std::cout << "end simple test" << std::endl;
-
-
-  //ALl fine after
   try {
     /* Initialize Command Line Interface */
     mempa::CLI commandLineInterface(argc, argv); /* CLI.cpp Object */

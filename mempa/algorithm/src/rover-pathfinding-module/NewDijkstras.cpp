@@ -1,15 +1,28 @@
 #include "NewDijkstras.hpp"
 
+ /**
+  * @brief Sets up and runs NewDijkstras all in one step
+  * 
+  * @param heightmap contains the height values to be used for naviagtion, Usualy a chunk of a larger heightmap
+  * @param chunkLocation 0,0 in the passed heightmap is this value in the whole larger heightmap (global context)
+  * @param startPoint the start point for navigation in the whole larger heightmap (global context)
+  * @param endPoint the end point for nagivation in the whole larger heightmap (global context)
+  * @param maxSlope the maximum slope that is allowed to be navigated over
+  * @param pixelSize the size (in meters) of the resolution of the heightmap
+  * @return std::vector<std::pair<int,int>> retruns the route taken from the startPoint to the endPoint or if that is not in range the closest point in the heightmap chunk to the endPoint
+  * 
+  * @author Oscar Mikus <osmi3783@colorado.edu>
+  */
 std::vector<std::pair<int,int>> NewDijkstras::get_step(std::vector<std::vector<float>> &heightmap,
     std::pair<int, int> chunkLocation, std::pair<int, int> startPoint,
     std::pair<int, int> endPoint, float maxSlope, float pixelSize){
                 this->setUpAlgo(heightmap, chunkLocation, startPoint, endPoint, maxSlope,
                     pixelSize);
 
-        std::cout << "AT: start newDijkstras" << std::endl;
+        // std::cout << "AT: start newDijkstras" << std::endl;
         std::vector<std::pair<int, int>> realPath = newDijkstras();
         std::vector<std::pair<int, int>> globalPath;
-        std::cout << "AT: after newDijkstras" << std::endl;
+        // std::cout << "AT: after newDijkstras" << std::endl;
 
         // for (size_t i = static_cast<size_t>(0); i < realPath.size(); i++) {
         for (int i = realPath.size() - 1; i >= 0; i--) {
@@ -20,11 +33,18 @@ std::vector<std::pair<int,int>> NewDijkstras::get_step(std::vector<std::vector<f
         globalPath.push_back(globalLocation);
         }
 
-        std::cout << "AT: after global loop" << std::endl;
+        // std::cout << "AT: after global loop" << std::endl;
 
         return globalPath;
-    }
+}
 
+/**
+ * @brief Runs the search algoritm after being set up by SearchAlgorithm::set_up_algo
+ * 
+ * @return std::vector<std::pair<int, int>> retruns the route taken from the startPoint to the endPoint or if that is not in range the closest point in the heightmap chunk to the endPoint
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
 {
     if (_heightmap.empty() || _heightmap[0].empty()) {
@@ -74,12 +94,10 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
         }
         currentNode->visited = true;
 
-        // std::cout << "current Node: " << currentNode->x << "," << currentNode->y << std::endl;
+        // std::cout << "current Node: " << currentNode->x << "," << currentNode->y <<".currentNode height " << currentNode->height <<std::endl;
 
         if(currentNode->x == localEnd.second && currentNode->y == localEnd.first)
         {
-            std::cout << calc_flat_index(cols, localEnd.second, localEnd.first) << std::endl;
-            std::cout << graph.size() << std::endl;
             return path_to_list(graph[calc_flat_index(cols, localEnd.second, localEnd.first)]);
         }
 
@@ -110,7 +128,6 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
                 double alt = currentNode->distFromPrevious + distanceBetweenNodeAndNeighbor;
                 neighbors.push_back(currentNeighbor);
 
-                //cout << currentNeighbor->height << endl;
 
                 if (alt < currentNeighbor->distFromPrevious)
                 {
@@ -127,7 +144,6 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
         for (Node* node : neighbors){
             if(node->visited != true)
             {
-                // std::cout << "pushing neighbor node: " << node->x << "," << node->y << std::endl;
                 Q.push(node);
             }
         }
@@ -136,34 +152,34 @@ std::vector<std::pair<int, int>> NewDijkstras::newDijkstras()
 
     std::cout << "No route found " << std::endl;
     return {};
-    
-
-    // class Node {
-    // public:
-    //     int height;
-    //     Node *previous;
-    //     double distFromPrevious;
-    //     double distFromNeighbor;
-    //     bool visited;
-    //     std::vector<int> neighborIndex;
-    //     int selfIndex;
-    //     int x;
-    //     int y;
-    // };
-
-    // _heightmap = heightmap;
-    // _chunkLocaiton = chunkLocation;
-    // _startPoint = startPoint;
-    // _endPoint = endPoint;
-    // _maxSlope = maxSlope;
-    // _pixelSize = pixelSize;
 
 }
 
+/**
+ * @brief finds the index of a value in a 1d array context when you know where it is in a 2d array context
+ * 
+ * @param cols number of columns in your 2d array
+ * @param row the row position of your desired element in a 2d array
+ * @param col the column position of your desired element in a 2d array
+ * @return int The index for your desired element in a 1d array
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 int NewDijkstras::calc_flat_index(int cols, int row, int col) {
     return row * cols + col;
 }
 
+/**
+ * @brief gets the 1d index of the neighbors of an element in a 2d array context
+ * 
+ * @param rows number of rows in your 2d array
+ * @param cols number of columns in your 2d array
+ * @param row the row of your target element (The one you are trying to get the neighbor indexs of)
+ * @param col the column of your target element (The one you are trying to get the neighbor indexs of)
+ * @return std::vector<int> 
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 std::vector<int> NewDijkstras::get_neighbor_indexs(int rows, int cols, int row, int col)
 {
     std::vector<int> out;
@@ -204,20 +220,24 @@ std::vector<int> NewDijkstras::get_neighbor_indexs(int rows, int cols, int row, 
     return out;
 }
 
+/**
+ * @brief used to find the path from a node back to the start point by tracing from a final node along pointers to previous nodes until the start node is reached
+ * 
+ * @param finalNode The Node that coresponds to the final endPosition after the search algorithm is completed
+ * @return std::vector<std::pair<int, int>> the path in x,y pairs that the search algorithm found.  
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 std::vector<std::pair<int, int>> NewDijkstras::path_to_list(Node finalNode)
 {
     Node *workingNode = &finalNode;
     std::vector<std::pair<int, int>> out;
 
-    // std::cout << "workingNode->disFromPrevious: " << workingNode->distFromPrevious << std::endl;
-
     while(workingNode->distFromPrevious != 0)
     {
-        // std::cout << "pushing back final node: " << workingNode->x << "," << workingNode->y <<std::endl;
         out.push_back({workingNode->x, workingNode->y});
         workingNode = workingNode->previous;
     }
-    // std::cout << "pushing back final node: ";
     std::cout << workingNode->x << "," << workingNode->y <<std::endl;
     out.push_back({workingNode->x, workingNode->y});
 
@@ -225,11 +245,32 @@ std::vector<std::pair<int, int>> NewDijkstras::path_to_list(Node finalNode)
     return out;
 }
 
+/**
+ * @brief used to compare two Nodes together
+ * 
+ * @param node1 First Node to compare
+ * @param node2 Second Node to compare
+ * @return true if the first Node has a smaller distance to its neighbor than the second Node
+ * @return false if the first Node has a larger distance to its neighbor than the second Node
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 bool NewDijkstras::compare_nodes_by_dist_from_neighbor(Node* node1, Node* node2)
 {
     return node1->distFromNeighbor < node2->distFromNeighbor;
 }
 
+/**
+ * @brief calcualates the 3d distance between two nodes, takes into account diagonal/or not and the diffrernce in height between two Nodes/points
+ * 
+ * @param node1 First Node for distance calculation
+ * @param node2 Second Node for distance calculation
+ * @param rise the absolute differnece in height between node1 and node2
+ * @param pixelSize the size (in meters) of the resolution of the heightmap
+ * @return double the 3d distance between node1 and node2
+ * 
+ * @author Oscar Mikus <osmi3783@colorado.edu>
+ */
 double NewDijkstras::calculate_distance_between_nodes(Node* node1, Node* node2, double rise, double pixelSize)
 {
     if(node1->x == node2->x || node1->y == node2->y)
