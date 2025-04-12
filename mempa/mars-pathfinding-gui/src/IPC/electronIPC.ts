@@ -1,5 +1,9 @@
 import { ipcRenderer } from "electron";
 
+// Add this to your existing exports
+export const READ_FILE = "read-file";
+export const readFile = (filePath: string) => 
+ipcRenderer.invoke(READ_FILE, filePath);
 export interface DEMInfo {
   width: number;
   height: number;
