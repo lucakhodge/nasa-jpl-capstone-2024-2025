@@ -25,6 +25,6 @@ void Metrics::reset() {
   asTheCrowFlysDistance = 0.0;
   totalElevationChange = 0.0;
   netElevationChange = 0.0;
-  maxSlope = 0.0;
-  averageSlope = 0.0;
+  maxSlope = 0.0; // calcualted off of totalElevationChange
+  averageSlope = 0.0; // calculated off of totalElevationChange
 }
