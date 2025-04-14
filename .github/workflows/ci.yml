@@ -28,7 +28,7 @@ jobs:
     - name: Download Mars DEM .tif
       run: |
         mkdir -p mempa/tests
-        curl -L https://photojournal.jpl.nasa.gov/tiff/PIA02820.tif -o mars_dem.tif
+        curl -L https://photojournal.jpl.nasa.gov/tiff/PIA26512.tif -o mars_dem.tif
       working-directory: mempa/algorithm/tests
 
     - name: Build and run tests
