@@ -9,6 +9,7 @@
 
 /* Dijkstras */
 #include "../src/rover-pathfinding-module/dijkstras.hpp"
+#include "../src/rover-pathfinding-module/NewDijkstras.hpp"
 
 /* PathLogger */
 #include "../logger/PathLogger.hpp"
@@ -33,6 +34,7 @@
  * @author Ryan Wagster <rywa2447@colorado.edu>
  */
 int main(int argc, char *argv[]) {
+
   try {
     /* Initialize Command Line Interface */
     mempa::CLI commandLineInterface(argc, argv); /* CLI.cpp Object */
@@ -68,7 +70,7 @@ int main(int argc, char *argv[]) {
                                         imgGoalCoordinates);
 
     /* TODO: Change this out for D* Lite Algorithm! */
-    Dijkstras roverRoutingAlgorithm; /* Dijkstra's Algorithm */
+    NewDijkstras roverRoutingAlgorithm; /* Dijkstra's Algorithm */
     std::vector<std::pair<int, int>> routedPath = marsSimulator.runSimulator(
         &roverRoutingAlgorithm, commandLineInterface.getSlopeTolerance(),
         commandLineInterface.getBufferSize());
