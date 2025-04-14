@@ -28,7 +28,7 @@ jobs:
     - name: Download Mars DEM .tif
       run: |
         mkdir -p mempa/tests
-        curl -L https://file-examples.com/wp-content/storage/2017/10/file_example_TIFF_1MB.tiff -o mars_dem.tiff
+        curl -L https://nssdc.gsfc.nasa.gov/image/hi-res/planetary/mars/mars_dim.tiff -o mars_dem.tiff
       working-directory: mempa/algorithm/tests
 
     - name: Build and run tests
