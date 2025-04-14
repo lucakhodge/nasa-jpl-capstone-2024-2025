@@ -184,6 +184,13 @@ std::vector<std::pair<int, int>> Dijkstras::dijkstras() {
 
       double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
 
+      // std::cout << slope << std::endl;
+
+      // if (slope != 0.0)
+      // {
+      //   std::cout << slope << std::endl;
+      // }
+
       if (slope <= _maxSlope) {
         double distance = calculate_distance_between_nodes(
             current, neighbor, elevChange, PIXEL_SIZE);

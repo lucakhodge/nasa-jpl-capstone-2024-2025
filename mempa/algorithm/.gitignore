@@ -10,6 +10,9 @@ local_paths.h.template
 # Output files
 rover_path.txt
 rover_path.json
+outputfile
+outputfile.json
+outputfile.json.
 
 # Build artifacts
 *.o
