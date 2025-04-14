@@ -81,7 +81,7 @@ $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
 # Test running
 test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 	./$(SEARCH_TEST_TARGET)
-	./$(DEM_TEST_TARGET) tests/mars_dem.tiff 5
+	./$(DEM_TEST_TARGET) tests/mars_dem.tif 5
 
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
