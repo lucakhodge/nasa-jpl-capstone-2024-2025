@@ -15,6 +15,10 @@ Mars Elevation Model Pathfinding Algorithm (MEMPA)
 - Adam Carlson, Brock Hoos, Grace Harrel, Kevin Buhler, Luca Hodge, Oscar Mikus, Ryan Wagster
 - David Blaines (TA),  Marcel Llopis (Sponsor)
 
+## Installation
+
+- Follow the README in the [mempa folder](https://github.com/lucakhodge/nasa-jpl-capstone-2024-2025/blob/main/mempa/algorithm/README.md)
+
 ## Dependencies
 
 - Windows Subsystem for Linux (WSL)
