@@ -1,56 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { PathMetrics } from '../IPC/electronIPC';
+import { useAppSelector } from '../store/hooks';
+import { selectPath } from '../store/mapSlice';
+import { selectParameters } from '../store/paramatersSlice';
+
+interface PathMetrics {
+  totalDistance: string;
+  horizontalDistance: string;
+  totalElevationChange: string;
+  netElevationChange: string;
+  maxSlope: string;
+  avgSlope: string;
+  energyCost: string;
+  baseElevation: string;
+  waypointCount: number;
+}
 
 export default function PathAnalytics() {
   const [metrics, setMetrics] = useState<PathMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const path = useAppSelector(selectPath);
+  const params = useAppSelector(selectParameters);
 
   useEffect(() => {
-    async function loadAnalytics() {
+    async function fetchPathAnalytics() {
+      if (!path || path.length === 0) return;
+      
+      setLoading(true);
       try {
-        // For testing, use fixed coordinates 
-        // In production, you would get these from your path data
-        const startX = 1254;
-        const startY = 1265;
-        const endX = 1340;
-        const endY = 1338;
+        // Get the start and end coordinates from the path
+        const start = path[0];
+        const end = path[path.length - 1];
         
-        const data = await window.electronIPC.getPathAnalytics(startX, startY, endX, endY);
-        setMetrics(data);
+        // Fetch analytics from the electron process
+        const data = await window.electronIPC.getPathAnalytics(
+          start.x, start.y, end.x, end.y
+        );
+        
+        if (data) {
+          setMetrics(data);
+        }
       } catch (error) {
-        console.error('Error loading path analytics:', error);
+        console.error('Error fetching path analytics:', error);
       } finally {
         setLoading(false);
       }
     }
     
-    loadAnalytics();
-  }, []);
+    fetchPathAnalytics();
+  }, [path]);
 
   if (loading) {
-    return <div>Loading analytics...</div>;
+    return <div className="p-4 bg-white/10 rounded-lg">Loading path analytics...</div>;
   }
 
   if (!metrics) {
-    return <div>No analytics data available</div>;
+    return <div className="p-4 bg-white/10 rounded-lg">No path analytics available</div>;
   }
 
   return (
-    <div className="bg-white/20 p-4 rounded-lg">
-      <h2 className="font-bold text-lg mb-2">Path Analytics</h2>
-      <div className="grid grid-cols-2 gap-2 text-sm">
+    <div className="p-4 bg-white/10 rounded-lg text-black">
+      <h2 className="text-xl font-orbitron mb-3">Mars Rover Path Analysis</h2>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="col-span-2 font-bold">Metrics:</div>
         <div>Total Distance:</div>
         <div>{metrics.totalDistance} m</div>
         <div>Horizontal Distance:</div>
         <div>{metrics.horizontalDistance} m</div>
         <div>Total Elevation Change:</div>
         <div>{metrics.totalElevationChange} m</div>
+        <div>Net Elevation Change:</div>
+        <div>{metrics.netElevationChange} m</div>
         <div>Maximum Slope:</div>
         <div>{metrics.maxSlope}°</div>
         <div>Average Slope:</div>
         <div>{metrics.avgSlope}°</div>
         <div>Energy Cost:</div>
         <div>{metrics.energyCost}</div>
+        <div>Base Elevation:</div>
+        <div>{metrics.baseElevation} m</div>
+        <div>Waypoints:</div>
+        <div>{metrics.waypointCount}</div>
       </div>
     </div>
   );
