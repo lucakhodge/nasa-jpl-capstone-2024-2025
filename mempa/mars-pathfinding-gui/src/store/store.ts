@@ -14,17 +14,19 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist'
+import pathReducer from './pathSlice';
 
 const rootReducer = combineReducers({
   dem: demReducer,
   paramaters: paramaterReducer,
   map: mapReducer,
+  path: pathReducer
 })
 
 const persistConfig = {
   key: "root",
   storage: sessionStorage, //persist on reload only, not on quit app
-  whilist: ["dem", "paramaters"]
+  whitelist: ["dem", "paramaters"] // Fixed typo: whilist -> whitelist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
