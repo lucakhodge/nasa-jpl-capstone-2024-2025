@@ -24,14 +24,7 @@ export default function InputPage(props: InputPagePropsI) {
 
   const isFileLoaded = useAppSelector(selectDemInfo) !== null;
 
-  // Clear path on component mount to ensure we don't see old path data
-  useEffect(() => {
-    dispatch(clearPath());
-  }, [dispatch]);
-
-  // Handler functions to keep code DRY
   const handleStartCoordinateChange = (val: number, coord: 'x' | 'y') => {
-    dispatch(clearPath()); // Clear previous path data when input changes
     dispatch(setStartCoordinate({
       x: coord === 'x' ? val : startCoordinate.x,
       y: coord === 'y' ? val : startCoordinate.y
@@ -39,7 +32,6 @@ export default function InputPage(props: InputPagePropsI) {
   };
 
   const handleEndCoordinateChange = (val: number, coord: 'x' | 'y') => {
-    dispatch(clearPath()); // Clear previous path data when input changes
     dispatch(setEndCoordinate({
       x: coord === 'x' ? val : endCoordinate.x,
       y: coord === 'y' ? val : endCoordinate.y
