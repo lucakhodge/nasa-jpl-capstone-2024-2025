@@ -62,7 +62,7 @@ export interface Parameters {
   startCoordinate: Coordinate
   endCoordinate: Coordinate
   slope: number | null
-
+  radius: number | null
 }
 
 export interface Coordinate {
