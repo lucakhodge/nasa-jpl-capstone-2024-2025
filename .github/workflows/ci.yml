@@ -28,7 +28,7 @@ jobs:
     - name: Download Mars DEM .tif
       run: |
         mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif -o mars_dem.tif
+        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
       working-directory: mempa/algorithm/tests
 
     - name: Build and run tests
