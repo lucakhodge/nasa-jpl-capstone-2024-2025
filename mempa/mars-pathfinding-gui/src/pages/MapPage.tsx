@@ -1,23 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useAppSelector } from '../store/hooks';
+import { useState, useEffect, useRef } from 'react';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
-import { selectPathNotFound } from '../store/pathSlice';
+import { selectPathNotFound, selectPath, selectPathLoading, clearPath, setPathLoading } from '../store/pathSlice';
 
 interface MapPagePropsI {
   onBack: () => void;
 }
 
 export default function MapPage(props: MapPagePropsI) {
+  const dispatch = useAppDispatch();
   const [pathData, setPathData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const intervalRef = useRef(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 5;
   
-  // Get path not found status from Redux store
+  // Get path states from Redux store
   const pathNotFound = useAppSelector(selectPathNotFound);
+  const path = useAppSelector(selectPath);
+  const pathLoading = useAppSelector(selectPathLoading);
 
   // Function to load metrics file
   const loadMetricsFile = async () => {
+    // Only block metrics loading if path is explicitly not found or loading
+    if (pathNotFound || pathLoading) return;
+    
     setLoading(true);
     setError(null);
     
@@ -26,25 +35,31 @@ export default function MapPage(props: MapPagePropsI) {
       
       // Use a direct path for now since findMetricsFile may not be working
       const metricsFilePath = '/var/folders/0l/krbnptvd7bz827zv1f7r0p140000gn/T/path-result';
-      console.log('Looking for metrics file at:', metricsFilePath);
       
       // Read the file
       const fileContent = await window.electronIPC.readFile(metricsFilePath);
       
       if (!fileContent || fileContent.trim() === '') {
-        throw new Error('Metrics file is empty');
+        if (retryCountRef.current < maxRetries) {
+          retryCountRef.current++;
+          setLoading(false);
+          return;
+        }
+        throw new Error('File is empty or not available');
       }
+      
+      // Reset retry counter on successful read
+      retryCountRef.current = 0;
       
       // Parse the JSON data
       const jsonData = JSON.parse(fileContent);
-      console.log('Successfully parsed metrics data');
       
       if (jsonData && jsonData.metrics) {
         const metrics = jsonData.metrics;
         
         // Transform to the required format - keeping units consistent
         const transformedData = {
-          totalDistance: metrics.totalDistance, // Keep in meters
+          totalDistance: metrics.totalDistance,
           elevationGain: metrics.netElevationChange > 0 ? metrics.netElevationChange : 0,
           elevationLoss: metrics.netElevationChange < 0 ? Math.abs(metrics.netElevationChange) : 0,
           maxSlope: metrics.maxSlope,
@@ -57,11 +72,11 @@ export default function MapPage(props: MapPagePropsI) {
         
         setPathData(transformedData);
       } else {
-        throw new Error('No metrics found in file');
+        throw new Error('No metrics data found in file');
       }
     } catch (error) {
-      console.error('Error loading metrics:', error);
-      setError(`Could not load metrics: ${error.message}`);
+      // Just show the error message without adding our own prefix
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -69,16 +84,41 @@ export default function MapPage(props: MapPagePropsI) {
 
   // Load metrics on component mount and periodically
   useEffect(() => {
-    // Initial load
-    loadMetricsFile();
+    // Clear any existing intervals
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     
-    // Set up periodic polling
-    const intervalId = setInterval(() => {
+    // Reset retry counter when dependencies change
+    retryCountRef.current = 0;
+    
+    // Start loading metrics if we're not in a definitive "path not found" state and not currently loading
+    if (!pathNotFound && !pathLoading) {
+      // Initial load
       loadMetricsFile();
-    }, 5000); // Check every 5 seconds
+      
+      // Set up periodic polling
+      intervalRef.current = setInterval(() => {
+        loadMetricsFile();
+      }, 5000); // Check every 5 seconds
+    }
     
-    return () => clearInterval(intervalId);
-  }, []);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [path, pathNotFound, pathLoading]);
+
+  // This effect specifically handles clearing old path when starting a new calculation
+  useEffect(() => {
+    // When path loading starts, clear any existing path data
+    if (pathLoading) {
+      setPathData(null);
+      setError(null);
+    }
+  }, [pathLoading]);
 
   return (
     <div 
@@ -119,6 +159,16 @@ export default function MapPage(props: MapPagePropsI) {
                 Adjust Parameters
               </MyButton>
             </div>
+          ) : pathLoading ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="text-blue-300 mb-3">
+                <svg className="animate-spin h-10 w-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+              <p className="text-white font-medium">Calculating path...</p>
+            </div>
           ) : (
             <LoadMapChunkFromPath />
           )}
@@ -128,14 +178,14 @@ export default function MapPage(props: MapPagePropsI) {
             <h2 className="text-lg font-semibold text-blue-300">Path Metrics</h2>
             {loading ? (
               <span className="text-xs text-gray-400">Updating...</span>
-            ) : (
+            ) : !pathNotFound && !pathLoading ? (
               <button 
                 onClick={loadMetricsFile}
                 className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded"
               >
                 Refresh
               </button>
-            )}
+            ) : null}
           </div>
           
           {error && (
@@ -151,12 +201,12 @@ export default function MapPage(props: MapPagePropsI) {
           ) : pathData ? (
             <div className="space-y-4">
               <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                <h3 className="font-medium text-gray-300 mb-2">Distance</h3>
+                <h3 className="font-medium text-gray-300 mb-2">Odometer Distance</h3>
                 <p className="text-xl font-bold text-blue-300">{Math.round(pathData.totalDistance)} m</p>
               </div>
               
               <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                <h3 className="font-medium text-gray-300 mb-2">Elevation</h3>
+                <h3 className="font-medium text-gray-300 mb-2">Net Elevation</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-xs text-gray-400">Gain</p>
@@ -200,6 +250,11 @@ export default function MapPage(props: MapPagePropsI) {
             <div className="flex flex-col items-center justify-center h-32">
               <p className="text-yellow-300 text-sm mb-2">No path could be found</p>
               <p className="text-gray-500 text-xs text-center">Try adjusting your parameters and calculate again</p>
+            </div>
+          ) : pathLoading ? (
+            <div className="flex flex-col items-center justify-center h-32">
+              <p className="text-blue-300 text-sm mb-2">Calculating path...</p>
+              <p className="text-gray-500 text-xs text-center">This may take a moment</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-32">
