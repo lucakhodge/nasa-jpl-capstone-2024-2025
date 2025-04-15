@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
+import { useAppSelector } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
+import { selectPathNotFound } from '../store/pathSlice';
 
 interface MapPagePropsI {
   onBack: () => void;
 }
 
-export default function (props: MapPagePropsI) {
+export default function MapPage(props: MapPagePropsI) {
   const [pathData, setPathData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Get path not found status from Redux store
+  const pathNotFound = useAppSelector(selectPathNotFound);
 
   // Function to load metrics file
   const loadMetricsFile = async () => {
@@ -91,7 +96,32 @@ export default function (props: MapPagePropsI) {
     >
       <div className="flex flex-1">
         <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700">
-          <LoadMapChunkFromPath></LoadMapChunkFromPath>
+          {pathNotFound ? (
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+              <div className="text-yellow-300 text-4xl mb-4">⚠️</div>
+              <h3 className="text-lg font-semibold text-white mb-2">No Path Found</h3>
+              <p className="text-gray-300 mb-4">
+                The algorithm couldn't find a valid path between your selected points.
+              </p>
+              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 w-full max-w-md">
+                <h4 className="font-medium text-blue-300 mb-2">Try these solutions:</h4>
+                <ul className="text-sm text-gray-300 text-left list-disc pl-5 space-y-1">
+                  <li>Increase the slope tolerance</li>
+                  <li>Select points that are closer together</li>
+                  <li>Choose points with less extreme elevation differences</li>
+                  <li>Verify that a path is physically possible in the selected region</li>
+                </ul>
+              </div>
+              <MyButton 
+                className="mt-6"
+                onClick={props.onBack}
+              >
+                Adjust Parameters
+              </MyButton>
+            </div>
+          ) : (
+            <LoadMapChunkFromPath />
+          )}
         </div>
         <div className="w-80 p-4 bg-gray-900 text-white rounded-lg shadow-lg m-2 border border-gray-700">
           <div className="flex justify-between items-center mb-4">
@@ -165,6 +195,11 @@ export default function (props: MapPagePropsI) {
                 <h3 className="font-medium text-gray-300 mb-2">Waypoints</h3>
                 <p className="text-xl font-bold text-purple-300">{pathData.waypointCount}</p>
               </div>
+            </div>
+          ) : pathNotFound ? (
+            <div className="flex flex-col items-center justify-center h-32">
+              <p className="text-yellow-300 text-sm mb-2">No path could be found</p>
+              <p className="text-gray-500 text-xs text-center">Try adjusting your parameters and calculate again</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-32">
