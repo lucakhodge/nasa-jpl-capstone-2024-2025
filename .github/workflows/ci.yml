@@ -51,23 +51,16 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install dependencies
-      run: |
-        choco install -y cmake git make
-      shell: powershell
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        channels: conda-forge
+        channel-priority: strict
 
-    - name: Initialize conda and install GDAL
-      shell: powershell
-      run: |
-        $env:Path += ";C:\Miniconda\Scripts;C:\Miniconda\Library\bin;C:\Miniconda\condabin"
-        conda config --add channels conda-forge
-        conda config --set channel_priority strict
-        conda install -y gdal
-
-    - name: Install GDAL using conda
-      run: |
-        & "C:\Miniconda3\Scripts\conda.exe" install -y -c conda-forge gdal
-      shell: powershell
+    - name: Install GDAL
+      run: conda install -y gdal
+      shell: bash
 
     - name: Download nlohmann/json single-header
       run: |
