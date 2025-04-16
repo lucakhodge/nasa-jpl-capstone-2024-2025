@@ -56,6 +56,14 @@ jobs:
         choco install -y cmake git make
       shell: powershell
 
+    - name: Initialize conda and install GDAL
+      shell: powershell
+      run: |
+        $env:Path += ";C:\Miniconda\Scripts;C:\Miniconda\Library\bin;C:\Miniconda\condabin"
+        conda config --add channels conda-forge
+        conda config --set channel_priority strict
+        conda install -y gdal
+
     - name: Install GDAL using conda
       run: |
         & "C:\Miniconda3\Scripts\conda.exe" install -y -c conda-forge gdal
