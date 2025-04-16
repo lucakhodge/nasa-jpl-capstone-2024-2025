@@ -26,6 +26,18 @@ export interface Chunk {
   data: number[][];
 }
 
+export interface Metrics {
+  totalDistance: number,
+  elevationGain: number,
+  elevationLoss: number,
+  maxSlope: number,
+  averageSlope: number,
+  maxElevation: number,
+  minElevation: number,
+  baseElevation: number,
+  asTheCrowFlysDistance: number,
+}
+
 // constants for message chanels
 export const OPEN_DEM = "open-dem";
 export const CLOSE_DEM = "close-dem";

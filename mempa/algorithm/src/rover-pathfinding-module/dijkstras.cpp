@@ -331,8 +331,6 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
 
   // Calculate path metrics
   double totalDistance = 0.0;
-  double maxSlope = 0.0;
-  double totalSlope = 0.0;
   int steps = path.size() - 1;
 
   for (size_t i = 0; i < path.size() - 1; i++) {
@@ -346,16 +344,12 @@ vector<pair<int, int>> Dijkstras::path_to_list(Node finalNode) {
     double slope = atan2(elevChange, horizontalDist) * 180.0 / M_PI;
 
     totalDistance += sqrt(pow(horizontalDist, 2) + pow(elevChange, 2));
-    maxSlope = std::max(maxSlope, slope);
-    totalSlope += slope;
   }
 
   cout << "Path metrics:" << endl
        << "- Length: " << fixed << setprecision(2) << totalDistance << "m"
        << endl
-       << "- Steps: " << path.size() << endl
-       << "- Max slope: " << maxSlope << "°" << endl
-       << "- Avg slope: " << (totalSlope / steps) << "°" << endl;
+       << "- Steps: " << path.size() << endl;
 
   return path;
 }

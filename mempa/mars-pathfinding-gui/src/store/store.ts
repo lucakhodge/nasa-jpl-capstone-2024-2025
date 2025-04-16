@@ -24,7 +24,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage: sessionStorage, //persist on reload only, not on quit app
-  whilist: ["dem", "paramaters"]
+  whitelist: ["dem", "paramaters"] // Fixed typo: whilist -> whitelist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

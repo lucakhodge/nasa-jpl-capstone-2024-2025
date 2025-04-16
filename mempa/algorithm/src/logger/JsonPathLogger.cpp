@@ -18,83 +18,39 @@ void JsonPathLogger::logPath(const std::string &filename,
     j["data"].push_back({{"x", point.first}, {"y", point.second}});
   }
 
-  j["metrics"].push_back(
-      {{"horizontalDistance", metrics.horizontalDistance},
-       {"asTheCrowFlysDistance", metrics.asTheCrowFlysDistance}});
+  // CHANGE HERE: Make metrics a direct object instead of an array element
+  j["metrics"] = {{"horizontalDistance", metrics.horizontalDistance},
+                  {"asTheCrowFlysDistance", metrics.asTheCrowFlysDistance},
+                  {"totalDistance", metrics.totalDistance},
+                  {"totalElevationChange", metrics.totalElevationChange},
+                  {"netElevationChange", metrics.netElevationChange},
+                  {"maxSlope", metrics.maxSlope},
+                  {"averageSlope", metrics.averageSlope},
+                  {"elevationGain", metrics.elevationGain},
+                  {"elevationLoss", metrics.elevationLoss}};
+
+  // Add debug output to verify metrics are being serialized correctly
+  std::cout << "\n===== METRICS VALUES BEING WRITTEN TO JSON =====\n";
+  std::cout << "horizontalDistance: " << metrics.horizontalDistance
+            << std::endl;
+  std::cout << "asTheCrowFlysDistance: " << metrics.asTheCrowFlysDistance
+            << std::endl;
+  std::cout << "totalDistance: " << metrics.totalDistance << std::endl;
+  std::cout << "totalElevationChange: " << metrics.totalElevationChange
+            << std::endl;
+  std::cout << "netElevationChange: " << metrics.netElevationChange
+            << std::endl;
+  std::cout << "maxSlope: " << metrics.maxSlope << std::endl;
+  std::cout << "averageSlope: " << metrics.averageSlope << std::endl;
+  std::cout << "elevationGain: " << metrics.elevationGain << std::endl;
+  std::cout << "elevationLoss: " << metrics.elevationLoss << std::endl;
 
   std::ofstream jsonFile(filename);
   if (jsonFile.is_open()) {
-    jsonFile << j.dump();
+    jsonFile << j.dump(2); // Added indentation for better readability
     jsonFile.close();
     std::cout << "Path saved to " << filename << std::endl;
   } else {
     std::cerr << "Error: Could not open file to write JSON." << std::endl;
   }
-
-  // // Create separate filenames for path data and analytics
-  // // Remove .txt extension if present
-  // std::string baseName = filename;
-  // size_t pos = baseName.find(".txt");
-  // if (pos != std::string::npos) {
-  //   baseName = baseName.substr(0, pos);
-  // }
-  //
-  // std::string pathFilename = baseName + "_path.json";
-  // std::string analyticsFilename = baseName + "_analytics.json";
-  //
-  // // Create path JSON
-  // nlohmann::json pathJson;
-  // pathJson["metadata"] = {{"timestamp", std::time(nullptr)},
-  //                         {"start", {startPoint.first, startPoint.second}},
-  //                         {"end", {endPoint.first, endPoint.second}}};
-  //
-  // pathJson["path"] = nlohmann::json::array();
-  // for (const auto pathStep : path) {
-  //
-  //   pathJson["path"].push_back({{"x", pathStep.first}, {"y",
-  //   pathStep.second}});
-  // }
-  //
-  // // Create analytics JSON
-  // nlohmann::json analyticsJson;
-  // analyticsJson["metrics"] = {
-  //     {"totalDistance", metrics.totalDistance},
-  //     {"horizontalDistance", metrics.horizontalDistance},
-  //     {"totalElevationChange", metrics.totalElevationChange},
-  //     {"netElevationChange", metrics.netElevationChange},
-  //     {"maxSlope", metrics.maxSlope},
-  //     {"averageSlope", metrics.averageSlope},
-  //     {"energyCost", metrics.energyCost},
-  //     {"baseElevation", metrics.baseElevation},
-  //     {"waypointCount", metrics.waypointCount}};
-  //
-  // // Write path JSON to file
-  // std::ofstream pathFile(pathFilename);
-  // if (!pathFile) {
-  //   throw std::runtime_error("Failed to create path output file: " +
-  //                            pathFilename);
-  // }
-  // pathFile << pathJson.dump(2); // Pretty print with 2-space indent
-  // pathFile.close();
-  //
-  // // Write analytics JSON to file
-  // std::ofstream analyticsFile(analyticsFilename);
-  // if (!analyticsFile) {
-  //   throw std::runtime_error("Failed to create analytics output file: " +
-  //                            analyticsFilename);
-  // }
-  // analyticsFile << analyticsJson.dump(2);
-  // analyticsFile.close();
-  //
-  // // Also create a combined file for backward compatibility
-  // std::ofstream combinedFile(filename);
-  // if (!combinedFile) {
-  //   throw std::runtime_error("Failed to create combined output file: " +
-  //                            filename);
-  // }
-  //
-  // nlohmann::json combinedJson = pathJson;
-  // combinedJson["metrics"] = analyticsJson["metrics"];
-  // combinedFile << combinedJson.dump(2);
-  // combinedFile.close();
 }

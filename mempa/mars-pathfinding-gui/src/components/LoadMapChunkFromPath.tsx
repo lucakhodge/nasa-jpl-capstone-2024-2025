@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Map3d from './Map3d'
 import { useAppSelector } from '../store/hooks'
-import { selectPath } from '../store/mapSlice';
+import { selectMetrics, selectPath } from '../store/mapSlice';
 import { selectDemInfo } from '../store/demSlice';
 
 export const LoadMapChunkFromPath = (props: {}) => {
   const path = useAppSelector(selectPath);
+  const metrics = useAppSelector(selectMetrics);
   const demInfo = useAppSelector(selectDemInfo);
 
   const [chunk, setChunk] = useState(null);

@@ -1,6 +1,6 @@
 import { selectDemInfo } from '../store/demSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setPath } from '../store/mapSlice';
+import { setMetrics, setPath } from '../store/mapSlice';
 import { selectParameters } from '../store/paramatersSlice';
 import { MyButton } from './MyButton';
 
@@ -29,7 +29,20 @@ export default function GeneratePathButton(props: GeneratePathButtonPropsI) {
     console.log("algorithimResult", algorithimResult)
     if (algorithimResult) {
       let path = JSON.parse(algorithimResult).data;
+      let metrics = JSON.parse(algorithimResult).metrics;
+      const transformedMetrics = {
+        totalDistance: metrics.totalDistance,
+        elevationGain: metrics.elevationGain,
+        elevationLoss: metrics.elevationLoss,
+        maxSlope: metrics.maxSlope,
+        averageSlope: metrics.averageSlope,
+        maxElevation: 0,
+        minElevation: 0,
+        baseElevation: 0,
+        asTheCrowFlysDistance: metrics.asTheCrowFlysDistance
+      };
       dispatch(setPath(path));
+      dispatch(setMetrics(transformedMetrics));
     }
   }
 

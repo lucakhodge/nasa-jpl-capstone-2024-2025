@@ -48,5 +48,4 @@ namespace mempa
         inline std::pair<int, int> globalVectorCorner(std::pair<int, int> globalCoordinate, int buffer) const noexcept;
     };
 }
-
 #include "RoverSimulator.inl"

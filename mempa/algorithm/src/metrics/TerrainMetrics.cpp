@@ -77,7 +77,6 @@ public:
     netElevationChange = 0.0;
     maxSlope = 0.0;
     averageSlope = 0.0;
-    energyCost = 0.0;
     waypointCount = 0;
     slopes.clear();
     baseElevation = 0.0;
@@ -92,17 +91,5 @@ public:
    */
   bool isInitialized() const {
     return !relativeHeights.empty() && !relativeHeights[0].empty();
-  }
-
-  /**
-   * @brief calculates a value to represent the energy cost of a path.  Takes
-   * into account distance and elevation change
-   *
-   * @author Adam Carlson
-   */
-  float calculateEnergyCost(float distance, float elevChange, float slope) {
-    float slopePenalty = std::pow(slope / MAX_SLOPE, 2);
-    float elevationPenalty = std::abs(elevChange) * 2.0;
-    return distance + elevationPenalty + (distance * slopePenalty);
   }
 };
