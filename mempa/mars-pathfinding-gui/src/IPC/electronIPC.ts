@@ -35,6 +35,7 @@ export interface Metrics {
   maxElevation: number,
   minElevation: number,
   baseElevation: number,
+  asTheCrowFlysDistance: number,
 }
 
 // constants for message chanels

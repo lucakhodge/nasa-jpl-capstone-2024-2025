@@ -32,13 +32,14 @@ export default function GeneratePathButton(props: GeneratePathButtonPropsI) {
       let metrics = JSON.parse(algorithimResult).metrics;
       const transformedMetrics = {
         totalDistance: metrics.totalDistance,
-        elevationGain: metrics.netElevationChange > 0 ? metrics.netElevationChange : 0,
-        elevationLoss: metrics.netElevationChange < 0 ? Math.abs(metrics.netElevationChange) : 0,
+        elevationGain: metrics.elevationGain,
+        elevationLoss: metrics.elevationLoss,
         maxSlope: metrics.maxSlope,
         averageSlope: metrics.averageSlope,
-        maxElevation: metrics.netElevationChange > 0 ? metrics.netElevationChange : 0,
-        minElevation: metrics.netElevationChange < 0 ? Math.abs(metrics.netElevationChange) : 0,
+        maxElevation: 0,
+        minElevation: 0,
         baseElevation: 0,
+        asTheCrowFlysDistance: metrics.asTheCrowFlysDistance
       };
       dispatch(setPath(path));
       dispatch(setMetrics(transformedMetrics));

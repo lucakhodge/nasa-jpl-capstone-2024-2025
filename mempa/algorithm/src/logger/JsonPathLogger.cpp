@@ -7,8 +7,8 @@
 #include <vector>
 
 void JsonPathLogger::logPath(const std::string &filename,
-                           const std::vector<std::pair<int, int>> &path,
-                           Metrics metrics) {
+                             const std::vector<std::pair<int, int>> &path,
+                             Metrics metrics) {
   // print outPath in JSON format to file for GUI to read
   nlohmann::json j;
   j["data"] = nlohmann::json::array();
@@ -19,25 +19,31 @@ void JsonPathLogger::logPath(const std::string &filename,
   }
 
   // CHANGE HERE: Make metrics a direct object instead of an array element
-  j["metrics"] = {
-    {"horizontalDistance", metrics.horizontalDistance},
-    {"asTheCrowFlysDistance", metrics.asTheCrowFlysDistance},
-    {"totalDistance", metrics.totalDistance},
-    {"totalElevationChange", metrics.totalElevationChange},
-    {"netElevationChange", metrics.netElevationChange},
-    {"maxSlope", metrics.maxSlope},
-    {"averageSlope", metrics.averageSlope}
-  };
+  j["metrics"] = {{"horizontalDistance", metrics.horizontalDistance},
+                  {"asTheCrowFlysDistance", metrics.asTheCrowFlysDistance},
+                  {"totalDistance", metrics.totalDistance},
+                  {"totalElevationChange", metrics.totalElevationChange},
+                  {"netElevationChange", metrics.netElevationChange},
+                  {"maxSlope", metrics.maxSlope},
+                  {"averageSlope", metrics.averageSlope},
+                  {"elevationGain", metrics.elevationGain},
+                  {"elevationLoss", metrics.elevationLoss}};
 
   // Add debug output to verify metrics are being serialized correctly
   std::cout << "\n===== METRICS VALUES BEING WRITTEN TO JSON =====\n";
-  std::cout << "horizontalDistance: " << metrics.horizontalDistance << std::endl;
-  std::cout << "asTheCrowFlysDistance: " << metrics.asTheCrowFlysDistance << std::endl;
+  std::cout << "horizontalDistance: " << metrics.horizontalDistance
+            << std::endl;
+  std::cout << "asTheCrowFlysDistance: " << metrics.asTheCrowFlysDistance
+            << std::endl;
   std::cout << "totalDistance: " << metrics.totalDistance << std::endl;
-  std::cout << "totalElevationChange: " << metrics.totalElevationChange << std::endl;
-  std::cout << "netElevationChange: " << metrics.netElevationChange << std::endl;
+  std::cout << "totalElevationChange: " << metrics.totalElevationChange
+            << std::endl;
+  std::cout << "netElevationChange: " << metrics.netElevationChange
+            << std::endl;
   std::cout << "maxSlope: " << metrics.maxSlope << std::endl;
   std::cout << "averageSlope: " << metrics.averageSlope << std::endl;
+  std::cout << "elevationGain: " << metrics.elevationGain << std::endl;
+  std::cout << "elevationLoss: " << metrics.elevationLoss << std::endl;
 
   std::ofstream jsonFile(filename);
   if (jsonFile.is_open()) {
