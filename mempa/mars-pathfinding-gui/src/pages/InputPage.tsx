@@ -126,13 +126,19 @@ export default function InputPage(props: InputPagePropsI) {
           </div>
         </div>
 
-        <div className='flex flex-row text-black mb-3'>
-          <div className='mr-2'>{"Vision radius: "}</div>
-          <MyNumberInput
-            disabled={!isFileLoaded} value={radius} onChange={(val) => {
-              dispatch(setRadius(val))
-            }}
-          ></MyNumberInput>
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+          <h3 className="font-medium text-gray-300 mb-2">Vision Radius</h3>
+          <div className='flex flex-row items-center'>
+            <MyNumberInput 
+              disabled={!isFileLoaded} 
+              value={radius} 
+              onChange={(val) => {
+                dispatch(setRadius(val))
+              }}
+              className="text-black bg-white"
+            />
+            <div className='text-white ml-2'>meters</div>
+          </div>
         </div>
       </div>
 
