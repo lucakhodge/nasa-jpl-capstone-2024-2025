@@ -7,7 +7,6 @@ import LoadFileButton from "../components/LoadFileButton";
 import GeneratePathButton from "../components/GeneratePathButton";
 import { selectDemInfo } from "../store/demSlice";
 import FileStatus from "../components/FileStatus";
-import { clearPath } from "../store/pathSlice";
 import { selectSlope } from "../store/paramatersSlice";
 
 interface InputPagePropsI {
@@ -39,7 +38,6 @@ export default function InputPage(props: InputPagePropsI) {
   };
 
   const handleSlopeChange = (val: number) => {
-    dispatch(clearPath()); // Clear previous path data when input changes
     dispatch(setSlope(val));
   };
 

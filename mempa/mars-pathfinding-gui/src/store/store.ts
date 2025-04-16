@@ -14,13 +14,11 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist'
-import pathReducer from './pathSlice';
 
 const rootReducer = combineReducers({
   dem: demReducer,
   paramaters: paramaterReducer,
   map: mapReducer,
-  path: pathReducer
 })
 
 const persistConfig = {

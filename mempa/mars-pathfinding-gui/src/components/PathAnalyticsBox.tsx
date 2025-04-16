@@ -1,17 +1,18 @@
 import React from 'react';
+import { Metrics } from '../IPC/electronIPC';
 
 interface PathAnalyticsBoxPropsI {
-  // You might want to pass in path data here
-  metrics: {
-    totalDistance: number;
-    elevationGain: number;
-    elevationLoss: number;
-    maxElevation: number;
-    minElevation: number;
-    maxSlope: number;     // Add maximum slope
-    averageSlope: number; // Add average slope
-    baseElevation: number; // Add base elevation
-  };
+  metrics: Metrics,
+  // metrics: {
+  //   totalDistance: number;
+  //   elevationGain: number;
+  //   elevationLoss: number;
+  //   maxElevation: number;
+  //   minElevation: number;
+  //   maxSlope: number;     // Add maximum slope
+  //   averageSlope: number; // Add average slope
+  //   baseElevation: number; // Add base elevation
+  // };
 }
 
 export const PathAnalyticsBox

@@ -1,6 +1,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "./store"
+import { Metrics } from "../IPC/electronIPC";
 
 
 interface MapState {
@@ -15,16 +16,6 @@ interface Coordinate {
   y: number,
 }
 
-interface Metrics {
-  totalDistance: number,
-  elevationGain: number,
-  elevationLoss: number,
-  maxSlope: number,
-  averageSlope: number,
-  maxElevation: number,
-  minElevation: number,
-  baseElevation: number,
-}
 
 const initialState: MapState = {
   path: null,
