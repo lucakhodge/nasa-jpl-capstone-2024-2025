@@ -60,7 +60,7 @@ jobs:
 
     - name: Install GDAL
       run: conda install -y gdal
-      shell: bash
+      shell: powershell
 
     - name: Download nlohmann/json single-header
       run: |
