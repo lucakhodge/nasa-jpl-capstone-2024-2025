@@ -55,64 +55,88 @@ export default function InputPage(props: InputPagePropsI) {
         backgroundPosition: '0 0, 40px 60px, 130px 270px'
       }}
     >
-      <div className="font-orbitron text-center text-white">Enter input parameters</div>
+      <div className="font-orbitron text-center text-white"></div>
 
       <div>
         <LoadFileButton />
       </div>
       <FileStatus />
 
-      <div className="bg-white bg-opacity-90 p-4 rounded-lg shadow-lg">
-        <div className='flex flex-row text-black mb-3'>
-          <div className='whitespace-nowrap'>Start Coordinate: (</div>
-          <MyNumberInput
-            disabled={!isFileLoaded}
-            value={startCoordinate.x}
-            onChange={(val) => handleStartCoordinateChange(val, 'x')}
-          />
-          <div>,</div>
-          <MyNumberInput
-            disabled={!isFileLoaded}
-            value={startCoordinate.y}
-            onChange={(val) => handleStartCoordinateChange(val, 'y')}
-          />
-          <div>)</div>
+      <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+        <h2 className="text-lg font-semibold text-blue-300 mb-4">Input Parameters</h2>
+      
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
+          <h3 className="font-medium text-gray-300 mb-2">Start Coordinate</h3>
+          <div className='flex flex-row items-center'>
+            <div className='text-white mr-2'>(</div>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={startCoordinate.x}
+              onChange={(val) => handleStartCoordinateChange(val, 'x')}
+              className="text-black bg-white"
+            />
+            <div className='text-white mx-2'>,</div>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={startCoordinate.y}
+              onChange={(val) => handleStartCoordinateChange(val, 'y')}
+              className="text-black bg-white"
+            />
+            <div className='text-white ml-2'>)</div>
+          </div>
         </div>
 
-        <div className='flex flex-row text-black mb-3'>
-          <div className='whitespace-nowrap'>End Coordinate: (</div>
-          <MyNumberInput
-            disabled={!isFileLoaded}
-            value={endCoordinate.x}
-            onChange={(val) => handleEndCoordinateChange(val, 'x')}
-          />
-          <div>,</div>
-          <MyNumberInput
-            disabled={!isFileLoaded}
-            value={endCoordinate.y}
-            onChange={(val) => handleEndCoordinateChange(val, 'y')}
-          />
-          <div>)</div>
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
+          <h3 className="font-medium text-gray-300 mb-2">End Coordinate</h3>
+          <div className='flex flex-row items-center'>
+            <div className='text-white mr-2'>(</div>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={endCoordinate.x}
+              onChange={(val) => handleEndCoordinateChange(val, 'x')}
+              className="text-black bg-white"
+            />
+            <div className='text-white mx-2'>,</div>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={endCoordinate.y}
+              onChange={(val) => handleEndCoordinateChange(val, 'y')}
+              className="text-black bg-white"
+            />
+            <div className='text-white ml-2'>)</div>
+          </div>
         </div>
 
-        <div className='flex flex-row text-black mb-3'>
-          <div className='mr-2'>{"Slope tolerance: "}</div>
-          <MyNumberInput
-            disabled={!isFileLoaded}
-            value={slope}
-            onChange={(val) => handleSlopeChange(val)}
-          />
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
+          <h3 className="font-medium text-gray-300 mb-2">Slope Tolerance</h3>
+          <div className='flex flex-row items-center'>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={slope}
+              onChange={(val) => handleSlopeChange(val)}
+              className="text-black bg-white"
+            />
+            <div className='text-white ml-2'>degrees</div>
+          </div>
         </div>
 
-        <div className='flex flex-row text-black mb-3'>
-          <div className='mr-2'>{"Vision radius: "}</div>
-          <MyNumberInput disabled={!isFileLoaded} value={radius} onChange={(val) => {
-            dispatch(setRadius(val))
-          }}></MyNumberInput>
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+          <h3 className="font-medium text-gray-300 mb-2">Vision Radius</h3>
+          <div className='flex flex-row items-center'>
+            <MyNumberInput 
+              disabled={!isFileLoaded} 
+              value={radius} 
+              onChange={(val) => {
+                dispatch(setRadius(val))
+              }}
+              className="text-black bg-white"
+            />
+            <div className='text-white ml-2'>meters</div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-auto flex justify-between">
+      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between">
         <MyButton onClick={props.onBack}>Back</MyButton>
         <GeneratePathButton onClick={props.onNext}>Next</GeneratePathButton>
       </div>
