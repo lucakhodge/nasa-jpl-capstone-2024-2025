@@ -97,7 +97,7 @@ export default function InputPage(props: InputPagePropsI) {
           <div>)</div>
         </div>
 
-        <div className='flex flex-row text-black'>
+        <div className='flex flex-row text-black mb-3'>
           <div className='mr-2'>{"Slope tolerance: "}</div>
           <MyNumberInput
             disabled={!isFileLoaded}
@@ -105,14 +105,15 @@ export default function InputPage(props: InputPagePropsI) {
             onChange={(val) => handleSlopeChange(val)}
           />
         </div>
+
+        <div className='flex flex-row text-black mb-3'>
+          <div className='mr-2'>{"Vision radius: "}</div>
+          <MyNumberInput disabled={!isFileLoaded} value={radius} onChange={(val) => {
+            dispatch(setRadius(val))
+          }}></MyNumberInput>
+        </div>
       </div>
 
-      <div className='flex flex-row text-black'>
-        <div className='mr-2'>{"Vision radius: "}</div>
-        <MyNumberInput disabled={!isFileLoaded} value={radius} onChange={(val) => {
-          dispatch(setRadius(val))
-        }}></MyNumberInput>
-      </div>
       <div className="mt-auto flex justify-between">
         <MyButton onClick={props.onBack}>Back</MyButton>
         <GeneratePathButton onClick={props.onNext}>Next</GeneratePathButton>

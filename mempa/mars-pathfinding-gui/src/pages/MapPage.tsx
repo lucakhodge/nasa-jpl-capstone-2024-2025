@@ -3,7 +3,8 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
 // import { selectPathNotFound, selectPath, selectPathLoading, clearPath, setPathLoading } from '../store/pathSlice';
-import { selectPath } from '../store/mapSlice'
+import { selectMetrics, selectPath } from '../store/mapSlice'
+import { PathAnalyticsBox } from '../components/PathAnalyticsBox';
 
 interface MapPagePropsI {
   onBack: () => void;
@@ -11,6 +12,7 @@ interface MapPagePropsI {
 
 export default function MapPage(props: MapPagePropsI) {
   const path = useAppSelector(selectPath);
+  const metrics = useAppSelector(selectMetrics);
   const pathNotFound = path === null;
 
   return (
@@ -66,86 +68,9 @@ export default function MapPage(props: MapPagePropsI) {
             <LoadMapChunkFromPath />
           )}
         </div>
-        <div className="w-80 p-4 bg-gray-900 text-white rounded-lg shadow-lg m-2 border border-gray-700">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-blue-300">Path Metrics</h2>
-          </div>
-
-          {/* {error && ( */}
-          {/*   <div className="mb-3 p-2 bg-yellow-900 text-yellow-200 text-sm rounded"> */}
-          {/*     {error} */}
-          {/*   </div> */}
-          {/* )} */}
-
-          {/* {loading && !pathData ? ( */}
-          {/*   <div className="flex justify-center items-center h-32"> */}
-          {/*     <p className="text-gray-400">Loading metrics...</p> */}
-          {/*   </div> */}
-          {/* ) : pathData ? ( */}
-          {/*   <div className="space-y-4"> */}
-          {/*     <div className="bg-gray-800 rounded-lg p-3 border border-gray-700"> */}
-          {/*       <h3 className="font-medium text-gray-300 mb-2">Odometer Distance</h3> */}
-          {/*       <p className="text-xl font-bold text-blue-300">{Math.round(pathData.totalDistance)} m</p> */}
-          {/*     </div> */}
-          {/**/}
-          {/*     <div className="bg-gray-800 rounded-lg p-3 border border-gray-700"> */}
-          {/*       <h3 className="font-medium text-gray-300 mb-2">Net Elevation</h3> */}
-          {/*       <div className="grid grid-cols-2 gap-2"> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Gain</p> */}
-          {/*           <p className="font-semibold text-green-400">+{pathData.elevationGain.toFixed(1)} m</p> */}
-          {/*         </div> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Loss</p> */}
-          {/*           <p className="font-semibold text-red-400">-{pathData.elevationLoss.toFixed(1)} m</p> */}
-          {/*         </div> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Max</p> */}
-          {/*           <p className="font-semibold text-cyan-300">{pathData.maxElevation.toFixed(1)} m</p> */}
-          {/*         </div> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Min</p> */}
-          {/*           <p className="font-semibold text-cyan-300">{pathData.minElevation.toFixed(1)} m</p> */}
-          {/*         </div> */}
-          {/*       </div> */}
-          {/*     </div> */}
-          {/**/}
-          {/*     <div className="bg-gray-800 rounded-lg p-3 border border-gray-700"> */}
-          {/*       <h3 className="font-medium text-gray-300 mb-2">Slope</h3> */}
-          {/*       <div className="grid grid-cols-2 gap-2"> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Maximum</p> */}
-          {/*           <p className="font-semibold text-yellow-300">{pathData.maxSlope.toFixed(1)}°</p> */}
-          {/*         </div> */}
-          {/*         <div> */}
-          {/*           <p className="text-xs text-gray-400">Average</p> */}
-          {/*           <p className="font-semibold text-yellow-300">{pathData.averageSlope.toFixed(1)}°</p> */}
-          {/*         </div> */}
-          {/*       </div> */}
-          {/*     </div> */}
-          {/**/}
-          {/*     <div className="bg-gray-800 rounded-lg p-3 border border-gray-700"> */}
-          {/*       <h3 className="font-medium text-gray-300 mb-2">Waypoints</h3> */}
-          {/*       <p className="text-xl font-bold text-purple-300">{pathData.waypointCount}</p> */}
-          {/*     </div> */}
-          {/*   </div> */}
-          {/* ) : pathNotFound ? ( */}
-          {/*   <div className="flex flex-col items-center justify-center h-32"> */}
-          {/*     <p className="text-yellow-300 text-sm mb-2">No path could be found</p> */}
-          {/*     <p className="text-gray-500 text-xs text-center">Try adjusting your parameters and calculate again</p> */}
-          {/*   </div> */}
-          {/* ) : pathLoading ? ( */}
-          {/*   <div className="flex flex-col items-center justify-center h-32"> */}
-          {/*     <p className="text-blue-300 text-sm mb-2">Calculating path...</p> */}
-          {/*     <p className="text-gray-500 text-xs text-center">This may take a moment</p> */}
-          {/*   </div> */}
-          {/* ) : ( */}
-          {/*   <div className="flex flex-col items-center justify-center h-32"> */}
-          {/*     <p className="text-gray-400">No metrics available</p> */}
-          {/*     <p className="text-gray-500 text-sm mt-1">Calculate a path to see metrics</p> */}
-          {/*   </div> */}
-          {/* )} */}
-        </div>
+        {pathNotFound ? <div>Not found</div> :
+          <PathAnalyticsBox metrics={metrics} ></PathAnalyticsBox>
+        }
       </div>
       <div className="mt-auto flex justify-between p-4">
         <MyButton onClick={props.onBack}>Back</MyButton>
