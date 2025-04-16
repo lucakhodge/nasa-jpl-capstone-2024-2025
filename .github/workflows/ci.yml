@@ -51,10 +51,13 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install dependencies (via Chocolatey)
+      - name: Install dependencies
       run: |
-        choco install -y cmake git make gdal nlohmann-json
-      shell: powershell
+          conda install -y -c conda-forge gdal
+          echo "Fetching nlohmann/json single-header..."
+          mkdir -p deps/json
+          curl -L https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o deps/json/json.hpp
+      shell: bash
 
     - name: Add make to PATH
       run: |
