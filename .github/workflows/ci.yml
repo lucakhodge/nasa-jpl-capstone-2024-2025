@@ -58,10 +58,9 @@ jobs:
           install: >
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-gdal
-            mingw-w64-x86_64-gdal-bin
             mingw-w64-x86_64-libtiff
             mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-nlohmann-json3-dev
+            mingw-w64-x86_64-nlohmann-json
 
       - name: Build the main program
         run: make
