@@ -56,6 +56,7 @@ jobs:
         with:
           update: true
           install: >
+            make
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-gdal
             mingw-w64-x86_64-libtiff
