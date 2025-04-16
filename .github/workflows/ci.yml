@@ -70,9 +70,9 @@ jobs:
 
     - name: Build the main program
       run: |
-        make
+        make CXXFLAGS="-I$CONDA_PREFIX/Library/include" LDFLAGS="-L$CONDA_PREFIX/Library/lib"
       shell: bash
-      working-directory: mempa/algorithm
+      working-directory: mempa/algorithm    
 
     - name: Download Mars DEM .tif
       run: |
