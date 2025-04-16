@@ -58,8 +58,7 @@ jobs:
 
     - name: Install GDAL using conda
       run: |
-        & "C:\Miniconda\Scripts\activate"
-        conda install -y -c conda-forge gdal
+        & "C:\Miniconda3\Scripts\conda.exe" install -y -c conda-forge gdal
       shell: powershell
 
     - name: Download nlohmann/json single-header
