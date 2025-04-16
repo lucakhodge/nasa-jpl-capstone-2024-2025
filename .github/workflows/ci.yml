@@ -47,7 +47,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
       with:
         submodules: recursive
 
@@ -68,11 +69,22 @@ jobs:
         curl -L https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o deps/json/json.hpp
       shell: bash
 
+    - name: Debug - Print CONDA_PREFIX
+      run: |
+        echo "CONDA_PREFIX is: $CONDA_PREFIX"
+      shell: bash
+
+    - name: Debug - Find gdal_priv.h
+      run: find $CONDA_PREFIX -name gdal_priv.h
+      shell: bash
+
     - name: Build the main program
       run: |
-        make CXXFLAGS="-I$CONDA_PREFIX/Library/include" LDFLAGS="-L$CONDA_PREFIX/Library/lib"
+        make \
+          CXXFLAGS="-I$CONDA_PREFIX/Library/include -I$CONDA_PREFIX/Library/include/gdal -Ideps/json" \
+          LDFLAGS="-L$CONDA_PREFIX/Library/lib"
       shell: bash
-      working-directory: mempa/algorithm    
+      working-directory: mempa/algorithm
 
     - name: Download Mars DEM .tif
       run: |
