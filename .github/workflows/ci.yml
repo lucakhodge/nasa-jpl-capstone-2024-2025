@@ -51,7 +51,7 @@ jobs:
       with:
         submodules: recursive
 
-      - name: Install dependencies
+    - name: Install dependencies
       run: |
           conda install -y -c conda-forge gdal
           echo "Fetching nlohmann/json single-header..."
