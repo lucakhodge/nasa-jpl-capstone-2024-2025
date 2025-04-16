@@ -9,75 +9,80 @@ on:
 jobs:
   build-and-test-linux:
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
+
+    - name: Build the main program
+      run: |
+        make
+      working-directory: mempa/algorithm
+
+    - name: Download Mars DEM .tif
+      run: |
+        mkdir -p mempa/tests
+        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
+      working-directory: mempa/algorithm/tests
+
+    - name: Build and run tests
+      run: |
+        make test
+      env:
+        PRINT_OUTPUT: "false"
+      working-directory: mempa/algorithm
+
+    - name: Clean up
+      run: |
+        make clean
+      working-directory: mempa/algorithm
+
+  build-and-test-windows:
+    runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gdal
+            mingw-w64-x86_64-gdal-bin
+            mingw-w64-x86_64-libtiff
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-nlohmann-json3-dev
 
       - name: Build the main program
         run: make
         working-directory: mempa/algorithm
+        shell: msys2 {0}
 
       - name: Download Mars DEM .tif
         run: |
           mkdir -p mempa/tests
           curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
         working-directory: mempa/algorithm/tests
+        shell: msys2 {0}
 
       - name: Build and run tests
         run: make test
         env:
           PRINT_OUTPUT: "false"
         working-directory: mempa/algorithm
+        shell: msys2 {0}
 
       - name: Clean up
         run: make clean
         working-directory: mempa/algorithm
-
-  build-and-test-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-update-conda: true
-          channels: conda-forge
-          channel-priority: strict
-
-      - name: Install make
-        shell: powershell
-        run: choco install make -y
-
-      - name: Install GDAL
-        shell: powershell
-        run: conda install -y gdal
-
-      - name: Download nlohmann/json
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force deps/json
-          Invoke-WebRequest https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -OutFile deps/json/json.hpp
-
-      - name: Add GDAL to PATH
-        shell: powershell
-        run: |
-          $Env:PATH = "$Env:CONDA_PREFIX\Library\bin;$Env:PATH"
-
-      - name: Build the main program
-        shell: powershell
-        working-directory: mempa/algorithm
-        run: make
-
-      - name: Build and run tests
-        shell: powershell
-        working-directory: mempa/algorithm
-        run: make test
+        shell: msys2 {0}
