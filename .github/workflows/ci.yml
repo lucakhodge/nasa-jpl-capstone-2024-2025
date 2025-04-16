@@ -9,100 +9,75 @@ on:
 jobs:
   build-and-test-linux:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
 
-    - name: Build the main program
-      run: |
-        make
-      working-directory: mempa/algorithm
+      - name: Build the main program
+        run: make
+        working-directory: mempa/algorithm
 
-    - name: Download Mars DEM .tif
-      run: |
-        mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
-      working-directory: mempa/algorithm/tests
+      - name: Download Mars DEM .tif
+        run: |
+          mkdir -p mempa/tests
+          curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
+        working-directory: mempa/algorithm/tests
 
-    - name: Build and run tests
-      run: |
-        make test
-      env:
-        PRINT_OUTPUT: "false"
-      working-directory: mempa/algorithm
+      - name: Build and run tests
+        run: make test
+        env:
+          PRINT_OUTPUT: "false"
+        working-directory: mempa/algorithm
 
-    - name: Clean up
-      run: |
-        make clean
-      working-directory: mempa/algorithm
+      - name: Clean up
+        run: make clean
+        working-directory: mempa/algorithm
 
   build-and-test-windows:
     runs-on: windows-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
-    - name: Set up Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        channels: conda-forge
-        channel-priority: strict
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
 
-    - name: Install GDAL
-      run: conda install -y gdal
-      shell: powershell
+      - name: Install make
+        shell: powershell
+        run: choco install make -y
 
-    - name: Download nlohmann/json single-header
-      run: |
-        mkdir -p deps/json
-        curl -L https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o deps/json/json.hpp
-      shell: bash
+      - name: Install GDAL
+        shell: powershell
+        run: conda install -y gdal
 
-    - name: Debug - Print CONDA_PREFIX
-      run: |
-        echo "CONDA_PREFIX is: $CONDA_PREFIX"
-      shell: bash
+      - name: Download nlohmann/json
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force deps/json
+          Invoke-WebRequest https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -OutFile deps/json/json.hpp
 
-    - name: Debug - Find gdal_priv.h
-      run: find $CONDA_PREFIX -name gdal_priv.h
-      shell: bash
+      - name: Add GDAL to PATH
+        shell: powershell
+        run: |
+          $Env:PATH = "$Env:CONDA_PREFIX\Library\bin;$Env:PATH"
 
-    - name: Build the main program
-      run: |
-        make \
-          CXXFLAGS="-I$CONDA_PREFIX/Library/include -I$CONDA_PREFIX/Library/include/gdal -Ideps/json" \
-          LDFLAGS="-L$CONDA_PREFIX/Library/lib"
-      shell: bash
-      working-directory: mempa/algorithm
+      - name: Build the main program
+        shell: powershell
+        working-directory: mempa/algorithm
+        run: make
 
-    - name: Download Mars DEM .tif
-      run: |
-        mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
-      shell: bash
-      working-directory: mempa/algorithm/tests
-
-    - name: Build and run tests
-      run: |
-        make test
-      env:
-        PRINT_OUTPUT: "false"
-      shell: bash
-      working-directory: mempa/algorithm
-
-    - name: Clean up
-      run: |
-        make clean
-      shell: bash
-      working-directory: mempa/algorithm
+      - name: Build and run tests
+        shell: powershell
+        working-directory: mempa/algorithm
+        run: make test
