@@ -53,16 +53,20 @@ jobs:
 
     - name: Install dependencies
       run: |
-          conda install -y -c conda-forge gdal
-          echo "Fetching nlohmann/json single-header..."
-          mkdir -p deps/json
-          curl -L https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o deps/json/json.hpp
-      shell: bash
-
-    - name: Add make to PATH
-      run: |
-        $env:Path += ";C:\ProgramData\chocolatey\bin"
+        choco install -y cmake git make
       shell: powershell
+
+    - name: Install GDAL using conda
+      run: |
+        & "C:\Miniconda\Scripts\activate"
+        conda install -y -c conda-forge gdal
+      shell: powershell
+
+    - name: Download nlohmann/json single-header
+      run: |
+        mkdir -p deps/json
+        curl -L https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o deps/json/json.hpp
+      shell: bash
 
     - name: Build the main program
       run: |
