@@ -16,9 +16,6 @@ export default function MapPage(props: MapPagePropsI) {
   const loadState = useAppSelector(selectLoadState);
   const pathNotFound = path === null;
   
-  // Track animation play state
-  const [isPlaying, setIsPlaying] = useState(false);
-  
   // Track window dimensions for responsiveness
   const [windowDimensions, setWindowDimensions] = useState({
     width: window.innerWidth,
@@ -38,15 +35,9 @@ export default function MapPage(props: MapPagePropsI) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Toggle play/pause state
-  const togglePlayPause = () => {
-    setIsPlaying(prevState => !prevState);
-    // Here you can add code to control animation
-    console.log(`Animation is now ${!isPlaying ? 'playing' : 'paused'}`);
-  };
-
   return (
     <div
+      className="w-screen h-screen flex flex-col gap-4 overflow-hidden"
       className="w-screen h-screen flex flex-col gap-4 overflow-hidden"
       style={{
         background: '#000',
@@ -59,9 +50,10 @@ export default function MapPage(props: MapPagePropsI) {
         backgroundPosition: '0 0, 40px 60px, 130px 270px'
       }}
     >
-      <div className="flex flex-1">
-        <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700">
-          {(loadState === 'error' || loadState === 'idle') && (
+      {/* Main content area - add padding-bottom to account for fixed footer */}
+      <div className="flex flex-1 pb-16">
+        <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700 overflow-auto">
+          {pathNotFound ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <div className="text-yellow-300 text-4xl mb-4">⚠️</div>
               <h3 className="text-lg font-semibold text-white mb-2">No Path Found</h3>
@@ -104,12 +96,23 @@ export default function MapPage(props: MapPagePropsI) {
           <div className="flex-shrink-0">
             <PathAnalyticsBox metrics={metrics} />
           </div>
+          <div className="flex-shrink-0">
+            <PathAnalyticsBox metrics={metrics} />
+          </div>
         }
       </div>
       
       {/* Fixed position button bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center z-10">
+      
+      {/* Fixed position button bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center z-10">
         <MyButton onClick={props.onBack}>Back</MyButton>
+        
+        {/* Optional: Show screen dimensions for responsive debugging */}
+        <span className="text-gray-400 text-xs">
+          {windowDimensions.width} × {windowDimensions.height}
+        </span>
       </div>
     </div>
   );
