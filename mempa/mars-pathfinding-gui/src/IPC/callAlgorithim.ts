@@ -48,7 +48,7 @@ ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
   catch {
   }
 
-  const TIMEOUT_SEC = 100;
+  const TIMEOUT_SEC = 60;
   const runWithTimeout = (cmd: string, timeout: number) => {
     return Promise.race([
       execPromise(cmd),
