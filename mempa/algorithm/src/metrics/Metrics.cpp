@@ -221,110 +221,125 @@ void Metrics::calculateNetElevationChange(
 }
 
 void Metrics::calculateMaxSlope(const std::vector<std::pair<int, int>> &path,
-                                const mempa::DemHandler *demHandler) {
-  this->maxSlope = 0.0;
+  const mempa::DemHandler *demHandler) {
+this->maxSlope = 0.0;
 
-  if (!demHandler || path.size() < 2) {
-    return;
-  }
+if (!demHandler || path.size() < 2) {
+return;
+}
 
-  for (size_t i = 1; i < path.size(); i++) {
-    std::pair<int, int> before = path[i - 1];
-    std::pair<int, int> after = path[i];
+// Use the same pixel size as your pathfinding algorithm - UPDATED to match average slope calculation
+const float pixelSize = 200.0; // Changed from 1.0 to match your pathfinder's value
 
-    // Calculate horizontal distance
-    float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
-                                     std::pow(after.second - before.second, 2));
+for (size_t i = 1; i < path.size(); i++) {
+// Rest of the function remains the same
+std::pair<int, int> before = path[i - 1];
+std::pair<int, int> after = path[i];
 
-    // Skip calculations for very small horizontal distances to avoid division
-    // by near-zero
-    if (horizontalDist < 0.001) {
-      continue;
-    }
+// Skip calculations for very small horizontal distances
+float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
+       std::pow(after.second - before.second, 2));
+if (horizontalDist < 0.001) {
+continue;
+}
 
-    // Get elevation data
-    float elevBefore = 0.0f;
-    float elevAfter = 0.0f;
+try {
+float elevBefore = demHandler->getValue(before.first, before.second);
+float elevAfter = demHandler->getValue(after.first, after.second);
+float elevDiff = std::abs(elevAfter - elevBefore);
 
-    try {
-      elevBefore = demHandler->getValue(before.first, before.second);
-      elevAfter = demHandler->getValue(after.first, after.second);
+// Calculate run based on whether the step is diagonal or cardinal
+float run;
+if (before.first == after.first || before.second == after.second) {
+// Cardinal direction (horizontal or vertical)
+run = pixelSize;
+} else {
+// Diagonal direction
+run = std::sqrt(2.0) * pixelSize;
+}
 
-      float elevDiff = std::abs(elevAfter - elevBefore);
+// Calculate slope consistently with path planning
+float segmentSlope = std::atan(elevDiff / run) * (180.0 / M_PI);
 
-      // Calculate slope in degrees (division by zero is already checked)
-      float segmentSlope =
-          std::atan(elevDiff / horizontalDist) * (180.0 / M_PI);
+// Track the steepest segment
+if (segmentSlope > this->maxSlope) {
+this->maxSlope = segmentSlope;
+std::cout << "New max slope at segment " << i << ": " << segmentSlope
+<< " degrees (elev diff: " << elevDiff
+<< ", run: " << run << ")" << std::endl;
+}
+} catch (const std::exception &e) {
+continue;
+}
+}
 
-      // Track the steepest segment
-      if (segmentSlope > this->maxSlope) {
-        this->maxSlope = segmentSlope;
-        std::cout << "New max slope at segment " << i << ": " << segmentSlope
-                  << " degrees (elev diff: " << elevDiff
-                  << ", horiz dist: " << horizontalDist << ")" << std::endl;
-      }
-    } catch (const std::exception &e) {
-      continue;
-    }
-  }
-
-  std::cout << "Maximum slope along path: " << this->maxSlope << " degrees"
-            << std::endl;
+std::cout << "Maximum slope along path: " << this->maxSlope << " degrees"
+<< std::endl;
 }
 
 void Metrics::calculateAverageSlope(
-    const std::vector<std::pair<int, int>> &path,
-    const mempa::DemHandler *demHandler) {
-  this->averageSlope = 0.0;
+  const std::vector<std::pair<int, int>> &path,
+  const mempa::DemHandler *demHandler) {
+this->averageSlope = 0.0;
 
-  if (!demHandler || path.size() < 2) {
-    return;
-  }
+if (!demHandler || path.size() < 2) {
+  return;
+}
 
-  float totalSlope = 0.0;
-  int validSegments = 0;
+// Use the same pixel size as your pathfinding algorithm
+const float pixelSize = 200.0; // CHANGE THIS to match your pathfinder setting
 
-  for (size_t i = 1; i < path.size(); i++) {
-    std::pair<int, int> before = path[i - 1];
-    std::pair<int, int> after = path[i];
+float totalSlope = 0.0;
+int validSegments = 0;
 
-    // Calculate horizontal distance
-    float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
-                                     std::pow(after.second - before.second, 2));
+for (size_t i = 1; i < path.size(); i++) {
+  std::pair<int, int> before = path[i - 1];
+  std::pair<int, int> after = path[i];
 
-    // Skip calculations for very small horizontal distances
-    if (horizontalDist < 0.001) {
-      continue;
+  // Get elevation data
+  float elevBefore = 0.0f;
+  float elevAfter = 0.0f;
+
+  try {
+    elevBefore = demHandler->getValue(before.first, before.second);
+    elevAfter = demHandler->getValue(after.first, after.second);
+
+    float elevDiff = std::abs(elevAfter - elevBefore);
+
+    // Determine if this is a cardinal or diagonal move
+    bool isDiagonal = (before.first != after.first && before.second != after.second);
+    
+    // Calculate the actual physical distance (run)
+    float run;
+    if (isDiagonal) {
+      // Diagonal moves are √2 times longer
+      run = std::sqrt(2.0f) * pixelSize;
+    } else {
+      // Cardinal moves (horizontal/vertical)
+      run = pixelSize;
     }
 
-    // Get elevation data
-    float elevBefore = 0.0f;
-    float elevAfter = 0.0f;
+    // Rise is the elevation difference in meters
+    float rise = elevDiff;
+    
+    // Calculate slope in degrees - use the same formula as pathfinding
+    float segmentSlope = std::atan(rise / run) * (180.0f / M_PI);
 
-    try {
-      elevBefore = demHandler->getValue(before.first, before.second);
-      elevAfter = demHandler->getValue(after.first, after.second);
-
-      float elevDiff = std::abs(elevAfter - elevBefore);
-
-      // Calculate slope in degrees
-      float segmentSlope =
-          std::atan(elevDiff / horizontalDist) * (180.0 / M_PI);
-      totalSlope += segmentSlope;
-      validSegments++;
-    } catch (const std::exception &e) {
-      continue;
-    }
+    totalSlope += segmentSlope;
+    validSegments++;
+  } catch (const std::exception &e) {
+    continue;
   }
+}
 
-  // Calculate average if we have valid segments
-  if (validSegments > 0) {
-    this->averageSlope = totalSlope / validSegments;
-    std::cout << "Average slope: " << this->averageSlope << " degrees "
-              << "(from " << validSegments << " segments)" << std::endl;
-  } else {
-    std::cout << "No valid segments for average slope calculation" << std::endl;
-  }
+// Calculate average if we have valid segments
+if (validSegments > 0) {
+  this->averageSlope = totalSlope / validSegments;
+  std::cout << "Average slope: " << this->averageSlope << " degrees "
+            << "(from " << validSegments << " segments)" << std::endl;
+} else {
+  std::cout << "No valid segments for average slope calculation" << std::endl;
+}
 }
 
 void Metrics::calculateElevationGain(
