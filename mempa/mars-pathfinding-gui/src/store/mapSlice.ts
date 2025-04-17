@@ -6,14 +6,22 @@ import { Metrics, Path } from "../IPC/electronIPC";
 
 interface MapState {
   loadState: LoadState,
+  loadState: LoadState,
   path: Path | null,
   metrics: Metrics | null,
 }
 
 export type LoadState = 'idle' | 'loading' | 'loaded' | 'error';
+export type Path = Coordinate[];
+
+interface Coordinate {
+  x: number,
+  y: number,
+}
 
 
 const initialState: MapState = {
+  loadState: 'idle',
   loadState: 'idle',
   path: null,
   metrics: null,
@@ -31,14 +39,19 @@ export const mapSlice = createSlice({
     },
     setLoadState: (state, action: PayloadAction<LoadState>) => {
       state.loadState = action.payload;
+    },
+    setLoadState: (state, action: PayloadAction<LoadState>) => {
+      state.loadState = action.payload;
     }
   },
 })
 
 export const { setPath, setMetrics, setLoadState } = mapSlice.actions
+export const { setPath, setMetrics, setLoadState } = mapSlice.actions
 
 export const selectPath = (state: RootState) => state.map.path
 export const selectMetrics = (state: RootState) => state.map.metrics
+export const selectLoadState = (state: RootState) => state.map.loadState
 export const selectLoadState = (state: RootState) => state.map.loadState
 
 export default mapSlice.reducer
