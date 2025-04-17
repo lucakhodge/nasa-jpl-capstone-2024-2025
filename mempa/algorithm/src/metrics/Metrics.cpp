@@ -5,6 +5,11 @@
 #include <iostream>
 #include <math.h>
 
+/**
+ * @brief Reset all metric values to their default values
+ * 
+ * This method initializes all metric fields to zero or their appropriate starting values.
+ */
 void Metrics::reset() {
   totalDistance = 0.0;
   horizontalDistance = 0.0;
@@ -15,6 +20,14 @@ void Metrics::reset() {
   averageSlope = 0.0;
 }
 
+/**
+ * @brief Calculate basic 2D path metrics without elevation data
+ * 
+ * @param path The sequence of coordinates representing the path
+ * 
+ * Calculates horizontal distance and as-the-crow-flies distance based on 2D coordinates.
+ * This method does not require elevation data.
+ */
 void Metrics::analizePath(std::vector<std::pair<int, int>> path) {
   this->reset();
   for (size_t i = 1; i < path.size(); i++) {
@@ -35,6 +48,15 @@ void Metrics::analizePath(std::vector<std::pair<int, int>> path) {
   this->totalDistance = this->horizontalDistance;
 }
 
+/**
+ * @brief Calculate the total 3D distance of the path including elevation changes
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Uses elevation data to calculate the true 3D distance by incorporating elevation
+ * changes between consecutive points in the path.
+ */
 void Metrics::calculateTotalDistance(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -153,6 +175,15 @@ void Metrics::calculateTotalDistance(
             << std::endl;
 }
 
+/**
+ * @brief Calculate the total elevation change (sum of all ups and downs)
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Computes the absolute sum of all elevation changes along the path,
+ * regardless of whether they are uphill or downhill.
+ */
 void Metrics::calculateTotalElevationChange(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -191,6 +222,15 @@ void Metrics::calculateTotalElevationChange(
             << this->totalElevationChange << std::endl;
 }
 
+/**
+ * @brief Calculate the net elevation change (end elevation - start elevation)
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Computes the difference between the elevation at the end point and the
+ * elevation at the start point of the path.
+ */
 void Metrics::calculateNetElevationChange(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -220,6 +260,15 @@ void Metrics::calculateNetElevationChange(
   }
 }
 
+/**
+ * @brief Calculate the maximum slope encountered along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Finds the steepest slope (in degrees) encountered at any segment of the path.
+ * Uses the same pixel size and slope calculation as the pathfinding algorithm.
+ */
 void Metrics::calculateMaxSlope(const std::vector<std::pair<int, int>> &path,
   const mempa::DemHandler *demHandler) {
 this->maxSlope = 0.0;
@@ -277,6 +326,15 @@ std::cout << "Maximum slope along path: " << this->maxSlope << " degrees"
 << std::endl;
 }
 
+/**
+ * @brief Calculate the average slope along the entire path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Calculates the average slope (in degrees) across all segments of the path.
+ * Uses the same pixel size and slope calculation as the pathfinding algorithm.
+ */
 void Metrics::calculateAverageSlope(
   const std::vector<std::pair<int, int>> &path,
   const mempa::DemHandler *demHandler) {
@@ -342,6 +400,14 @@ if (validSegments > 0) {
 }
 }
 
+/**
+ * @brief Calculate the total elevation gain (uphill) along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Sums all positive elevation changes (uphill segments) throughout the path.
+ */
 void Metrics::calculateElevationGain(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -377,6 +443,15 @@ void Metrics::calculateElevationGain(
   }
 }
 
+/**
+ * @brief Calculate the total elevation loss (downhill) along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Sums all negative elevation changes (downhill segments) throughout the path.
+ * The result is represented as a positive value.
+ */
 void Metrics::calculateElevationLoss(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -412,6 +487,17 @@ void Metrics::calculateElevationLoss(
   }
 }
 
+/**
+ * @brief Analyze the path and calculate all available metrics
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * This is the main method to calculate all metrics for a path. It calls the
+ * individual calculation methods and handles error conditions. If a DEM handler
+ * is provided, 3D metrics including elevation data are calculated. Otherwise,
+ * only 2D metrics are computed.
+ */
 void Metrics::analyzePath(const std::vector<std::pair<int, int>> &path,
                           const mempa::DemHandler *demHandler) {
   this->reset();
