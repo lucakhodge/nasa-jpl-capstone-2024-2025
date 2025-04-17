@@ -8,7 +8,6 @@
 #include "../rover-simulator/RoverSimulator.hpp"
 
 /* Dijkstras */
-#include "../src/rover-pathfinding-module/dijkstras.hpp"
 #include "../src/rover-pathfinding-module/NewDijkstras.hpp"
 
 /* PathLogger */
