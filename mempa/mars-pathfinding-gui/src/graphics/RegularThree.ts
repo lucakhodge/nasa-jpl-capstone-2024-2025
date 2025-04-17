@@ -124,7 +124,7 @@ export default class RegularThree {
     // });
 
     // Add light to make mesh look better
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
     // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
