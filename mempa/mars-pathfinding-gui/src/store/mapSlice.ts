@@ -12,12 +12,6 @@ interface MapState {
 }
 
 export type LoadState = 'idle' | 'loading' | 'loaded' | 'error';
-export type Path = Coordinate[];
-
-interface Coordinate {
-  x: number,
-  y: number,
-}
 
 
 const initialState: MapState = {

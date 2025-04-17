@@ -64,10 +64,12 @@ ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
     const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     if (stderr) {
-      return null;
+      getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
+      return;
     }
   } catch (error) {
-    return null;
+    getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
+    return;
   }
 
   const data: string = fs.readFileSync(outputPath, "utf-8");
