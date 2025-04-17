@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
-// import { selectPathNotFound, selectPath, selectPathLoading, clearPath, setPathLoading } from '../store/pathSlice';
-import { selectLoadState, selectMetrics, selectPath } from '../store/mapSlice'
+import { selectMetrics, selectPath } from '../store/mapSlice'
 import { PathAnalyticsBox } from '../components/PathAnalyticsBox';
 
 interface MapPagePropsI {
@@ -15,6 +14,9 @@ export default function MapPage(props: MapPagePropsI) {
   const metrics = useAppSelector(selectMetrics);
   const loadState = useAppSelector(selectLoadState);
   const pathNotFound = path === null;
+  
+  // Track animation play state
+  const [isPlaying, setIsPlaying] = useState(false);
   
   // Track window dimensions for responsiveness
   const [windowDimensions, setWindowDimensions] = useState({
@@ -34,6 +36,13 @@ export default function MapPage(props: MapPagePropsI) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Toggle play/pause state
+  const togglePlayPause = () => {
+    setIsPlaying(prevState => !prevState);
+    // Here you can add code to control animation
+    console.log(`Animation is now ${!isPlaying ? 'playing' : 'paused'}`);
+  };
 
   return (
     <div
@@ -108,11 +117,6 @@ export default function MapPage(props: MapPagePropsI) {
       {/* Fixed position button bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center z-10">
         <MyButton onClick={props.onBack}>Back</MyButton>
-        
-        {/* Optional: Show screen dimensions for responsive debugging */}
-        <span className="text-gray-400 text-xs">
-          {windowDimensions.width} × {windowDimensions.height}
-        </span>
       </div>
     </div>
   );
