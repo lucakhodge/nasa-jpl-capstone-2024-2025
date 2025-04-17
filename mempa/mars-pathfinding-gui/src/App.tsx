@@ -4,11 +4,13 @@ import DemListener from "./components/DemListener";
 import "./index.css";
 import { store } from "./store/store";
 import MainFlow from "./flows/MainFlow";
+import AlgorithimListener from "./components/AlgorithimLister";
 const root = createRoot(document.body);
 root.render(
   <div>
     <Provider store={store}>
       <DemListener />
+      <AlgorithimListener />
       {/* <FigmaPage /> */}
       <MainFlow />
     </Provider>

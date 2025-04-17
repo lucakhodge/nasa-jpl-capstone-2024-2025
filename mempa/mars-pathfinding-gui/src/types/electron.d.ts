@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { REACT_LOADING_DONE, CALL_CPP, Parameters } from "../IPC/electronIPC";
+import { REACT_LOADING_DONE, CALL_CPP, Parameters, AlgorithimData } from "../IPC/electronIPC";
 
 interface ElectronIPC {
   openDEM: () => void;
@@ -11,7 +11,9 @@ interface ElectronIPC {
   onDEMClosed: (callback: (() => void) | undefined) => void;
   setReactLoaded: () => void;
   callCpp: (string: string) => Promise<string>;
-  callAlgorithim: (Parameters: Parameters) => Promise<string>;
+  // callAlgorithim: (Parameters: Parameters) => Promise<string>;
+  callAlgorithim: (Parameters: Parameters) => void;
+  onAlgorithimEnd: (callback: (event: Election.IpcRendererEvent, AlgorithimData) => void) => void;
 }
 
 declare global {

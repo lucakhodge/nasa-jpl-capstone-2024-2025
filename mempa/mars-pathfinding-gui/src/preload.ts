@@ -7,6 +7,7 @@ import {
   callCpp,
   closeDEM,
   getChunk,
+  onAlgorithimEnd,
   onDEMClosed,
   onDEMOpened,
   openDEM,
@@ -22,4 +23,5 @@ contextBridge.exposeInMainWorld("electronIPC", {
   callCpp,
   setReactLoaded,
   callAlgorithim,
+  onAlgorithimEnd,
 });
