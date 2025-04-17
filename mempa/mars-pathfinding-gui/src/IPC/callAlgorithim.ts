@@ -41,25 +41,31 @@ ipcMain.handle(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
   console.log("in call algo handle, was passed:", parameters);
   const outputPath = path.join(app.getPath("temp"), 'path-result');
 
-  console.log("RM: ", "rm " + outputPath)
   try {
     await execPromise("rm " + outputPath);
   }
   catch {
-
   }
+
+  const TIMEOUT_SEC = 100;
+  const runWithTimeout = (cmd: string, timeout: number) => {
+    return Promise.race([
+      execPromise(cmd),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Execution timed out")), timeout)
+      ),
+    ]);
+  };
+
   try {
     const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
     console.log("EC: ", executableCall)
-    const { stderr } = await execPromise(executableCall);
+    const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     if (stderr) {
-      console.log("IN STDERR");
-      throw new Error(stderr);
+      return null;
     }
   } catch (error) {
-    console.log("IN a ERROR");
-    // TODO: what should happen on error?
-    return undefined;
+    return null;
   }
 
   const data = fs.readFileSync(outputPath, "utf-8");
