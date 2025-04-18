@@ -37,9 +37,8 @@ DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
                   $(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o \
                   $(OBJ_DIR)/tests/DemTester.o
 
-# Main target
 $(TARGET): $(OBJECTS)
-    $(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Generic object file rule
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
