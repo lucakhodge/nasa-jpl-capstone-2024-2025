@@ -69,28 +69,14 @@ export const LoadMapChunkFromPath: React.FC<LoadMapChunkFromPathProps> = ({
     }
   }, [path, buffer, extendedBoundary, demInfo]);
   
-  // Calculate vignette intensity based on edgeSmoothing value
-  const vignetteSize = edgeSmoothing * 2.5; // Adjust this multiplier as needed
-  const vignetteOpacity = 0.7; // Adjust opacity as needed
-  
   return (
-    <div className="relative w-full h-full">
-      {path ? (
-        <>
-          {/* Map3d component without passing the edgeSmoothing prop */}
-          <Map3d chunk={chunk} path={path} />
-          
-          {/* Vignette overlay */}
-          <div 
-            className="absolute inset-0 pointer-events-none rounded-lg"
-            style={{
-              boxShadow: `inset 0 0 ${vignetteSize}px ${vignetteSize / 2}px rgba(0,0,0,${vignetteOpacity})`,
-            }}
-          ></div>
-        </>
-      ) : (
-        <div className="flex items-center justify-center h-full text-white">Loading</div>
-      )}
-    </div>
-  );
+    path ?
+      <Map3d 
+        chunk={chunk} 
+        path={path} 
+        edgeSmoothing={edgeSmoothing}
+      />
+      :
+      <div>Loading</div>
+  )
 }
