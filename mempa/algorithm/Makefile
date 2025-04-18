@@ -22,8 +22,7 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 # Source files for search tests
 SEARCH_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                        $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-                       $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
-                       $(TEST_DIR)/DijkstrasTester.cpp
+                       $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
 
 SEARCH_TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SEARCH_TEST_SOURCES))
 
