@@ -68,7 +68,9 @@ export default function MapPage(props: MapPagePropsI) {
             </div>
           )}
           {loadState === 'loaded' && (
-            <LoadMapChunkFromPath />
+            <div className="w-full h-full p-4">
+              <LoadMapChunkFromPath extendedBoundary={true} edgeSmoothing={20} />
+            </div>
           )}
 
         </div>

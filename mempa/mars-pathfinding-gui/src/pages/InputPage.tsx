@@ -72,7 +72,7 @@ export default function InputPage(props: InputPagePropsI) {
         <h2 className="text-lg font-semibold text-blue-300 mb-4">Input Parameters</h2>
       
         <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
-          <h3 className="font-medium text-gray-300 mb-2">Start Coordinate</h3>
+          <h3 className="font-medium text-gray-300 mb-2">Pixel Start Coordinate</h3>
           <div className='flex flex-row items-center'>
             <div className='text-white mr-2'>(</div>
             <MyNumberInput
@@ -93,7 +93,7 @@ export default function InputPage(props: InputPagePropsI) {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
-          <h3 className="font-medium text-gray-300 mb-2">End Coordinate</h3>
+          <h3 className="font-medium text-gray-300 mb-2">Pixel End Coordinate</h3>
           <div className='flex flex-row items-center'>
             <div className='text-white mr-2'>(</div>
             <MyNumberInput
