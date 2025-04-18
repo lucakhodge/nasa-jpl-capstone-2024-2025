@@ -125,7 +125,6 @@ export default function InputPage(props: InputPagePropsI) {
             <div className='text-white ml-2'>degrees</div>
           </div>
         </div>
-
         <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
           <h3 className="font-medium text-gray-300 mb-2">Vision Radius</h3>
           <div className='flex flex-row items-center'>
@@ -138,7 +137,7 @@ export default function InputPage(props: InputPagePropsI) {
               className="text-black bg-white"
             />
             <div className='text-white ml-2'>meters</div>
-          </div>
+          </div
         </div>
       </div>
 

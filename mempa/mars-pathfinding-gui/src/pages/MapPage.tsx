@@ -72,7 +72,6 @@ export default function MapPage(props: MapPagePropsI) {
               <LoadMapChunkFromPath extendedBoundary={true} edgeSmoothing={20} />
             </div>
           )}
-
         </div>
         {pathNotFound ? <div>Not found</div> :
           <PathAnalyticsBox metrics={metrics} ></PathAnalyticsBox>
