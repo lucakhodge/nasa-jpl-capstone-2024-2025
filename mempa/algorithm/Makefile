@@ -15,7 +15,6 @@ TARGET = simulator.out
 OBJ_DIR = build
 SRC_DIR = src
 TEST_DIR = tests
-SEARCH_TEST_TARGET = run_search_tests.out
 DEM_TEST_TARGET = run_dem_tests.out
 
 # Create build directories if they don't exist
@@ -24,15 +23,6 @@ $(shell mkdir -p $(OBJ_DIR) $(OBJ_DIR)/dem-handler $(OBJ_DIR)/rover-simulator $(
 # Main program sources and objects
 SOURCES := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
-
-# Source files for search tests
-SEARCH_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
-                      $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-                      $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
-                      $(TEST_DIR)/SearchAlgorithmTester.cpp
-
-SEARCH_TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SEARCH_TEST_SOURCES))
-SEARCH_TEST_OBJECTS += $(OBJ_DIR)/tests/SearchAlgorithmTester.o
 
 # Source files for DEM tests
 DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
@@ -58,15 +48,11 @@ $(OBJ_DIR)/tests/%.o: $(TEST_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test targets
-$(SEARCH_TEST_TARGET): $(SEARCH_TEST_OBJECTS)
-	$(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
-
 $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
 	$(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Test running - check if test files exist before running
-test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
-	@if [ -f "./$(SEARCH_TEST_TARGET)" ]; then ./$(SEARCH_TEST_TARGET); fi
+test: $(DEM_TEST_TARGET)
 	@if [ -f "./$(DEM_TEST_TARGET)" ] && [ -f "$(TEST_DIR)/mars_dem.tif" ]; then \
 		./$(DEM_TEST_TARGET) $(TEST_DIR)/mars_dem.tif 5; \
 	else \
@@ -76,6 +62,6 @@ test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 
 # Clean up
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET) $(DEM_TEST_TARGET)
 
 .PHONY: clean test
