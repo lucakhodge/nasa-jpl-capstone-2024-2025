@@ -16,13 +16,12 @@ SOURCES := $(shell find $(SRC_DIR) -type f -name '*.cpp')
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 
 # Source files for search tests (SearchAlgorithm and SearchAlgorithmTester.cpp)
-SEARCH_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
-					   $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-					   $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
-
 SEARCH_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                        $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-                       $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
+                       $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
+                       $(TEST_DIR)/SearchAlgorithmTester.cpp
+
+SEARCH_TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SEARCH_TEST_SOURCES))
 
 # Source files for DEM tests (DemHandler and DemTester.cpp)
 DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
@@ -30,10 +29,7 @@ DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                     $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
                     $(TEST_DIR)/DemTester.cpp
 
-DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
-					$(OBJ_DIR)/rover-simulator/RoverSimulator.o \
-					$(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o \
-                    $(OBJ_DIR)/tests/DemTester.o
+DEM_TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(DEM_TEST_SOURCES))
 
 # Main target
 $(TARGET): $(OBJECTS)
@@ -41,19 +37,6 @@ $(TARGET): $(OBJECTS)
 
 # Generic object file rule
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-# Specific object file rules
-$(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o: $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-$(OBJ_DIR)/dem-handler/DemHandler.o: $(SRC_DIR)/dem-handler/DemHandler.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-$(OBJ_DIR)/tests/DemTester.o: $(TEST_DIR)/DemTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
