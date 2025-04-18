@@ -42,39 +42,39 @@ $(TARGET): $(OBJECTS)
 
 # Generic object file rule
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Specific object file rules
 $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o: $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR)/tests.o: $(TEST_DIR)/DijkstrasTester.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR)/DemHandler/DemHandler.o: $(SRC_DIR)/dem-handler/DemHandler.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR)/tests/DemTester.o: $(TEST_DIR)/DemTester.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test targets
 $(SEARCH_TEST_TARGET): $(SEARCH_TEST_OBJECTS)
-    $(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
-    $(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Test running
 test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
-    ./$(SEARCH_TEST_TARGET)
-    ./$(DEM_TEST_TARGET) tests/mars_dem.tif 5
+	./$(SEARCH_TEST_TARGET)
+	./$(DEM_TEST_TARGET) tests/mars_dem.tif 5
 
 clean:
-    rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 
 .PHONY: clean test
