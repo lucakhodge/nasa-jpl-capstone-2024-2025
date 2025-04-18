@@ -137,7 +137,7 @@ export default function InputPage(props: InputPagePropsI) {
               className="text-black bg-white"
             />
             <div className='text-white ml-2'>meters</div>
-          </div
+          </div>
         </div>
       </div>
 

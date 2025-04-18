@@ -19,8 +19,6 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 SEARCH_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 					   $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
 					   $(SRC_DIR)/search_algorithms/SearchAlgorithm.cpp \
-                       $(SRC_DIR)/search_algorithms/dijkstras.cpp \
-                       $(TEST_DIR)/DijkstrasTester.cpp
 
 SEARCH_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
 					   $(OBJ_DIR)/rover-simulator/RoverSimulator.o \
