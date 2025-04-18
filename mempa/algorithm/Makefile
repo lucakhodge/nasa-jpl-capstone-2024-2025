@@ -53,10 +53,6 @@ $(OBJ_DIR)/dem-handler/DemHandler.o: $(SRC_DIR)/dem-handler/DemHandler.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR)/tests/SearchAlgorithmTester.o: $(TEST_DIR)/SearchAlgorithmTester.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
 $(OBJ_DIR)/tests/DemTester.o: $(TEST_DIR)/DemTester.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
