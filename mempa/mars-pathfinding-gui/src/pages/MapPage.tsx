@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
-import { selectMetrics, selectPath } from '../store/mapSlice'
+// import { selectPathNotFound, selectPath, selectPathLoading, clearPath, setPathLoading } from '../store/pathSlice';
+import { selectLoadState, selectMetrics, selectPath } from '../store/mapSlice'
 import { PathAnalyticsBox } from '../components/PathAnalyticsBox';
 
 interface MapPagePropsI {
@@ -14,40 +15,10 @@ export default function MapPage(props: MapPagePropsI) {
   const metrics = useAppSelector(selectMetrics);
   const loadState = useAppSelector(selectLoadState);
   const pathNotFound = path === null;
-  
-  // Track animation play state
-  const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Track window dimensions for responsiveness
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-  
-  // Add resize event listener
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Toggle play/pause state
-  const togglePlayPause = () => {
-    setIsPlaying(prevState => !prevState);
-    // Here you can add code to control animation
-    console.log(`Animation is now ${!isPlaying ? 'playing' : 'paused'}`);
-  };
 
   return (
     <div
-      className="w-screen h-screen flex flex-col gap-4 overflow-hidden"
-      className="w-screen h-screen flex flex-col gap-4 overflow-hidden"
+      className="w-screen h-screen flex flex-col gap-4"
       style={{
         background: '#000',
         backgroundImage: `
@@ -59,10 +30,9 @@ export default function MapPage(props: MapPagePropsI) {
         backgroundPosition: '0 0, 40px 60px, 130px 270px'
       }}
     >
-      {/* Main content area - add padding-bottom to account for fixed footer */}
-      <div className="flex flex-1 pb-16">
-        <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700 overflow-auto">
-          {pathNotFound ? (
+      <div className="flex flex-1">
+        <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700">
+          {(loadState === 'error' || loadState === 'idle') && (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <div className="text-yellow-300 text-4xl mb-4">⚠️</div>
               <h3 className="text-lg font-semibold text-white mb-2">No Path Found</h3>
@@ -79,6 +49,7 @@ export default function MapPage(props: MapPagePropsI) {
                 </ul>
               </div>
               <MyButton
+                // className="mt-6"
                 onClick={props.onBack}
               >
                 Adjust Parameters
@@ -102,20 +73,10 @@ export default function MapPage(props: MapPagePropsI) {
 
         </div>
         {pathNotFound ? <div>Not found</div> :
-          <div className="flex-shrink-0">
-            <PathAnalyticsBox metrics={metrics} />
-          </div>
-          <div className="flex-shrink-0">
-            <PathAnalyticsBox metrics={metrics} />
-          </div>
+          <PathAnalyticsBox metrics={metrics} ></PathAnalyticsBox>
         }
       </div>
-      
-      {/* Fixed position button bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center z-10">
-      
-      {/* Fixed position button bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between items-center z-10">
+      <div className="mt-auto flex justify-between p-4">
         <MyButton onClick={props.onBack}>Back</MyButton>
       </div>
     </div>
