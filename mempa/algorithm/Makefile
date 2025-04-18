@@ -37,7 +37,8 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 # Source files for DEM tests (do not include the test cpp file directly)
 DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                    $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-                   $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
+                   $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
+                   $(SRC_DIR)/rover-pathfinding-module/NewDijkstras.cpp
 
 # Convert source files to object files
 DEM_TEST_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(DEM_TEST_SOURCES))
@@ -46,36 +47,35 @@ DEM_TEST_OBJECTS += $(OBJ_DIR)/tests/DemTester.o
 
 # Build target
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+    $(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Generic object file rule for source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+    @mkdir -p $(dir $@)
+    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Rule for test files
 $(OBJ_DIR)/tests/%.o: $(TEST_DIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+    @mkdir -p $(dir $@)
+    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test targets - add INCLUDES to the linker command to help find headers
 $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
-	$(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+    $(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Test running - check if test files exist before running
 test: $(DEM_TEST_TARGET)
-	@if [ -f "./$(DEM_TEST_TARGET)" ] && [ -f "$(TEST_DIR)/mars_dem.tif" ]; then \
-		./$(DEM_TEST_TARGET) $(TEST_DIR)/mars_dem.tif 5; \
-	elif [ -f "./$(DEM_TEST_TARGET)" ]; then \
-		echo "Warning: mars_dem.tif not found, running test without it"; \
-		./$(DEM_TEST_TARGET); \
-	else \
-		echo "Error: DEM test executable not built"; \
-		exit 1; \
-	fi
+    @if [ -f "./$(DEM_TEST_TARGET)" ] && [ -f "$(TEST_DIR)/mars_dem.tif" ]; then \
+        ./$(DEM_TEST_TARGET) $(TEST_DIR)/mars_dem.tif 5; \
+    elif [ -f "./$(DEM_TEST_TARGET)" ]; then \
+        echo "Warning: mars_dem.tif not found, running test without it"; \
+        ./$(DEM_TEST_TARGET); \
+    else \
+        echo "Error: DEM test executable not built"; \
+        exit 1; \
+    fi
 
-# Clean up
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET) $(DEM_TEST_TARGET)
+    rm -rf $(OBJ_DIR) $(TARGET) $(DEM_TEST_TARGET)
 
 .PHONY: clean test
