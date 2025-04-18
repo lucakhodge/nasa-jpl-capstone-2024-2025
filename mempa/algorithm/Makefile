@@ -45,37 +45,37 @@ DEM_TEST_OBJECTS += $(OBJ_DIR)/tests/DemTester.o
 
 # Build target
 $(TARGET): $(OBJECTS)
-    $(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Generic object file rule for source files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Rule for test files
 $(OBJ_DIR)/tests/%.o: $(TEST_DIR)/%.cpp
-    @mkdir -p $(dir $@)
-    $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test targets
 $(SEARCH_TEST_TARGET): $(SEARCH_TEST_OBJECTS)
-    $(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(SEARCH_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 $(DEM_TEST_TARGET): $(DEM_TEST_OBJECTS)
-    $(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	$(CXX) $(DEM_TEST_OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 # Test running - check if test files exist before running
 test: $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
-    @if [ -f "./$(SEARCH_TEST_TARGET)" ]; then ./$(SEARCH_TEST_TARGET); fi
-    @if [ -f "./$(DEM_TEST_TARGET)" ] && [ -f "$(TEST_DIR)/mars_dem.tif" ]; then \
-        ./$(DEM_TEST_TARGET) $(TEST_DIR)/mars_dem.tif 5; \
-    else \
-        echo "Missing DEM test file or mars_dem.tif"; \
-        exit 1; \
-    fi
+	@if [ -f "./$(SEARCH_TEST_TARGET)" ]; then ./$(SEARCH_TEST_TARGET); fi
+	@if [ -f "./$(DEM_TEST_TARGET)" ] && [ -f "$(TEST_DIR)/mars_dem.tif" ]; then \
+		./$(DEM_TEST_TARGET) $(TEST_DIR)/mars_dem.tif 5; \
+	else \
+		echo "Missing DEM test file or mars_dem.tif"; \
+		exit 1; \
+	fi
 
 # Clean up
 clean:
-    rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET) $(SEARCH_TEST_TARGET) $(DEM_TEST_TARGET)
 
 .PHONY: clean test
