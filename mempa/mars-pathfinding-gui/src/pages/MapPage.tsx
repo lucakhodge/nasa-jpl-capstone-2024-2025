@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { LoadMapChunkFromPath } from '../components/LoadMapChunkFromPath';
 import { MyButton } from '../components/MyButton';
 // import { selectPathNotFound, selectPath, selectPathLoading, clearPath, setPathLoading } from '../store/pathSlice';
-import { selectMetrics, selectPath } from '../store/mapSlice'
+import { selectLoadState, selectMetrics, selectPath } from '../store/mapSlice'
 import { PathAnalyticsBox } from '../components/PathAnalyticsBox';
 
 interface MapPagePropsI {
@@ -13,6 +13,7 @@ interface MapPagePropsI {
 export default function MapPage(props: MapPagePropsI) {
   const path = useAppSelector(selectPath);
   const metrics = useAppSelector(selectMetrics);
+  const loadState = useAppSelector(selectLoadState);
   const pathNotFound = path === null;
 
   return (
@@ -31,7 +32,7 @@ export default function MapPage(props: MapPagePropsI) {
     >
       <div className="flex flex-1">
         <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700">
-          {pathNotFound ? (
+          {(loadState === 'error' || loadState === 'idle') && (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <div className="text-yellow-300 text-4xl mb-4">⚠️</div>
               <h3 className="text-lg font-semibold text-white mb-2">No Path Found</h3>
@@ -54,7 +55,8 @@ export default function MapPage(props: MapPagePropsI) {
                 Adjust Parameters
               </MyButton>
             </div>
-          ) : false ? (
+          )}
+          {loadState === 'loading' && (
             <div className="flex flex-col items-center justify-center h-full">
               <div className="text-blue-300 mb-3">
                 <svg className="animate-spin h-10 w-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -64,9 +66,11 @@ export default function MapPage(props: MapPagePropsI) {
               </div>
               <p className="text-white font-medium">Calculating path...</p>
             </div>
-          ) : (
+          )}
+          {loadState === 'loaded' && (
             <LoadMapChunkFromPath />
           )}
+
         </div>
         {pathNotFound ? <div>Not found</div> :
           <PathAnalyticsBox metrics={metrics} ></PathAnalyticsBox>

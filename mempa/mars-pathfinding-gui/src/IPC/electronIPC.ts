@@ -38,6 +38,18 @@ export interface Metrics {
   asTheCrowFlysDistance: number,
 }
 
+export type AlgorithimData = {
+  path: Path;
+  metrics: Metrics;
+} | null
+
+export type Path = PathCoordinate[];
+
+export interface PathCoordinate {
+  x: number,
+  y: number,
+}
+
 // constants for message chanels
 export const OPEN_DEM = "open-dem";
 export const CLOSE_DEM = "close-dem";
@@ -78,6 +90,11 @@ export interface Coordinate {
   y: number | null
 }
 export const CALL_ALGORITHIM = "call-algorithim"
+export const ON_ALGORITHIM_END = "on-algorithim-end"
+
 export const callAlgorithim = (parameters: Parameters) =>
-  ipcRenderer.invoke(CALL_ALGORITHIM, parameters);
+  ipcRenderer.send(CALL_ALGORITHIM, parameters);
+export const onAlgorithimEnd = (
+  callback: (event: Electron.IpcRendererEvent, props: AlgorithimData) => void
+) => ipcRenderer.on(ON_ALGORITHIM_END, callback);
 

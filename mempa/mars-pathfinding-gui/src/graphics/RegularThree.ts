@@ -51,6 +51,9 @@ export default class RegularThree {
     renderer.setSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, false);
     renderer.setPixelRatio(window.devicePixelRatio);
 
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
     const rows = chunk.data.length;
     const cols = chunk.data[0].length;
     const minVal = -5000;
@@ -108,20 +111,50 @@ export default class RegularThree {
     geometry.computeVertexNormals();
 
     // material for mesh
+    // const material = new THREE.MeshNormalMaterial({ flatShading: true });
     const material = new THREE.MeshStandardMaterial({
       color: 0xDB7030,
-      wireframe: false,
+      roughness: 1,
+      metalness: 0,
+      flatShading: true,
     });
+    // const material = new THREE.MeshStandardMaterial({
+    //   color: 0xDB7030,
+    //   wireframe: false,
+    // });
 
     // Add light to make mesh look better
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
+
+    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    // directionalLight.position.set(5, 5, 5);
+    // // directionalLight.position.set(100, 200, 100);
+    // // directionalLight.castShadow = true;
+    // // directionalLight.shadow.mapSize.width = 2048;
+    // // directionalLight.shadow.mapSize.width = 2048;
+    // // directionalLight.shadow.mapSize.height = 2048;
+    // // directionalLight.shadow.camera.near = 0.1;
+    // // directionalLight.shadow.camera.far = 500;
+    // // directionalLight.shadow.camera.left = -100;
+    // // directionalLight.shadow.camera.right = 100;
+    // // directionalLight.shadow.camera.top = 100;
+    // // directionalLight.shadow.camera.bottom = -100;
+    // scene.add(directionalLight);
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight2.position.set(chunk.description.coordinate.x * this.scale, 100, chunk.description.coordinate.y * this.scale);
+    scene.add(directionalLight2);
+    // const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x444422, 0.6); // Sky blue & earthy tone
+    // hemiLight.position.set(0, 50, 0);
+    // scene.add(hemiLight);
+    const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    // backLight.position.set(-100, 100, -100);
+    // scene.add(backLight);
 
     // const mesh = new THREE.Mesh(geometry, heatGradiant);
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
     scene.add(mesh);
 
     //add controls for obiting
@@ -155,6 +188,26 @@ export default class RegularThree {
       path_positions.push(new THREE.Vector3(x_pos, y_pos, z_pos));
       // }
     }
+    const startGeometry = new THREE.SphereGeometry(10 * this.scale, 16, 16);
+    const startMaterial = new THREE.MeshStandardMaterial({
+      color: 0x228B22,
+      roughness: 0.8,
+      metalness: 0.1,
+    }); // Green
+    const startMarker = new THREE.Mesh(startGeometry, startMaterial);
+    startMarker.position.copy(path_positions[0]);
+    scene.add(startMarker);
+
+    const endGeometry = new THREE.SphereGeometry(10 * this.scale, 16, 16);
+    const endMaterial = new THREE.MeshStandardMaterial({
+      color: 0x4682B4,
+      roughness: 0.8,
+      metalness: 0.1,
+    }); // Blue
+    const endMarker = new THREE.Mesh(endGeometry, endMaterial);
+    endMarker.position.copy(path_positions[path_positions.length - 1]);
+    scene.add(endMarker);
+
     const pathGeometry = new THREE.BufferGeometry().setFromPoints(path_positions);
     const pathMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     const pathLine = new THREE.Line(pathGeometry, pathMaterial);
@@ -163,9 +216,13 @@ export default class RegularThree {
 
     //object to foolow path
     const objectGeometry = new THREE.SphereGeometry(10 * this.scale);
-    const objectMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const objectMaterial = new THREE.MeshStandardMaterial({
+      color: 0xff0000,
+      roughness: 0.8,
+      metalness: 0.1,
+    });
     const movingObject = new THREE.Mesh(objectGeometry, objectMaterial);
-    movingObject.position.set(chunk.description.coordinate.x * this.scale, 0, chunk.description.coordinate.y * this.scale); // Place at center of the mesh
+    movingObject.position.set(path_positions[0].x * this.scale, path_positions[0].y, path_positions[0].y * this.scale); // Place at center of the mesh
     scene.add(movingObject);
 
     this.renderer = renderer;

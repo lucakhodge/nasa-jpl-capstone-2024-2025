@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { MyButton } from "../components/MyButton";
 import { selectEndCoordinate, selectRadius, selectStartCoordinate, setEndCoordinate, setRadius, setSlope, setStartCoordinate } from "../store/paramatersSlice";
@@ -22,6 +22,12 @@ export default function InputPage(props: InputPagePropsI) {
   const radius = useAppSelector(selectRadius);
 
   const isFileLoaded = useAppSelector(selectDemInfo) !== null;
+
+  // const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // const focusInput = (index: number) => {
+  //   const input = inputRefs.current[index];
+  //   if (input) input.focus();
+  // };
 
   const handleStartCoordinateChange = (val: number, coord: 'x' | 'y') => {
     dispatch(setStartCoordinate({
@@ -106,9 +112,11 @@ export default function InputPage(props: InputPagePropsI) {
 
         <div className='flex flex-row text-black mb-3'>
           <div className='mr-2'>{"Vision radius: "}</div>
-          <MyNumberInput disabled={!isFileLoaded} value={radius} onChange={(val) => {
-            dispatch(setRadius(val))
-          }}></MyNumberInput>
+          <MyNumberInput
+            disabled={!isFileLoaded} value={radius} onChange={(val) => {
+              dispatch(setRadius(val))
+            }}
+          ></MyNumberInput>
         </div>
       </div>
 

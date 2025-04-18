@@ -1,23 +1,20 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "./store"
-import { Metrics } from "../IPC/electronIPC";
+import { Metrics, Path } from "../IPC/electronIPC";
 
 
 interface MapState {
+  loadState: LoadState,
   path: Path | null,
   metrics: Metrics | null,
 }
 
-export type Path = Coordinate[];
-
-interface Coordinate {
-  x: number,
-  y: number,
-}
+export type LoadState = 'idle' | 'loading' | 'loaded' | 'error';
 
 
 const initialState: MapState = {
+  loadState: 'idle',
   path: null,
   metrics: null,
 }
@@ -26,19 +23,23 @@ export const mapSlice = createSlice({
   name: "map",
   initialState,
   reducers: {
-    setPath: (state, action: PayloadAction<Coordinate[]>) => {
+    setPath: (state, action: PayloadAction<Path>) => {
       state.path = action.payload;
     },
     setMetrics: (state, action: PayloadAction<Metrics>) => {
       state.metrics = action.payload;
+    },
+    setLoadState: (state, action: PayloadAction<LoadState>) => {
+      state.loadState = action.payload;
     }
   },
 })
 
-export const { setPath, setMetrics } = mapSlice.actions
+export const { setPath, setMetrics, setLoadState } = mapSlice.actions
 
 export const selectPath = (state: RootState) => state.map.path
 export const selectMetrics = (state: RootState) => state.map.metrics
+export const selectLoadState = (state: RootState) => state.map.loadState
 
 export default mapSlice.reducer
 

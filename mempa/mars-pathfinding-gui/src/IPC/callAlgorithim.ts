@@ -3,8 +3,9 @@ import { app, ipcMain } from "electron";
 import path from 'path';
 import { promisify } from 'util';
 import fs from 'fs';
-import { CALL_ALGORITHIM, Parameters } from './electronIPC';
+import { CALL_ALGORITHIM, ON_ALGORITHIM_END, Parameters } from './electronIPC';
 import { getDemFilePath } from './FilePathStore';
+import { getRendererWindow } from '../main';
 
 const execPromise = promisify(exec)
 
@@ -36,33 +37,57 @@ const getFlags = (parameters: Parameters, inputPath: string, outputPath: string)
   return flagsStr;
 }
 
-ipcMain.handle(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
+ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
 
   console.log("in call algo handle, was passed:", parameters);
   const outputPath = path.join(app.getPath("temp"), 'path-result');
 
-  console.log("RM: ", "rm " + outputPath)
   try {
     await execPromise("rm " + outputPath);
   }
   catch {
-
   }
+
+  const TIMEOUT_SEC = 60;
+  const runWithTimeout = (cmd: string, timeout: number) => {
+    return Promise.race([
+      execPromise(cmd),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Execution timed out")), timeout)
+      ),
+    ]);
+  };
+
   try {
     const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
     console.log("EC: ", executableCall)
-    const { stderr } = await execPromise(executableCall);
+    const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     if (stderr) {
-      console.log("IN STDERR");
-      throw new Error(stderr);
+      getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
+      return;
     }
   } catch (error) {
-    console.log("IN a ERROR");
-    // TODO: what should happen on error?
-    return undefined;
+    getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
+    return;
   }
 
-  const data = fs.readFileSync(outputPath, "utf-8");
+  const data: string = fs.readFileSync(outputPath, "utf-8");
   console.log("FILE data", data)
-  return data;
+
+  let roverPath = JSON.parse(data).data;
+  let metrics = JSON.parse(data).metrics;
+  const transformedMetrics = {
+    totalDistance: metrics.totalDistance,
+    elevationGain: metrics.elevationGain,
+    elevationLoss: metrics.elevationLoss,
+    maxSlope: metrics.maxSlope,
+    averageSlope: metrics.averageSlope,
+    maxElevation: 0,
+    minElevation: 0,
+    baseElevation: 0,
+    asTheCrowFlysDistance: metrics.asTheCrowFlysDistance
+  };
+
+  getRendererWindow().webContents.send(ON_ALGORITHIM_END, { path: roverPath, metrics: transformedMetrics });
+  // event.sender.send(ON_ALGORITHIM_END, { path: roverPath, metrics: transformedMetrics });
 });
