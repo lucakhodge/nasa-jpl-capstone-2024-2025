@@ -6,6 +6,10 @@ CXXFLAGS = -std=c++17 -Wall -Wextra
 GDAL_CFLAGS := $(shell gdal-config --cflags 2>/dev/null || echo "-I/usr/include/gdal -I/usr/local/include/gdal -I/opt/homebrew/include/gdal")
 GDAL_LIBS := $(shell gdal-config --libs 2>/dev/null || echo "-lgdal")
 
+# Add fallback paths explicitly for environments where gdal-config is missing or incomplete
+GDAL_CFLAGS += -I/usr/include/gdal -I/usr/local/include/gdal -I/opt/homebrew/include/gdal
+GDAL_LIBS += -L/usr/lib -L/usr/local/lib -L/opt/homebrew/lib -lgdal
+
 INCLUDES = -Isrc $(GDAL_CFLAGS) -Iexternal/json/include
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
 LIBS = $(GDAL_LIBS) -ltiff
@@ -24,7 +28,7 @@ $(shell mkdir -p $(OBJ_DIR) $(OBJ_DIR)/dem-handler $(OBJ_DIR)/rover-simulator $(
 SOURCES := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 
-# Source files for DEM tests (removed dijkstras.hpp and cpp references)
+# Source files for DEM tests
 DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                    $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
                    $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
