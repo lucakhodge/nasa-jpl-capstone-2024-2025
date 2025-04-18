@@ -30,7 +30,6 @@ SEARCH_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
 DEM_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 					$(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
 					$(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
-					$(SRC_DIR)/rover-pathfinding-module/dijkstras.cpp \
                     $(TEST_DIR)/DemTester.cpp
 
 DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
@@ -50,10 +49,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Specific object file rules
 $(OBJ_DIR)/search_algorithms/SearchAlgorithm.o: $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-$(OBJ_DIR)/search_algorithms/dijkstras.o: $(SRC_DIR)/rover-pathfinding-module/dijkstras.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
