@@ -18,13 +18,13 @@ TEST_DIR = tests
 DEM_TEST_TARGET = run_dem_tests.out
 
 # Create build directories if they don't exist
-$(shell mkdir -p $(OBJ_DIR) $(OBJ_DIR)/dem-handler $(OBJ_DIR)/rover-simulator $(OBJ_DIR)/rover-pathfinding-module $(OBJ_DIR)/tests)
+$(shell mkdir -p $(OBJ_DIR) $(OBJ_DIR)/dem-handler $(OBJ_DIR)/rover-simulator $(OBJ_DIR)/tests)
 
 # Main program sources and objects
 SOURCES := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 
-# Source files for DEM tests
+# Source files for DEM tests (removed dijkstras.hpp and cpp references)
 DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
                    $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
                    $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
