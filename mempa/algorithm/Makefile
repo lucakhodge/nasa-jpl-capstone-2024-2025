@@ -20,15 +20,14 @@ SEARCH_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
 					   $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
 					   $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
 
-SEARCH_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
-					   $(OBJ_DIR)/rover-simulator/RoverSimulator.o \
-					   $(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o \
-                       $(OBJ_DIR)/tests/SearchAlgorithmTester.o
+SEARCH_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
+                       $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
+                       $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp
 
 # Source files for DEM tests (DemHandler and DemTester.cpp)
-DEM_TEST_SOURCES := $(SRC_DIR)/DemHandler/DemHandler.cpp \
-					$(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
-					$(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
+DEM_TEST_SOURCES := $(SRC_DIR)/dem-handler/DemHandler.cpp \
+                    $(SRC_DIR)/rover-simulator/RoverSimulator.cpp \
+                    $(SRC_DIR)/rover-pathfinding-module/SearchAlgorithm.cpp \
                     $(TEST_DIR)/DemTester.cpp
 
 DEM_TEST_OBJECTS := $(OBJ_DIR)/DemHandler/DemHandler.o \
@@ -50,7 +49,7 @@ $(OBJ_DIR)/rover-pathfinding-module/SearchAlgorithm.o: $(SRC_DIR)/rover-pathfind
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR)/DemHandler/DemHandler.o: $(SRC_DIR)/DemHandler/DemHandler.cpp
+$(OBJ_DIR)/dem-handler/DemHandler.o: $(SRC_DIR)/dem-handler/DemHandler.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
