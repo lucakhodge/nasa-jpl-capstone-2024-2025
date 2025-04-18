@@ -1,6 +1,6 @@
 #include "../src/dem-handler/DemHandler.hpp"
 #include "../src/rover-pathfinding-module/SearchAlgorithm.hpp"
-#include "../src/rover-pathfinding-module/dijkstras.hpp"
+#include "../src/rover-pathfinding-module/NewDijkstras.hpp"
 #include "../src/rover-simulator/RoverSimulator.hpp"
 
 #include <cassert>
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
                                         userCoordinates2);
 
     // Create a new pathfinding algorithm object.
-    Dijkstras marsDisjkstrasAlgorithm;
+    NewDijkstras marsDisjkstrasAlgorithm;
 
     std::vector<std::pair<int, int>> routedPath =
         marsSimulator.runSimulator(&marsDisjkstrasAlgorithm, 35.0f, chunkSize);
