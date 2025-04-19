@@ -70,7 +70,7 @@ export default function InputPage(props: InputPagePropsI) {
 
       <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
         <h2 className="text-lg font-semibold text-blue-300 mb-4">Input Parameters</h2>
-      
+
         <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
           <h3 className="font-medium text-gray-300 mb-2">Pixel Start Coordinate</h3>
           <div className='flex flex-row items-center'>
@@ -128,9 +128,9 @@ export default function InputPage(props: InputPagePropsI) {
         <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
           <h3 className="font-medium text-gray-300 mb-2">Vision Radius</h3>
           <div className='flex flex-row items-center'>
-            <MyNumberInput 
-              disabled={!isFileLoaded} 
-              value={radius} 
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={radius}
               onChange={(val) => {
                 dispatch(setRadius(val))
               }}
