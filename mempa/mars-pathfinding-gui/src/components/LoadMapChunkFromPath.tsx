@@ -74,7 +74,6 @@ export const LoadMapChunkFromPath: React.FC<LoadMapChunkFromPathProps> = ({
       <Map3d 
         chunk={chunk} 
         path={path} 
-        edgeSmoothing={edgeSmoothing}
       />
       :
       <div>Loading</div>

@@ -7,7 +7,6 @@ import { Path } from "../store/mapSlice";
 interface Map3dPropsI {
   chunk: Chunk | null
   path: Path | null
-  edgeSmoothing?: number; // Add this line
 }
 
 export default function Map3d(props: Map3dPropsI) {

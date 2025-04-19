@@ -62,7 +62,6 @@ ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
     const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
     console.log("EC: ", executableCall)
     const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
-    const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     if (stderr) {
       getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
       return;
