@@ -49,17 +49,7 @@ export default function InputPage(props: InputPagePropsI) {
 
   return (
     <div
-      className="w-screen h-screen flex flex-col gap-4 p-4"
-      style={{
-        background: '#000',
-        backgroundImage: `
-          radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-          radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-          radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 1px)
-        `,
-        backgroundSize: '550px 550px, 350px 350px, 250px 250px',
-        backgroundPosition: '0 0, 40px 60px, 130px 270px'
-      }}
+      className="w-screen h-screen flex flex-col gap-4 p-4 overflow-scroll"
     >
       <div className="font-orbitron text-center text-white"></div>
 
@@ -79,14 +69,12 @@ export default function InputPage(props: InputPagePropsI) {
               disabled={!isFileLoaded}
               value={startCoordinate.x}
               onChange={(val) => handleStartCoordinateChange(val, 'x')}
-              className="text-black bg-white"
             />
             <div className='text-white mx-2'>,</div>
             <MyNumberInput
               disabled={!isFileLoaded}
               value={startCoordinate.y}
               onChange={(val) => handleStartCoordinateChange(val, 'y')}
-              className="text-black bg-white"
             />
             <div className='text-white ml-2'>)</div>
           </div>
@@ -100,14 +88,12 @@ export default function InputPage(props: InputPagePropsI) {
               disabled={!isFileLoaded}
               value={endCoordinate.x}
               onChange={(val) => handleEndCoordinateChange(val, 'x')}
-              className="text-black bg-white"
             />
             <div className='text-white mx-2'>,</div>
             <MyNumberInput
               disabled={!isFileLoaded}
               value={endCoordinate.y}
               onChange={(val) => handleEndCoordinateChange(val, 'y')}
-              className="text-black bg-white"
             />
             <div className='text-white ml-2'>)</div>
           </div>
@@ -120,7 +106,6 @@ export default function InputPage(props: InputPagePropsI) {
               disabled={!isFileLoaded}
               value={slope}
               onChange={(val) => handleSlopeChange(val)}
-              className="text-black bg-white"
             />
             <div className='text-white ml-2'>degrees</div>
           </div>
@@ -134,14 +119,13 @@ export default function InputPage(props: InputPagePropsI) {
               onChange={(val) => {
                 dispatch(setRadius(val))
               }}
-              className="text-black bg-white"
             />
             <div className='text-white ml-2'>meters</div>
           </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 flex justify-between">
+      <div className="mt-auto flex justify-between p-4">
         <MyButton onClick={props.onBack}>Back</MyButton>
         <GeneratePathButton onClick={props.onNext}>Next</GeneratePathButton>
       </div>

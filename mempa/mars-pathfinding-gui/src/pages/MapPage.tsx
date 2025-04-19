@@ -18,17 +18,7 @@ export default function MapPage(props: MapPagePropsI) {
 
   return (
     <div
-      className="w-screen h-screen flex flex-col gap-4"
-      style={{
-        background: '#000',
-        backgroundImage: `
-          radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-          radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-          radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 1px)
-        `,
-        backgroundSize: '550px 550px, 350px 350px, 250px 250px',
-        backgroundPosition: '0 0, 40px 60px, 130px 270px'
-      }}
+      className="w-screen h-screen flex flex-col gap-4 overflow-scroll"
     >
       <div className="flex flex-1">
         <div className="flex-1 bg-black bg-opacity-30 m-2 rounded-lg border border-gray-700">
