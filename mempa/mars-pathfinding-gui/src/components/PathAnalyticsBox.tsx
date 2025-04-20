@@ -45,14 +45,6 @@ export const PathAnalyticsBox
                 <p className="text-xs text-gray-400">Loss</p>
                 <p className="font-semibold text-red-400">-{props.metrics.elevationLoss.toFixed(1)} m</p>
               </div>
-              <div>
-                <p className="text-xs text-gray-400">Max</p>
-                <p className="font-semibold text-cyan-300">{props.metrics.maxElevation.toFixed(1)} m</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Min</p>
-                <p className="font-semibold text-cyan-300">{props.metrics.minElevation.toFixed(1)} m</p>
-              </div>
             </div>
           </div>
 

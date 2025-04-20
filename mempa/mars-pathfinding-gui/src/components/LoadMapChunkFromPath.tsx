@@ -4,17 +4,19 @@ import { useAppSelector } from '../store/hooks'
 import { selectMetrics, selectPath } from '../store/mapSlice';
 import { selectDemInfo } from '../store/demSlice';
 
-export const LoadMapChunkFromPath = (props: {}) => {
+
+export const LoadMapChunkFromPath = () => {
   const path = useAppSelector(selectPath);
   const metrics = useAppSelector(selectMetrics);
   const demInfo = useAppSelector(selectDemInfo);
 
   const [chunk, setChunk] = useState(null);
 
-  const buffer = 50;
+  // Increase buffer size to prevent edge cutoff
+  const buffer = 100; // Use larger buffer when extendedBoundary is true
 
   useEffect(() => {
-    if (path !== null || undefined) {
+    if (path !== null && path !== undefined) {
       const limits = path.reduce((acc, coordinate) => {
         return {
           maxX: Math.max(acc.maxX, coordinate.x),
@@ -28,32 +30,44 @@ export const LoadMapChunkFromPath = (props: {}) => {
           minX: Infinity,
           maxY: -Infinity,
           minY: Infinity,
-        })
+        });
 
-      const xCoordinate = Math.max(0, limits.minX);
-      const yCoordinate = Math.max(0, limits.minY);
+      // Add buffer around the path limits to prevent edge cutoff
+      const minXWithBuffer = Math.max(0, limits.minX - buffer);
+      const minYWithBuffer = Math.max(0, limits.minY - buffer);
 
-      const width = Math.min(demInfo.width, limits.maxX) - xCoordinate
-      const height = Math.min(demInfo.height, limits.maxY) - yCoordinate
+      // Make sure we don't exceed DEM boundaries
+      const maxXWithBuffer = Math.min(demInfo.width, limits.maxX + buffer);
+      const maxYWithBuffer = Math.min(demInfo.height, limits.maxY + buffer);
 
-      console.log("coord width ", xCoordinate, yCoordinate, width, height);
+      const width = maxXWithBuffer - minXWithBuffer;
+      const height = maxYWithBuffer - minYWithBuffer;
 
+      console.log("coord width with buffer: ", minXWithBuffer, minYWithBuffer, width, height);
+      console.log("Using buffer size:", buffer);
+
+      // Request the expanded chunk with buffer
       const chunk = window.electronIPC.getChunk({
         coordinate: {
-          x: xCoordinate,
-          y: yCoordinate,
+          x: minXWithBuffer,
+          y: minYWithBuffer,
         },
         dimensions: {
           width: width,
           height: height,
         },
       });
-      setChunk(chunk)
+
+      setChunk(chunk);
     }
-  }, [path])
+  }, [path, buffer, demInfo]);
+
   return (
     path ?
-      <Map3d chunk={chunk} path={path}></Map3d>
+      <Map3d
+        chunk={chunk}
+        path={path}
+      />
       :
       <div>Loading</div>
   )

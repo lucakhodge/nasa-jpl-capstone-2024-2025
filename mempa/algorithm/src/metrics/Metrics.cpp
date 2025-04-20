@@ -5,6 +5,11 @@
 #include <iostream>
 #include <math.h>
 
+/**
+ * @brief Reset all metric values to their default values
+ * 
+ * This method initializes all metric fields to zero or their appropriate starting values.
+ */
 void Metrics::reset() {
   totalDistance = 0.0;
   horizontalDistance = 0.0;
@@ -15,6 +20,14 @@ void Metrics::reset() {
   averageSlope = 0.0;
 }
 
+/**
+ * @brief Calculate basic 2D path metrics without elevation data
+ * 
+ * @param path The sequence of coordinates representing the path
+ * 
+ * Calculates horizontal distance and as-the-crow-flies distance based on 2D coordinates.
+ * This method does not require elevation data.
+ */
 void Metrics::analizePath(std::vector<std::pair<int, int>> path) {
   this->reset();
   for (size_t i = 1; i < path.size(); i++) {
@@ -35,6 +48,15 @@ void Metrics::analizePath(std::vector<std::pair<int, int>> path) {
   this->totalDistance = this->horizontalDistance;
 }
 
+/**
+ * @brief Calculate the total 3D distance of the path including elevation changes
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Uses elevation data to calculate the true 3D distance by incorporating elevation
+ * changes between consecutive points in the path.
+ */
 void Metrics::calculateTotalDistance(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -153,6 +175,15 @@ void Metrics::calculateTotalDistance(
             << std::endl;
 }
 
+/**
+ * @brief Calculate the total elevation change (sum of all ups and downs)
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Computes the absolute sum of all elevation changes along the path,
+ * regardless of whether they are uphill or downhill.
+ */
 void Metrics::calculateTotalElevationChange(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -191,6 +222,15 @@ void Metrics::calculateTotalElevationChange(
             << this->totalElevationChange << std::endl;
 }
 
+/**
+ * @brief Calculate the net elevation change (end elevation - start elevation)
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Computes the difference between the elevation at the end point and the
+ * elevation at the start point of the path.
+ */
 void Metrics::calculateNetElevationChange(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -220,113 +260,154 @@ void Metrics::calculateNetElevationChange(
   }
 }
 
+/**
+ * @brief Calculate the maximum slope encountered along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Finds the steepest slope (in degrees) encountered at any segment of the path.
+ * Uses the same pixel size and slope calculation as the pathfinding algorithm.
+ */
 void Metrics::calculateMaxSlope(const std::vector<std::pair<int, int>> &path,
-                                const mempa::DemHandler *demHandler) {
-  this->maxSlope = 0.0;
+  const mempa::DemHandler *demHandler) {
+this->maxSlope = 0.0;
 
-  if (!demHandler || path.size() < 2) {
-    return;
-  }
-
-  for (size_t i = 1; i < path.size(); i++) {
-    std::pair<int, int> before = path[i - 1];
-    std::pair<int, int> after = path[i];
-
-    // Calculate horizontal distance
-    float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
-                                     std::pow(after.second - before.second, 2));
-
-    // Skip calculations for very small horizontal distances to avoid division
-    // by near-zero
-    if (horizontalDist < 0.001) {
-      continue;
-    }
-
-    // Get elevation data
-    float elevBefore = 0.0f;
-    float elevAfter = 0.0f;
-
-    try {
-      elevBefore = demHandler->getValue(before.first, before.second);
-      elevAfter = demHandler->getValue(after.first, after.second);
-
-      float elevDiff = std::abs(elevAfter - elevBefore);
-
-      // Calculate slope in degrees (division by zero is already checked)
-      float segmentSlope =
-          std::atan(elevDiff / horizontalDist) * (180.0 / M_PI);
-
-      // Track the steepest segment
-      if (segmentSlope > this->maxSlope) {
-        this->maxSlope = segmentSlope;
-        std::cout << "New max slope at segment " << i << ": " << segmentSlope
-                  << " degrees (elev diff: " << elevDiff
-                  << ", horiz dist: " << horizontalDist << ")" << std::endl;
-      }
-    } catch (const std::exception &e) {
-      continue;
-    }
-  }
-
-  std::cout << "Maximum slope along path: " << this->maxSlope << " degrees"
-            << std::endl;
+if (!demHandler || path.size() < 2) {
+return;
 }
 
+// Use the same pixel size as your pathfinding algorithm - UPDATED to match average slope calculation
+const float pixelSize = 200.0; // Changed from 1.0 to match your pathfinder's value
+
+for (size_t i = 1; i < path.size(); i++) {
+// Rest of the function remains the same
+std::pair<int, int> before = path[i - 1];
+std::pair<int, int> after = path[i];
+
+// Skip calculations for very small horizontal distances
+float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
+       std::pow(after.second - before.second, 2));
+if (horizontalDist < 0.001) {
+continue;
+}
+
+try {
+float elevBefore = demHandler->getValue(before.first, before.second);
+float elevAfter = demHandler->getValue(after.first, after.second);
+float elevDiff = std::abs(elevAfter - elevBefore);
+
+// Calculate run based on whether the step is diagonal or cardinal
+float run;
+if (before.first == after.first || before.second == after.second) {
+// Cardinal direction (horizontal or vertical)
+run = pixelSize;
+} else {
+// Diagonal direction
+run = std::sqrt(2.0) * pixelSize;
+}
+
+// Calculate slope consistently with path planning
+float segmentSlope = std::atan(elevDiff / run) * (180.0 / M_PI);
+
+// Track the steepest segment
+if (segmentSlope > this->maxSlope) {
+this->maxSlope = segmentSlope;
+std::cout << "New max slope at segment " << i << ": " << segmentSlope
+<< " degrees (elev diff: " << elevDiff
+<< ", run: " << run << ")" << std::endl;
+}
+} catch (const std::exception &e) {
+continue;
+}
+}
+
+std::cout << "Maximum slope along path: " << this->maxSlope << " degrees"
+<< std::endl;
+}
+
+/**
+ * @brief Calculate the average slope along the entire path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Calculates the average slope (in degrees) across all segments of the path.
+ * Uses the same pixel size and slope calculation as the pathfinding algorithm.
+ */
 void Metrics::calculateAverageSlope(
-    const std::vector<std::pair<int, int>> &path,
-    const mempa::DemHandler *demHandler) {
-  this->averageSlope = 0.0;
+  const std::vector<std::pair<int, int>> &path,
+  const mempa::DemHandler *demHandler) {
+this->averageSlope = 0.0;
 
-  if (!demHandler || path.size() < 2) {
-    return;
-  }
+if (!demHandler || path.size() < 2) {
+  return;
+}
 
-  float totalSlope = 0.0;
-  int validSegments = 0;
+// Use the same pixel size as your pathfinding algorithm
+const float pixelSize = 200.0; // CHANGE THIS to match your pathfinder setting
 
-  for (size_t i = 1; i < path.size(); i++) {
-    std::pair<int, int> before = path[i - 1];
-    std::pair<int, int> after = path[i];
+float totalSlope = 0.0;
+int validSegments = 0;
 
-    // Calculate horizontal distance
-    float horizontalDist = std::sqrt(std::pow(after.first - before.first, 2) +
-                                     std::pow(after.second - before.second, 2));
+for (size_t i = 1; i < path.size(); i++) {
+  std::pair<int, int> before = path[i - 1];
+  std::pair<int, int> after = path[i];
 
-    // Skip calculations for very small horizontal distances
-    if (horizontalDist < 0.001) {
-      continue;
+  // Get elevation data
+  float elevBefore = 0.0f;
+  float elevAfter = 0.0f;
+
+  try {
+    elevBefore = demHandler->getValue(before.first, before.second);
+    elevAfter = demHandler->getValue(after.first, after.second);
+
+    float elevDiff = std::abs(elevAfter - elevBefore);
+
+    // Determine if this is a cardinal or diagonal move
+    bool isDiagonal = (before.first != after.first && before.second != after.second);
+    
+    // Calculate the actual physical distance (run)
+    float run;
+    if (isDiagonal) {
+      // Diagonal moves are √2 times longer
+      run = std::sqrt(2.0f) * pixelSize;
+    } else {
+      // Cardinal moves (horizontal/vertical)
+      run = pixelSize;
     }
 
-    // Get elevation data
-    float elevBefore = 0.0f;
-    float elevAfter = 0.0f;
+    // Rise is the elevation difference in meters
+    float rise = elevDiff;
+    
+    // Calculate slope in degrees - use the same formula as pathfinding
+    float segmentSlope = std::atan(rise / run) * (180.0f / M_PI);
 
-    try {
-      elevBefore = demHandler->getValue(before.first, before.second);
-      elevAfter = demHandler->getValue(after.first, after.second);
-
-      float elevDiff = std::abs(elevAfter - elevBefore);
-
-      // Calculate slope in degrees
-      float segmentSlope =
-          std::atan(elevDiff / horizontalDist) * (180.0 / M_PI);
-      totalSlope += segmentSlope;
-      validSegments++;
-    } catch (const std::exception &e) {
-      continue;
-    }
-  }
-
-  // Calculate average if we have valid segments
-  if (validSegments > 0) {
-    this->averageSlope = totalSlope / validSegments;
-    std::cout << "Average slope: " << this->averageSlope << " degrees "
-              << "(from " << validSegments << " segments)" << std::endl;
-  } else {
-    std::cout << "No valid segments for average slope calculation" << std::endl;
+    totalSlope += segmentSlope;
+    validSegments++;
+  } catch (const std::exception &e) {
+    continue;
   }
 }
 
+// Calculate average if we have valid segments
+if (validSegments > 0) {
+  this->averageSlope = totalSlope / validSegments;
+  std::cout << "Average slope: " << this->averageSlope << " degrees "
+            << "(from " << validSegments << " segments)" << std::endl;
+} else {
+  std::cout << "No valid segments for average slope calculation" << std::endl;
+}
+}
+
+/**
+ * @brief Calculate the total elevation gain (uphill) along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Sums all positive elevation changes (uphill segments) throughout the path.
+ */
 void Metrics::calculateElevationGain(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -362,6 +443,15 @@ void Metrics::calculateElevationGain(
   }
 }
 
+/**
+ * @brief Calculate the total elevation loss (downhill) along the path
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * Sums all negative elevation changes (downhill segments) throughout the path.
+ * The result is represented as a positive value.
+ */
 void Metrics::calculateElevationLoss(
     const std::vector<std::pair<int, int>> &path,
     const mempa::DemHandler *demHandler) {
@@ -397,6 +487,17 @@ void Metrics::calculateElevationLoss(
   }
 }
 
+/**
+ * @brief Analyze the path and calculate all available metrics
+ * 
+ * @param path The sequence of coordinates representing the path
+ * @param demHandler Pointer to the DEM handler that provides elevation data
+ * 
+ * This is the main method to calculate all metrics for a path. It calls the
+ * individual calculation methods and handles error conditions. If a DEM handler
+ * is provided, 3D metrics including elevation data are calculated. Otherwise,
+ * only 2D metrics are computed.
+ */
 void Metrics::analyzePath(const std::vector<std::pair<int, int>> &path,
                           const mempa::DemHandler *demHandler) {
   this->reset();
