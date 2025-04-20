@@ -4,10 +4,10 @@
 #include <vector>
 #include <queue>
 
-class NewDijkstras : public SearchAlgorithm {
-public:
-    virtual ~NewDijkstras() override = default; // Add virtual destructor
-    std::vector<std::pair<int, int>> get_step(std::vector<std::vector<float>> &heightmap,
+class NewDijkstras: public SearchAlgorithm
+{
+    public:
+    std::vector<std::pair<int,int>> get_step(std::vector<std::vector<float>> &heightmap,
         std::pair<int, int> chunkLocation, std::pair<int, int> startPoint,
         std::pair<int, int> endPoint, float maxSlope, float pixelSize) override;
     std::vector<std::pair<int, int>> newDijkstras();
