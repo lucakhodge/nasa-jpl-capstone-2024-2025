@@ -1,40 +1,60 @@
-cmake_minimum_required(VERSION 3.10)
-project(MEMPA_Algorithm LANGUAGES CXX)
+cmake_minimum_required (VERSION 3.16)
+project (mars_pathfinding CXX)
 
-# Use modern C++
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# ----------  compiler options ----------
+set (CMAKE_CXX_STANDARD 20)
+set (CMAKE_CXX_EXTENSIONS OFF)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find external dependencies
-find_package(GDAL REQUIRED)
-find_package(nlohmann_json REQUIRED)
+# ----------  dependencies ----------
+find_package (GDAL           REQUIRED)          # libgdal-dev
+find_package (TIFF           REQUIRED)          # libtiff5-dev
+find_package (nlohmann_json  REQUIRED)
 
-# Define source directories
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
-set(TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
+# ----------  include / source ----------
+include_directories (src)
 
-# Gather all .cpp source files (excluding the CLI main)
-file(GLOB_RECURSE CORE_SOURCES
-    "${SRC_DIR}/*.cpp"
-)
-list(REMOVE_ITEM CORE_SOURCES "${SRC_DIR}/main/main.cpp")
+# All engine / library sources
+file (GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
+      src/dem-handler/*.cpp
+      src/logger/*.cpp
+      src/metrics/*.cpp
+      src/rover-pathfinding-module/*.cpp
+      src/rover-simulator/*.cpp)
 
-# Create a library target for core algorithm code
-add_library(mempa_core ${CORE_SOURCES})
-target_include_directories(mempa_core PUBLIC ${SRC_DIR})
-target_link_libraries(mempa_core PUBLIC GDAL::GDAL nlohmann_json::nlohmann_json)
+add_library (pathfinding STATIC ${ENGINE_SOURCES})
+target_link_libraries (pathfinding
+    PRIVATE
+        GDAL::GDAL
+        TIFF::TIFF
+        nlohmann_json::nlohmann_json)
 
-# Create the CLI executable
-add_executable(mempa_algorithm "${SRC_DIR}/main/main.cpp")
-target_link_libraries(mempa_algorithm PRIVATE mempa_core)
+# ----------  main CLI executable ----------
+add_executable (mars_pathfinder
+    src/main/main.cpp
+    src/main/CLI.cpp)
 
-# Tests
+target_link_libraries (mars_pathfinder PRIVATE pathfinding)
+
+# ----------  tests ----------
 enable_testing()
-file(GLOB TEST_SOURCES "${TEST_DIR}/*.cpp")
-foreach(test_src IN LISTS TEST_SOURCES)
-    get_filename_component(test_name ${test_src} NAME_WE)
-    add_executable(${test_name} ${test_src})
-    target_link_libraries(${test_name} PRIVATE mempa_core)
-    add_test(NAME ${test_name} COMMAND ${test_name})
+
+add_executable (DemTester        tests/DemTester.cpp)
+add_executable (DijkstrasTester  tests/DijkstrasTester.cpp)
+
+foreach (t DemTester DijkstrasTester)
+    target_link_libraries (${t} PRIVATE pathfinding)
+    add_test (NAME ${t} COMMAND ${t})
 endforeach()
+
+# Pass the same PRINT_OUTPUT env‑var the Makefile expected
+set_tests_properties (DemTester DijkstrasTester
+    PROPERTIES ENVIRONMENT "PRINT_OUTPUT=$ENV{PRINT_OUTPUT}")
+
+# Convenience aliases so old muscle‑memory still works
+add_custom_target (test
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+    DEPENDS  DemTester DijkstrasTester)
+
+# CMake already generates a ‘clean’ target for the build tree,
+# but expose a top‑level alias so `cmake --build . --target clean` works.
