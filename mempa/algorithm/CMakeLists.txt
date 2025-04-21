@@ -11,6 +11,8 @@ find_package (GDAL           REQUIRED)          # libgdal-dev
 find_package (TIFF           REQUIRED)          # libtiff5-dev
 find_package (nlohmann_json  REQUIRED)
 
+target_include_directories (pathfinding PUBLIC ${GDAL_INCLUDE_DIRS})
+
 # ----------  include / source ----------
 include_directories (src)
 
