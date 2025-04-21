@@ -1,0 +1,54 @@
+# .github/workflows/ci-windows.yml
+name: CI (Windows)
+
+on:
+  push:         { branches: [ main ] }
+  pull_request: { branches: [ main ] }
+
+jobs:
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    steps:
+    # ──────────── Checkout ────────────
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    # ───────── Install vcpkg & deps ─────────
+    - name: Bootstrap vcpkg
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git vcpkg
+        .\vcpkg\bootstrap-vcpkg.bat
+
+    - name: Install GDAL, TIFF & JSON through vcpkg
+      run: .\vcpkg\vcpkg.exe install gdal:x64-windows libtiff:x64-windows nlohmann-json:x64-windows
+
+    # ───────── Configure with CMake ────────
+    - name: Configure CMake
+      run: cmake -S mempa/algorithm -B build `
+             -A x64 `
+             -DCMAKE_BUILD_TYPE=Release `
+             -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake
+
+    # ────────── Build all targets ───────────
+    - name: Build (app + tests)
+      run: cmake --build build --config Release --parallel
+
+    # ────────── Download DEM fixture ────────
+    - name: Download Mars DEM .tif
+      run: |
+        New-Item -ItemType Directory -Force -Path mempa/algorithm/tests
+        Invoke-WebRequest `
+          -Uri "https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif" `
+          -OutFile "mempa/algorithm/tests/mars_dem.tif"
+
+    # ─────────── Run tests ────────────────
+    - name: Run unit tests
+      run: ctest --test-dir build --config Release --output-on-failure --verbose
+      env:
+        PRINT_OUTPUT: "false"
+
+    # ─────────── Clean (optional) ──────────
+    - name: Clean build tree
+      run: cmake --build build --target clean --config Release
