@@ -43,7 +43,7 @@ jobs:
       if: runner.os == 'Linux'
       run: cmake -S mempa/algorithm -B build -DCMAKE_BUILD_TYPE=Release
     
-      - name: Configure on Windows
+    - name: Configure on Windows
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
