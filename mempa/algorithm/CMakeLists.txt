@@ -53,7 +53,7 @@ endforeach()
 
 # honour existing env‑var used by the legacy Makefile
 set_tests_properties (DemTester DijkstrasTester
-    PROPERTIES ENVIRONMENT "PRINT_OUTPUT=$ENV{PRINT_OUTPUT}")
+    PROPERTIES ENVIRONMENT "PRINT_OUTPUT=TRUE")
 
 # Handy alias mimicking the old “make test”
 add_custom_target (check
