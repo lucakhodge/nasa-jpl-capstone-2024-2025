@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.10)
 project(MEMPA_Algorithm LANGUAGES CXX)
 
@@ -11,39 +10,31 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(GDAL REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-# Where to find your headers
-include_directories(${CMAKE_SOURCE_DIR}/src)
+# Define source directories
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
 
-# Collect all your library sources
-file(GLOB_RECURSE ALGO_SOURCES
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+# Gather all .cpp source files (excluding the CLI main)
+file(GLOB_RECURSE CORE_SOURCES
+    "${SRC_DIR}/*.cpp"
 )
+list(REMOVE_ITEM CORE_SOURCES "${SRC_DIR}/main/main.cpp")
 
-# Main executable
-add_executable(mempa_algorithm
-    ${ALGO_SOURCES}
-)
-target_link_libraries(mempa_algorithm
-    PRIVATE GDAL::GDAL
-            nlohmann_json::nlohmann_json
-)
+# Create a library target for core algorithm code
+add_library(mempa_core ${CORE_SOURCES})
+target_include_directories(mempa_core PUBLIC ${SRC_DIR})
+target_link_libraries(mempa_core PUBLIC GDAL::GDAL nlohmann_json::nlohmann_json)
+
+# Create the CLI executable
+add_executable(mempa_algorithm "${SRC_DIR}/main/main.cpp")
+target_link_libraries(mempa_algorithm PRIVATE mempa_core)
 
 # Tests
 enable_testing()
-file(GLOB TEST_SOURCES
-    "${CMAKE_SOURCE_DIR}/tests/*.cpp"
-)
+file(GLOB TEST_SOURCES "${TEST_DIR}/*.cpp")
 foreach(test_src IN LISTS TEST_SOURCES)
     get_filename_component(test_name ${test_src} NAME_WE)
-    add_executable(${test_name}
-        ${test_src}
-        ${ALGO_SOURCES}
-    )
-    target_link_libraries(${test_name}
-        PRIVATE GDAL::GDAL
-                nlohmann_json::nlohmann_json
-    )
-    add_test(NAME ${test_name}
-             COMMAND ${test_name}
-    )
+    add_executable(${test_name} ${test_src})
+    target_link_libraries(${test_name} PRIVATE mempa_core)
+    add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
