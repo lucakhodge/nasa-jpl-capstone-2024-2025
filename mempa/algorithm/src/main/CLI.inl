@@ -203,7 +203,7 @@ namespace mempa
      */
     inline float getMemorySize() const noexcept
     {
-        return getMemorySize;
+        return memorySize;
     }
 
 
