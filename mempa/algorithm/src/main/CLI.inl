@@ -201,7 +201,7 @@ namespace mempa
      * 
      * @author Brock Hoos <brock.hoos@colorado.edu>
      */
-    inline int getMemorySize() const noexcept
+    inline int CLI::getMemorySize() const noexcept
     {
         return memorySize;
     }
