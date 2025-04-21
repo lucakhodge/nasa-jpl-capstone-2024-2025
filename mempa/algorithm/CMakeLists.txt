@@ -37,6 +37,7 @@ add_executable (mars_pathfinder
 target_link_libraries (mars_pathfinder PRIVATE pathfinding)
 
 # ----------  tests ----------
+include (CTest)
 enable_testing()
 
 add_executable (DemTester        tests/DemTester.cpp)
