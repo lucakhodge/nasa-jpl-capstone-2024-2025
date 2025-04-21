@@ -42,15 +42,15 @@ jobs:
     - name: Configure on Linux
       if: runner.os == 'Linux'
       run: cmake -S mempa/algorithm -B build -DCMAKE_BUILD_TYPE=Release
-
-    - name: Configure on Windows
+    
+      - name: Configure on Windows
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        cmake -S mempa/algorithm -B build -A x64 \
-          -DCMAKE_BUILD_TYPE=Release \
+        cmake -S mempa/algorithm -B build -A x64 `
+          -DCMAKE_BUILD_TYPE=Release `
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
-
+    
     # ── Build everything ───────────────────────────────────────
     - name: Build on Linux
       if: runner.os == 'Linux'
