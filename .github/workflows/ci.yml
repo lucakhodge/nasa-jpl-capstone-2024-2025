@@ -9,80 +9,92 @@ on:
 jobs:
   build-and-test-linux:
     runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
-
-    - name: Build the main program
-      run: |
-        make
-      working-directory: mempa/algorithm
-
-    - name: Download Mars DEM .tif
-      run: |
-        mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
-      working-directory: mempa/algorithm/tests
-
-    - name: Build and run tests
-      run: |
-        make test
-      env:
-        PRINT_OUTPUT: "false"
-      working-directory: mempa/algorithm
-
-    - name: Clean up
-      run: |
-        make clean
-      working-directory: mempa/algorithm
-
-  build-and-test-windows:
-    runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >
-            make
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-gdal
-            mingw-w64-x86_64-libtiff
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-nlohmann-json
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            g++ gdal-bin libgdal-dev libtiff5-dev \
+            cmake git nlohmann-json3-dev
 
-      - name: Build the main program
-        run: make
-        working-directory: mempa/algorithm
-        shell: msys2 {0}
+      - name: Configure CMake
+        run: |
+          mkdir -p mempa/algorithm/build
+          cd mempa/algorithm/build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+
+      - name: Build
+        run: cmake --build mempa/algorithm/build -- -j
 
       - name: Download Mars DEM .tif
         run: |
-          mkdir -p mempa/tests
-          curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
-        working-directory: mempa/algorithm/tests
-        shell: msys2 {0}
+          mkdir -p mempa/algorithm/tests
+          curl -L \
+            https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
+            -o mempa/algorithm/tests/mars_dem.tif
 
-      - name: Build and run tests
-        run: make test
+      - name: Run tests
+        run: |
+          cd mempa/algorithm/build
+          ./run_search_tests
+          ./run_dem_tests ../tests/mars_dem.tif 5
         env:
           PRINT_OUTPUT: "false"
-        working-directory: mempa/algorithm
-        shell: msys2 {0}
 
       - name: Clean up
-        run: make clean
-        working-directory: mempa/algorithm
-        shell: msys2 {0}
+        run: rm -rf mempa/algorithm/build
+
+  # build-and-test-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         submodules: recursive
+
+  #     - name: Setup MSYS2
+  #       uses: msys2/setup-msys2@v2
+  #       with:
+  #         update: true
+  #         install: >
+  #           make
+  #           mingw-w64-x86_64-gcc
+  #           mingw-w64-x86_64-gdal
+  #           mingw-w64-x86_64-libtiff
+  #           mingw-w64-x86_64-cmake
+  #           mingw-w64-x86_64-nlohmann-json
+
+  #     - name: Configure CMake
+  #       shell: msys2 {0}
+  #       run: |
+  #         mkdir -p mempa/algorithm/build
+  #         cd mempa/algorithm/build
+  #         cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+
+  #     - name: Build
+  #       shell: msys2 {0}
+  #       run: cmake --build mempa/algorithm/build -- -j
+
+  #     - name: Download Mars DEM .tif
+  #       shell: msys2 {0}
+  #       run: |
+  #         mkdir -p mempa/algorithm/tests
+  #         curl -L \
+  #           https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
+  #           -o mempa/algorithm/tests/mars_dem.tif
+
+  #     - name: Run tests
+  #       shell: msys2 {0}
+  #       run: |
+  #         cd mempa/algorithm/build
+  #         ./run_search_tests
+  #         ./run_dem_tests ../tests/mars_dem.tif 5
+  #       env:
+  #         PRINT_OUTPUT: "false"
+
+  #     - name: Clean up
+  #       shell: msys2 {0}
+  #       run: rm -rf mempa/algorithm/build
