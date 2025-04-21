@@ -132,7 +132,7 @@ namespace mempa
         inline bool isGeoCRS() const noexcept;
         inline bool getJSONFlag() const noexcept;
         inline float getSlopeTolerance() const noexcept;
-        inline float getMemorySize() const noexcept;
+        inline int getMemorySize() const noexcept;
         inline int getBufferSize() const noexcept;
         inline std::pair<std::pair<double, double>, std::pair<double, double>> getGeoCoordinates() const noexcept;
         inline std::pair<std::pair<int, int>, std::pair<int, int>> getImgCoordinates() const noexcept;
