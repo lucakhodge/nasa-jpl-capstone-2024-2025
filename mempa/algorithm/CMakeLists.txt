@@ -53,9 +53,9 @@ set_tests_properties (DemTester DijkstrasTester
     PROPERTIES ENVIRONMENT "PRINT_OUTPUT=$ENV{PRINT_OUTPUT}")
 
 # Convenience aliases so old muscle‑memory still works
-add_custom_target (test
-    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-    DEPENDS  DemTester DijkstrasTester)
+# add_custom_target (test
+#     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+#     DEPENDS  DemTester DijkstrasTester)
 
 # CMake already generates a ‘clean’ target for the build tree,
 # but expose a top‑level alias so `cmake --build . --target clean` works.
