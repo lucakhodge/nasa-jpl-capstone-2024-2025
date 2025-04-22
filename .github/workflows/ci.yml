@@ -14,12 +14,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      # ──────── Checkout (incl. submodules) ────────
+      # ───────────── Checkout ─────────────
       - uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      # ──────── Linux deps ─────────────────────────
+      # ───────────── Linux deps ─────────────
       - name: Install build dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -29,7 +29,7 @@ jobs:
             gdal-bin libgdal-dev \
             libtiff5-dev nlohmann-json3-dev
 
-      # ──────── Windows deps via vcpkg ────────────
+      # ───────────── Windows deps ────────────
       - name: Bootstrap vcpkg & install deps (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -41,7 +41,7 @@ jobs:
           .\vcpkg.exe integrate install
           cd ..
 
-      # ──────── Configure ──────────────────────────
+      # ───────────── Configure ───────────────
       - name: Configure (Linux)
         if: runner.os == 'Linux'
         run: cmake -S mempa/algorithm -B build -DCMAKE_BUILD_TYPE=Release
@@ -49,9 +49,14 @@ jobs:
       - name: Configure (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: cmake -S mempa/algorithm -B build -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: |
+          # Build an absolute path to vcpkg toolchain file
+          $tc = Join-Path $env:GITHUB_WORKSPACE 'vcpkg\scripts\buildsystems\vcpkg.cmake'
+          cmake -S mempa/algorithm -B build -A x64 `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_TOOLCHAIN_FILE="$tc"
 
-      # ──────── Build ──────────────────────────────
+      # ───────────── Build ────────────────────
       - name: Build (Linux)
         if: runner.os == 'Linux'
         run: cmake --build build --parallel
@@ -61,7 +66,7 @@ jobs:
         shell: pwsh
         run: cmake --build build --config Release --parallel
 
-      # ──────── Download DEM for tests ─────────────
+      # ───────────── Fetch DEM ────────────────
       - name: Download Mars DEM .tif
         run: |
           mkdir -p mempa/algorithm/tests
@@ -69,7 +74,7 @@ jobs:
             https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
             -o mempa/algorithm/tests/mars_dem.tif
 
-      # ──────── Run tests ──────────────────────────
+      # ───────────── Run tests ────────────────
       - name: Run unit tests (Linux)
         if: runner.os == 'Linux'
         run: ctest --test-dir build --output-on-failure
@@ -83,7 +88,7 @@ jobs:
         env:
           PRINT_OUTPUT: "false"
 
-      # ──────── Clean up ───────────────────────────
+      # ───────────── Clean up ─────────────────
       - name: Clean build directory (Linux)
         if: runner.os == 'Linux'
         run: cmake --build build --target clean
