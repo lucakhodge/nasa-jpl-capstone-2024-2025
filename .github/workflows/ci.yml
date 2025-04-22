@@ -44,7 +44,10 @@ jobs:
         run: |
           mkdir build
           cd build
-          conan install .. --build=missing -s build_type=Release
+          conan install .. \
+            --build=missing \
+            -s build_type=Release \
+            -s compiler.cppstd=17    # ← Arrow needs at least C++17
 
       # ────────────── Configure (Linux) ──────────────
       - name: Configure (Linux)
