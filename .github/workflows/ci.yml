@@ -42,7 +42,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          mkdir build; cd build; conan install .. --build=missing -s build_type=Release -s compiler.cppstd=17 -o gdal:with_arrow=False
+          mkdir build; cd build; conan install .. --build=missing -s build_type=Release -s compiler.cppstd=17 -o gdal/*:with_arrow=False
     
       # ────────────── Configure (Linux) ──────────────
       - name: Configure (Linux)
