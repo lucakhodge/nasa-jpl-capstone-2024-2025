@@ -89,7 +89,7 @@ namespace mempa
               --end-pixel      End pixel coordinate (e.g., <int>,<int>)
               --input          Input DEM file (.tif format)
               --output         Output results file
-              --iterations     Number of iterations
+              --memory         Memory Size on rover (in kilobytes)
               --slope          Slope tolerances (e.g., 10,20,30)
               --radius         Visibility Radius of Rover (in meters)
               --json           Print output into JSON format
@@ -113,7 +113,7 @@ namespace mempa
                   << "\nEnd (Pixel): " << imgStrGoalCoordinate
                   << "\nInput File: " << geotiffFilepath
                   << "\nOutput File: " << outputFilename
-                  << "\nIterations: " << numIterations
+                  << "\nMemory Size: " << memorySize
                   << "\nSlope Tolerance: " << maxSlopeTolerance
                   << "\nRadius: " << pixelBuffer
                   << std::endl;
@@ -193,6 +193,19 @@ namespace mempa
     {
         return maxSlopeTolerance;
     }
+
+    /**
+     * @brief Get the Memory Size object
+     * 
+     * @return float 
+     * 
+     * @author Brock Hoos <brock.hoos@colorado.edu>
+     */
+    inline int CLI::getMemorySize() const noexcept
+    {
+        return memorySize;
+    }
+
 
     /**
      * @brief Get the desired pixel buffering area.

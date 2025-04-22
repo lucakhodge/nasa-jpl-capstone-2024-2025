@@ -23,7 +23,7 @@ namespace mempa
      *
      * 2. To compile:
      *    @code
-     *    `g++ ./cli_main.cpp -o cli`
+     *    `g++ ./main.cpp -o cli`
      *    @endcode
      *
      * 3. To run:
@@ -33,7 +33,7 @@ namespace mempa
      *
      *    Example:
      *    @code
-     *    `./cli --start 44.43,55.55 --end 32.22,55.33 --input test.dem --output test.txt --iterations 4 --slope 12.3 --radius 3.4`
+     *    `./cli --start 44.43,55.55 --end 32.22,55.33 --input test.dem --output test.txt --memory 256 --slope 12.3 --radius 3.4`
      *    @endcode
      *
      * ## Required Flags
@@ -48,7 +48,7 @@ namespace mempa
      *
      * - `--input`          (Path to the input DEM file)
      * - `--output`         (Path to the output file)
-     * - `--numIterations`  (Number of iterations)
+     * - `--memory`         (Amount of memory capacity on rover in kilobytes)
      * - `--slope`          (Max slope threshold)
      * - `--radius`         (Search radius)
      *
@@ -70,18 +70,18 @@ namespace mempa
             {"end-pixel", required_argument, nullptr, 'y'},
             {"input", required_argument, nullptr, 'i'},
             {"output", required_argument, nullptr, 'o'},
-            {"iterations", required_argument, nullptr, 'n'},
+            {"memory", required_argument, nullptr, 'm'},
             {"slope", required_argument, nullptr, 'p'},
             {"radius", required_argument, nullptr, 'r'},
             {"json", no_argument, nullptr, 'j'},
             {"help", no_argument, nullptr, 'h'},
             {nullptr, 0, nullptr, 0}};
-        inline static constexpr const char *shortOptions = "s:e:a:b:i:o:n:p:h"; /* Single character identifiers for getopt_long(). */
+        inline static constexpr const char *shortOptions = "s:e:a:b:i:o:m:p:h"; /* Single character identifiers for getopt_long(). */
 
         float maxSlopeTolerance = std::numeric_limits<float>::quiet_NaN(); /* User defined maximum slope tolerance (0° - 90°) */
         int pixelBuffer = std::numeric_limits<int>::quiet_NaN();           /* Radius or buffer to be passed to RoverSimulator and then DemHandler. */
 
-        int numIterations = std::numeric_limits<int>::quiet_NaN(); /* How many times the algorithm will be run? IDK. TODO: Remove this. */
+        int memorySize = std::numeric_limits<int>::quiet_NaN(); /* Memory constraint. */
 
         bool makeJSON = false; /* Flag to set whether to use a text or json output file format. */
 
@@ -132,6 +132,7 @@ namespace mempa
         inline bool isGeoCRS() const noexcept;
         inline bool getJSONFlag() const noexcept;
         inline float getSlopeTolerance() const noexcept;
+        inline int getMemorySize() const noexcept;
         inline int getBufferSize() const noexcept;
         inline std::pair<std::pair<double, double>, std::pair<double, double>> getGeoCoordinates() const noexcept;
         inline std::pair<std::pair<int, int>, std::pair<int, int>> getImgCoordinates() const noexcept;

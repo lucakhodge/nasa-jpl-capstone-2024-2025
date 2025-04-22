@@ -90,11 +90,11 @@ namespace mempa
             case 'o': /* Output filepath. */
                 outputFilename = optarg;
                 break;
-            case 'n': /* Number of numIterations. */
-                numIterations = std::stoi(optarg);
-                if (numIterations <= 0)
+            case 'm': /* Memory size. */
+                memorySize = std::stoi(optarg);
+                if (memorySize <= 0)
                 {
-                    throw std::out_of_range("Iterations must be greater than 0.");
+                    throw std::out_of_range("Memory size must be greater than 0.");
                 }
                 break;
             case 'p': /* Maximum tolerable slope. */
@@ -130,9 +130,9 @@ namespace mempa
             throw std::invalid_argument("Invalid coordinate system mismatch. Start and goal coordinates must be (lat, long) geospatial or (x, y) image based.");
         }
 
-        if (std::isnan(numIterations) || std::isnan(maxSlopeTolerance) || std::isnan(pixelBuffer))
+        if (std::isnan(memorySize) || std::isnan(maxSlopeTolerance) || std::isnan(pixelBuffer))
         {
-            throw std::invalid_argument("Iterations, Slope, and Radius must all be declared.");
+            throw std::invalid_argument("Memory Size, Slope, and Radius must all be declared.");
         }
     }
 
