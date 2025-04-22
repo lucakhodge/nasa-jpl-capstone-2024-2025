@@ -38,12 +38,18 @@ jobs:
           version: "2.15.1"
 
       # ────────────── Windows: Pull deps via Conan ──────────────
-      - name: Conan install (Windows)
+      # - name: Conan install (Windows)
+      #   if: runner.os == 'Windows'
+      #   shell: pwsh
+      #   run: |
+      #     mkdir build; cd build; conan install .. --build=missing -s build_type=Release -s compiler.cppstd=17 
+    
+      - name: Configure (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          mkdir build; cd build; conan install .. --build=missing -s build_type=Release -s compiler.cppstd=17 -o gdal/*:with_arrow=False
-    
+          cmake -S mempa/algorithm -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
       # ────────────── Configure (Linux) ──────────────
       - name: Configure (Linux)
         if: runner.os == 'Linux'
