@@ -30,17 +30,13 @@ jobs:
             libtiff5-dev nlohmann-json3-dev \
             ninja-build
 
-      # ────────────── Windows: Install Python & Conan ──────────────
-      - name: Set up Python (Windows)
+      # ────────────── Windows: Setup Conan ──────────────
+      - name: Setup Python & Conan (Windows)
         if: runner.os == 'Windows'
-        uses: actions/setup-python@v4
+        uses: conanio/setup-conan@v1
         with:
-          python-version: '3.x'
-
-      - name: Install Conan (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: python -m pip install conan
+          python-version: "3.11"
+          conan-version: "2.15.1"
 
       # ────────────── Windows: Pull deps via Conan ──────────────
       - name: Conan install (Windows)
@@ -53,13 +49,14 @@ jobs:
             --build=missing \
             -s build_type=Release
 
-      # ────────────── Configure ──────────────
+      # ────────────── Configure (Linux) ──────────────
       - name: Configure (Linux)
         if: runner.os == 'Linux'
         run: cmake -S mempa/algorithm -B build \
                      -G Ninja \
                      -DCMAKE_BUILD_TYPE=Release
 
+      # ────────────── Configure (Windows) ──────────────
       - name: Configure (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -69,11 +66,12 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake `
             -DCMAKE_BUILD_TYPE=Release
 
-      # ────────────── Build ──────────────
+      # ────────────── Build (Linux) ──────────────
       - name: Build (Linux)
         if: runner.os == 'Linux'
         run: ninja -C build
 
+      # ────────────── Build (Windows) ──────────────
       - name: Build (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -87,13 +85,14 @@ jobs:
             https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
             -o mempa/algorithm/tests/mars_dem.tif
 
-      # ────────────── Run tests ──────────────
+      # ────────────── Run tests (Linux) ──────────────
       - name: Run unit tests (Linux)
         if: runner.os == 'Linux'
         run: ctest --test-dir build --output-on-failure
         env:
           PRINT_OUTPUT: "false"
 
+      # ────────────── Run tests (Windows) ──────────────
       - name: Run unit tests (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -101,11 +100,12 @@ jobs:
         env:
           PRINT_OUTPUT: "false"
 
-      # ────────────── Clean up ──────────────
+      # ────────────── Clean up (Linux) ──────────────
       - name: Clean build directory (Linux)
         if: runner.os == 'Linux'
         run: ninja -C build clean
 
+      # ────────────── Clean up (Windows) ──────────────
       - name: Clean build directory (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
