@@ -57,7 +57,7 @@ jobs:
           cd $env:VCPKG_ROOT
           .\bootstrap-vcpkg.bat -disableMetrics
           .\vcpkg.exe install `
-            gdal[core,png,tiff] `
+            gdal[core,png] `
             tiff `
             nlohmann-json `
             --triplet $env:VCPKG_DEFAULT_TRIPLET `
