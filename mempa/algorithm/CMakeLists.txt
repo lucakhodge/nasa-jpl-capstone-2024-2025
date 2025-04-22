@@ -12,10 +12,10 @@ if(MSVC)
 endif()
 
 # ────── Dependencies ────────────────────────────────────────────────────
-# First try CONFIG (preferred by vcpkg), then fall back to MODULE
-find_package(GDAL          REQUIRED CONFIG MODULE)
-find_package(TIFF          REQUIRED CONFIG MODULE)
-find_package(nlohmann_json REQUIRED CONFIG MODULE)
+# Call find_package once; CMake will prefer CONFIG mode when it exists
+find_package(GDAL          REQUIRED)
+find_package(TIFF          REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 # ────── Library code ────────────────────────────────────────────────────
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
