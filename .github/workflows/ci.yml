@@ -55,8 +55,12 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git $env:VCPKG_ROOT
           cd $env:VCPKG_ROOT
           .\bootstrap-vcpkg.bat -disableMetrics
-          .\vcpkg.exe install gdal:x64-windows tiff:x64-windows nlohmann-json:x64-windows `
-              --clean-after-build
+          .\vcpkg.exe install ^
+          gdal[core,png,tiff] ^
+          tiff ^
+          nlohmann-json ^
+          --triplet x64-windows-release ^
+          --clean-after-build
 
       # Make vcpkg DLLs visible to the tests
       - name: Add vcpkg runtime DLLs to PATH (Windows)
