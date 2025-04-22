@@ -1,24 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
 project(mars_pathfinding LANGUAGES CXX)
 
-# ─────── Compiler settings ───────
-set(CMAKE_CXX_STANDARD        20)
+# ────── Compiler settings ────────────────────────────────────────────────
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS       OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ─────── Dependencies ───────────
-# Try config‐mode first (picks up vcpkg on Windows), then module‐mode on Linux
-find_package(GDAL          REQUIRED)   # libgdal-dev / vcpkg gdal
-find_package(TIFF          REQUIRED)   # libtiff5-dev / vcpkg tiff
-find_package(nlohmann_json REQUIRED)   # nlohmann-json3-dev / vcpkg nlohmann-json
+# Windows‑specific niceties
+if(MSVC)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS NOMINMAX)
+endif()
 
-# Some FindGDAL versions set GDAL_INCLUDE_DIRS but don’t propagate them
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/src    # your “rover-pathfinding-module/…” headers
-  ${GDAL_INCLUDE_DIRS}               # legacy var from FindGDAL
-)
+# ────── Dependencies ────────────────────────────────────────────────────
+# First try CONFIG (preferred by vcpkg), then fall back to MODULE
+find_package(GDAL          REQUIRED CONFIG MODULE)
+find_package(TIFF          REQUIRED CONFIG MODULE)
+find_package(nlohmann_json REQUIRED CONFIG MODULE)
 
-# ─────── Library code ────────────
+# ────── Library code ────────────────────────────────────────────────────
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
      src/dem-handler/*.cpp
      src/logger/*.cpp
@@ -27,22 +26,29 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
      src/rover-simulator/*.cpp)
 
 add_library(pathfinding STATIC ${ENGINE_SOURCES})
+
+target_include_directories(pathfinding
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+)
+
 target_link_libraries(pathfinding
-  PRIVATE
+  PUBLIC
     GDAL::GDAL
     TIFF::TIFF
     nlohmann_json::nlohmann_json
 )
 
-# ─────── CLI executable ──────────
+# ────── CLI executable ──────────────────────────────────────────────────
 add_executable(mars_pathfinder
   src/main/main.cpp
   src/main/CLI.cpp
 )
 target_link_libraries(mars_pathfinder PRIVATE pathfinding)
 
-# ─────── Unit tests ──────────────
-include(CTest)       # defines the built‑in “test” target
+# ────── Unit tests ──────────────────────────────────────────────────────
+include(CTest)
 enable_testing()
 
 add_executable(DemTester       tests/DemTester.cpp)
