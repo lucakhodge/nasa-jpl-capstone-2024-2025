@@ -1,7 +1,7 @@
 [requires]
 gdal/3.8.3
-libtiff/4.6.0        # ← match libgeotiff’s requirement
-nlohmann_json/3.12.0
+libtiff/4.6.0
+nlohmann_json/3.11.3
 
 [generators]
 CMakeDeps
