@@ -12,7 +12,6 @@ if(MSVC)
 endif()
 
 # ────── Dependencies ────────────────────────────────────────────────────
-# Call find_package once; CMake will prefer CONFIG mode when it exists
 find_package(GDAL          REQUIRED)
 find_package(TIFF          REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -69,7 +68,6 @@ set_tests_properties(DemTester DijkstrasTester
   PROPERTIES ENVIRONMENT "PRINT_OUTPUT=$ENV{PRINT_OUTPUT}"
 )
 
-# “make check” / “cmake --build . --target check”
 add_custom_target(check
   DEPENDS DemTester DijkstrasTester
   COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure

@@ -13,7 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
 
-    # Shared environment
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg   # one place, used in every Windows step
 
@@ -33,20 +32,33 @@ jobs:
             gdal-bin libgdal-dev \
             libtiff5-dev nlohmann-json3-dev
 
+      # ───────────── Windows – decide on binary cache ─────────
+      - name: Configure vcpkg binary sources (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if ($env:ACTIONS_RUNTIME_TOKEN -and $env:ACTIONS_CACHE_URL) {
+            Write-Host "Using GitHub‑Actions binary cache"
+            "VCPKG_BINARY_SOURCES=clear;x-gha,readwrite" |
+              Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          } else {
+            Write-Host "GitHub‑Actions cache unavailable – building from source"
+            "VCPKG_BINARY_SOURCES=clear" |
+              Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+
       # ───────────── Windows deps ─────────
       - name: Bootstrap vcpkg & install deps (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        env:
-          VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"   # <── enable the cache
         run: |
           git clone https://github.com/microsoft/vcpkg.git $env:VCPKG_ROOT
           cd $env:VCPKG_ROOT
           .\bootstrap-vcpkg.bat -disableMetrics
           .\vcpkg.exe install gdal:x64-windows tiff:x64-windows nlohmann-json:x64-windows `
-              --clean-after-build                          # tidy buildtrees
-    
-      # Make vcpkg‑supplied DLLs visible to the tests
+              --clean-after-build
+
+      # Make vcpkg DLLs visible to the tests
       - name: Add vcpkg runtime DLLs to PATH (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
