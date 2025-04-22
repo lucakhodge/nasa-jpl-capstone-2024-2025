@@ -14,7 +14,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     env:
-      VCPKG_ROOT: ${{ github.workspace }}/vcpkg   # one place, used in every Windows step
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows-release
 
     steps:
       # ───────────── Checkout ─────────────
@@ -32,7 +33,7 @@ jobs:
             gdal-bin libgdal-dev \
             libtiff5-dev nlohmann-json3-dev
 
-      # ───────────── Windows – decide on binary cache ─────────
+      # ───────────── Windows – configure cache ─────────
       - name: Configure vcpkg binary sources (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -42,7 +43,7 @@ jobs:
             "VCPKG_BINARY_SOURCES=clear;x-gha,readwrite" |
               Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           } else {
-            Write-Host "GitHub‑Actions cache unavailable – building from source"
+            Write-Host "Building from source (no binary cache)"
             "VCPKG_BINARY_SOURCES=clear" |
               Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
@@ -55,18 +56,18 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git $env:VCPKG_ROOT
           cd $env:VCPKG_ROOT
           .\bootstrap-vcpkg.bat -disableMetrics
-          .\vcpkg.exe install ^
-          gdal[core,png,tiff] ^
-          tiff ^
-          nlohmann-json ^
-          --triplet x64-windows-release ^
-          --clean-after-build
+          .\vcpkg.exe install `
+            gdal[core,png,tiff] `
+            tiff `
+            nlohmann-json `
+            --triplet $env:VCPKG_DEFAULT_TRIPLET `
+            --clean-after-build
 
-      # Make vcpkg DLLs visible to the tests
+      # expose vcpkg DLLs for tests
       - name: Add vcpkg runtime DLLs to PATH (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: echo "$env:VCPKG_ROOT\installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        run: echo "$env:VCPKG_ROOT\installed\$env:VCPKG_DEFAULT_TRIPLET\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       # ───────────── Configure ────────────
       - name: Configure (Linux)
@@ -78,11 +79,11 @@ jobs:
         shell: pwsh
         run: |
           cmake -S mempa/algorithm -B build `
-                -G "Visual Studio 17 2022" -A x64 `
-                -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
-                -DCMAKE_BUILD_TYPE=Release
+            -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DCMAKE_BUILD_TYPE=Release
 
-      # ───────────── Build ────────────────
+      # ───────────── Build ─────────────────
       - name: Build (Linux)
         if: runner.os == 'Linux'
         run: cmake --build build --parallel
@@ -92,7 +93,7 @@ jobs:
         shell: pwsh
         run: cmake --build build --config Release --parallel
 
-      # ───────────── Download DEM ─────────
+      # ───────────── Download DEM ──────────
       - name: Download Mars DEM .tif
         run: |
           mkdir -p mempa/algorithm/tests
@@ -100,7 +101,7 @@ jobs:
             https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
             -o mempa/algorithm/tests/mars_dem.tif
 
-      # ───────────── Run tests ────────────
+      # ───────────── Run tests ─────────────
       - name: Run unit tests (Linux)
         if: runner.os == 'Linux'
         run: ctest --test-dir build --output-on-failure
@@ -114,7 +115,7 @@ jobs:
         env:
           PRINT_OUTPUT: "false"
 
-      # ───────────── Clean up ─────────────
+      # ───────────── Clean up ──────────────
       - name: Clean build directory (Linux)
         if: runner.os == 'Linux'
         run: cmake --build build --target clean
