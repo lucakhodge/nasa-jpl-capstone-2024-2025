@@ -31,12 +31,11 @@ jobs:
             ninja-build
 
       # ────────────── Windows: Setup Conan ──────────────
-      - name: Setup Python & Conan (Windows)
+      - name: Setup Conan (Windows)
         if: runner.os == 'Windows'
-        uses: conanio/setup-conan@v1
+        uses: conan-io/setup-conan@v1
         with:
-          python-version: "3.11"
-          conan-version: "2.15.1"
+          version: "2.15.1"
 
       # ────────────── Windows: Pull deps via Conan ──────────────
       - name: Conan install (Windows)
@@ -45,16 +44,12 @@ jobs:
         run: |
           mkdir build
           cd build
-          conan install .. \
-            --build=missing \
-            -s build_type=Release
+          conan install .. --build=missing -s build_type=Release
 
       # ────────────── Configure (Linux) ──────────────
       - name: Configure (Linux)
         if: runner.os == 'Linux'
-        run: cmake -S mempa/algorithm -B build \
-                     -G Ninja \
-                     -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S mempa/algorithm -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       # ────────────── Configure (Windows) ──────────────
       - name: Configure (Windows)
