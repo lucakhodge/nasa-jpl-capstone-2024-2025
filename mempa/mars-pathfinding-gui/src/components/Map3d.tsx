@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Chunk } from "../IPC/electronIPC";
+import { Chunk, Path } from "../IPC/electronIPC";
 import RegularThree from "../graphics/RegularThree";
 import { MyButton } from "./MyButton";
-import { Path } from "../store/mapSlice";
 
 interface Map3dPropsI {
   chunk: Chunk | null
