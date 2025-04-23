@@ -83,6 +83,7 @@ export interface Parameters {
   endCoordinate: Coordinate
   slope: number | null
   radius: number | null
+  memory: number | null
 }
 
 export interface Coordinate {

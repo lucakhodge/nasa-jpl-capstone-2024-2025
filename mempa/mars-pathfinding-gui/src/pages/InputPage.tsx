@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { MyButton } from "../components/MyButton";
-import { selectEndCoordinate, selectRadius, selectStartCoordinate, setEndCoordinate, setRadius, setSlope, setStartCoordinate } from "../store/paramatersSlice";
+import { selectEndCoordinate, selectMemory, selectRadius, selectStartCoordinate, setEndCoordinate, setMemory, setRadius, setSlope, setStartCoordinate } from "../store/paramatersSlice";
 import { MyNumberInput } from "../components/MyNumberInput";
 import LoadFileButton from "../components/LoadFileButton";
 import GeneratePathButton from "../components/GeneratePathButton";
@@ -20,6 +20,7 @@ export default function InputPage(props: InputPagePropsI) {
   const endCoordinate = useAppSelector(selectEndCoordinate);
   const slope = useAppSelector(selectSlope);
   const radius = useAppSelector(selectRadius);
+  const memory = useAppSelector(selectMemory);
 
   const isFileLoaded = useAppSelector(selectDemInfo) !== null;
 
@@ -110,7 +111,7 @@ export default function InputPage(props: InputPagePropsI) {
             <div className='text-white ml-2'>degrees</div>
           </div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 mb-3">
           <h3 className="font-medium text-gray-300 mb-2">Vision Radius</h3>
           <div className='flex flex-row items-center'>
             <MyNumberInput
@@ -121,6 +122,19 @@ export default function InputPage(props: InputPagePropsI) {
               }}
             />
             <div className='text-white ml-2'>meters</div>
+          </div>
+        </div>
+        <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+          <h3 className="font-medium text-gray-300 mb-2">Memory Capacity</h3>
+          <div className='flex flex-row items-center'>
+            <MyNumberInput
+              disabled={!isFileLoaded}
+              value={memory}
+              onChange={(val) => {
+                dispatch(setMemory(val))
+              }}
+            />
+            <div className='text-white ml-2'>kb</div>
           </div>
         </div>
       </div>
