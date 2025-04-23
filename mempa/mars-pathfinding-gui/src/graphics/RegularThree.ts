@@ -8,7 +8,6 @@ export default class RegularThree {
 
   scale = 0.005
 
-
   renderer: THREE.WebGLRenderer;
   camera: THREE.PerspectiveCamera;
   scene: THREE.Scene;
@@ -23,20 +22,27 @@ export default class RegularThree {
     this.canvasRef = canvasRef;
   }
 
+  dispose() {
+    this.renderer?.dispose();
+  }
+
   resizeToCanvas() {
-    const { width, height } = this.canvasRef.current.getBoundingClientRect();
+    const canvas = this.renderer?.domElement;
+    if (!canvas || !this.camera) return;
 
-    // console.log("RESISE TO CNAVAS", this.canvas.current.clientWidth, this.canvas.current.clientHeight);
+    const width = canvas.clientWidth;   // CSS pixels only
+    const height = canvas.clientHeight;
 
-    if (this.renderer) {
-      this.renderer.setSize(width, height);
+    const size = this.renderer.getSize(new THREE.Vector2());
+    if (size.width !== width || size.height !== height) {
+      // this.renderer.setDrawingBufferSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, window.devicePixelRatio);
+      this.renderer.setSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, false);
       this.renderer.setPixelRatio(window.devicePixelRatio);
-    }
-    if (this.camera) {
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
     }
   }
+
 
   displayChunk(chunk: Chunk, path: Path) {
     // create scene, camera, and renderer
@@ -48,6 +54,7 @@ export default class RegularThree {
       1000
     );
     const renderer = new THREE.WebGLRenderer({ canvas: this.canvasRef.current, antialias: true });
+    // renderer.setDrawingBufferSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, window.devicePixelRatio);
     renderer.setSize(this.canvasRef.current.clientWidth, this.canvasRef.current.clientHeight, false);
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -116,7 +123,7 @@ export default class RegularThree {
       color: 0xDB7030,
       roughness: 1,
       metalness: 0,
-      flatShading: true,
+      flatShading: false,
     });
     // const material = new THREE.MeshStandardMaterial({
     //   color: 0xDB7030,
@@ -237,6 +244,7 @@ export default class RegularThree {
   }
 
   animate = () => {
+    this.resizeToCanvas();
     // move object along path
     if (this.isPlaying) {
       this.tickTime += 0.001; // Adjust speed
