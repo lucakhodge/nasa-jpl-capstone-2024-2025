@@ -54,10 +54,10 @@ export default function InputPage(props: InputPagePropsI) {
     >
       <div className="font-orbitron text-center text-white"></div>
 
-      <div>
+      <div className="flex flex-row gap-4">
         <LoadFileButton />
+        <FileStatus />
       </div>
-      <FileStatus />
 
       <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
         <h2 className="text-lg font-semibold text-blue-300 mb-4">Input Parameters</h2>
