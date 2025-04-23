@@ -25,7 +25,6 @@ export default function Map3d(props: Map3dPropsI) {
   // Only rerender once you have new chunk
   useEffect(() => {
     if (props.chunk && props.path) {
-      console.log("ABOUT TO CALL DISPLAY CHUNK", props.chunk.resolutionScaling, props.chunk.description)
       regularThree?.displayChunk(props.chunk, props.path);
     }
   }, [props.chunk]);

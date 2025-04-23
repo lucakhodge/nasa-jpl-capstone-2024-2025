@@ -16,19 +16,41 @@ export default class RegularThree {
   tickTime = 0;
   movingObject: THREE.Mesh;
   track: THREE.CatmullRomCurve3;
-  isPlaying = false;
+  isPlaying = true;
+
+  resizeObserver: ResizeObserver;
+  resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(canvasRef: React.RefObject<HTMLCanvasElement>) {
     this.canvasRef = canvasRef;
+    // this.resizeObserver = new ResizeObserver(() => {
+    //   this.resizeToCanvas();
+    // });
+
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.resizeTimeout) {
+        clearTimeout(this.resizeTimeout);
+      }
+      this.resizeTimeout = setTimeout(() => {
+        this.resizeToCanvas();
+      }, 1); // tweak delay if needed
+    });
+
+    if (this.canvasRef.current) {
+      this.resizeObserver.observe(this.canvasRef.current);
+    }
   }
 
   dispose() {
     this.renderer?.dispose();
+    if (this.canvasRef.current) {
+      this.resizeObserver.unobserve(this.canvasRef.current);
+    }
   }
 
   resizeToCanvas() {
     const canvas = this.renderer?.domElement;
-    if (!canvas || !this.camera) return;
+    if (!canvas || !this.camera || !this.canvasRef.current) return;
 
     const width = canvas.clientWidth;   // CSS pixels only
     const height = canvas.clientHeight;
@@ -244,7 +266,8 @@ export default class RegularThree {
   }
 
   animate = () => {
-    this.resizeToCanvas();
+    // this.resizeToCanvas();
+
     // move object along path
     if (this.isPlaying) {
       this.tickTime += 0.001; // Adjust speed

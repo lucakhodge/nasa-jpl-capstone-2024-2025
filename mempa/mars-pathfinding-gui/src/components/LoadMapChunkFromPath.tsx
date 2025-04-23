@@ -43,9 +43,6 @@ export const LoadMapChunkFromPath = () => {
       const width = maxXWithBuffer - minXWithBuffer;
       const height = maxYWithBuffer - minYWithBuffer;
 
-      console.log("coord width with buffer: ", minXWithBuffer, minYWithBuffer, width, height);
-      console.log("Using buffer size:", buffer);
-
       // Request the expanded chunk with buffer
       const chunk = window.electronIPC.getChunk({
         coordinate: {

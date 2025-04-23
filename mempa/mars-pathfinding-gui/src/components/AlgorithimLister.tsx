@@ -8,7 +8,6 @@ export default function AlgorithimListener() {
   useEffect(() => {
     window.electronIPC.onAlgorithimEnd(
       (_event: Electron.IpcRendererEvent, algorithimData: AlgorithimData) => {
-        console.log("In Algo Listener");
         if (algorithimData === null) {
           dispatch(setMetrics(null))
           dispatch(setPath(null))

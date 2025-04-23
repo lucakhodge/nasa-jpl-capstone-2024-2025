@@ -9,7 +9,6 @@ export default function DEMListener() {
     window.electronIPC.onDEMOpened(
       (_event: Electron.IpcRendererEvent, demInfo: DEMInfo) => {
         // push data to redux store
-        console.log("demInfo", demInfo);
         dispatch(setDemInfo(demInfo));
       }
     );

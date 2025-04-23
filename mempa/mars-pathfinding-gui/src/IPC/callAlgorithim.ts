@@ -26,8 +26,8 @@ const getExecutablePath = () => {
 
 const getFlags = (parameters: Parameters, inputPath: string, outputPath: string) => {
   let flagsStr = ""
-  flagsStr += " --start-pixel " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
-  flagsStr += " --end-pixel " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
+  flagsStr += " --start " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
+  flagsStr += " --end " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
   flagsStr += " --input " + inputPath
   flagsStr += " --output " + outputPath
   flagsStr += " --radius " + parameters.radius
@@ -39,7 +39,6 @@ const getFlags = (parameters: Parameters, inputPath: string, outputPath: string)
 
 ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
 
-  console.log("in call algo handle, was passed:", parameters);
   const outputPath = path.join(app.getPath("temp"), 'path-result');
 
   try {
@@ -49,19 +48,43 @@ ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
   }
 
   const TIMEOUT_SEC = 60;
+  function execWithTimeout(cmd: string, timeoutMs: number) {
+    return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+      // start the process and keep a reference to it
+      const child = exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+        clearTimeout(timer);
+        if (error) {
+          return reject(error);              // exec error (exit != 0, ENOENT, etc.)
+        }
+        resolve({ stdout, stderr });         // finished successfully
+      });
+
+      // if the timeout fires, kill the process and reject
+      const timer = setTimeout(() => {
+        // Try a graceful shutdown first …
+        child.kill(process.platform === "win32" ? undefined : "SIGTERM");
+
+        // … and if it’s still around after 5 s, force-kill it.
+        setTimeout(() => child.kill("SIGKILL"), 5_000);
+
+        reject(new Error("Execution timed out"));
+      }, timeoutMs);
+    });
+  }
   const runWithTimeout = (cmd: string, timeout: number) => {
     return Promise.race([
       execPromise(cmd),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Execution timed out")), timeout)
       ),
+
     ]);
   };
 
   try {
     const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
-    console.log("EC: ", executableCall)
-    const { stderr } = await runWithTimeout(executableCall, TIMEOUT_SEC * 1000);
+    // console.log("EC: ", executableCall)
+    const { stderr } = await execWithTimeout(executableCall, TIMEOUT_SEC * 1000);
     if (stderr) {
       getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
       return;
@@ -72,7 +95,6 @@ ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
   }
 
   const data: string = fs.readFileSync(outputPath, "utf-8");
-  console.log("FILE data", data)
 
   let roverPath = JSON.parse(data).data;
   let metrics = JSON.parse(data).metrics;
