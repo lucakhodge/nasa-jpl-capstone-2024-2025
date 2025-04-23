@@ -8,12 +8,12 @@ interface LandingPagePropsI {
 export default function (props: LandingPagePropsI) {
   return (
     <div
-      className="w-screen h-screen  overflow-scroll"
+      className="w-screen h-screen flex flex-col items-center pt-[15%]"
     >
       <div
-        className="flex flex-col items-center justify-center gap-6 p-6 overflow-scroll"
+        className="flex flex-col items-center justify-center gap-6 p-6 max-w-xl w-full"
       >
-        <div className='flex items-center justify-center gap-4 mb-2'>
+        <div className='flex items-center justify-center gap-4 mb-2 w-full'>
           <img
             src={nasaLogo}
             alt="NASA Logo"
@@ -23,7 +23,7 @@ export default function (props: LandingPagePropsI) {
             MEMPA
           </div>
         </div>
-        <div className='max-w-md text-center p-4 bg-gray-800 rounded-lg border border-gray-700'>
+        <div className='w-full text-center p-4 bg-gray-800 rounded-lg border border-gray-700'>
           <p className='text-white font-medium mb-2'>Welcome to the Mars Elevation Model Pathfinding Algorithm Application</p>
           <p className='text-white/80 text-sm'>
             MEMPA helps plan optimal rover traversal paths across the Martian terrain by analyzing elevation data, adhering to
@@ -31,7 +31,9 @@ export default function (props: LandingPagePropsI) {
             coordinates, and discover the most efficient path for your mission.
           </p>
         </div>
-        <MyButton onClick={props.onNext}>Get Started</MyButton>
+        <div className="flex justify-center w-full">
+          <MyButton onClick={props.onNext}>Get Started</MyButton>
+        </div>
       </div>
     </div>
   )
