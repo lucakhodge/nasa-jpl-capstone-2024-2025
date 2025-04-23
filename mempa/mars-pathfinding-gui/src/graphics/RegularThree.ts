@@ -1,7 +1,6 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Chunk } from "../IPC/electronIPC";
+import { Chunk, Path } from "../IPC/electronIPC";
 import * as THREE from "three";
-import { Path } from "../store/mapSlice";
 export default class RegularThree {
   // canvas: HTMLCanvasElement;
   canvasRef: React.RefObject<HTMLCanvasElement>

@@ -15,19 +15,21 @@ interface Coordinate {
   y: number | null,
 }
 
-// const initialState: ParamatersState = {
-//   startCoordinate: { x: null, y: null },
-//   endCoordinate: { x: null, y: null },
-//   slope: null,
-//   radius: null
-// }
 const initialState: ParamatersState = {
-  startCoordinate: { x: 40000, y: 29000 },
-  endCoordinate: { x: 41000, y: 30000 },
-  slope: 15,
-  radius: 1000,
-  memory: 100,
+  startCoordinate: { x: null, y: null },
+  endCoordinate: { x: null, y: null },
+  slope: null,
+  radius: null,
+  memory: null
 }
+
+// const initialState: ParamatersState = {
+//   startCoordinate: { x: 40000, y: 29000 },
+//   endCoordinate: { x: 41000, y: 30000 },
+//   slope: 15,
+//   radius: 1000,
+//   memory: 100,
+// }
 
 export const paramaterSlice = createSlice({
   name: "parameters",
