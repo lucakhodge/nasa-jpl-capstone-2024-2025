@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { ChildProcess, exec } from 'child_process';
 import { app, ipcMain } from "electron";
 import path from 'path';
 import { promisify } from 'util';
@@ -37,79 +37,84 @@ const getFlags = (parameters: Parameters, inputPath: string, outputPath: string)
   return flagsStr;
 }
 
-ipcMain.on(CALL_ALGORITHIM, async (event, parameters: Parameters) => {
+function execWithTimeout(cmd: string, timeoutMs: number) {
+  let child!: ChildProcess;                             // will be assigned below
 
-  const outputPath = path.join(app.getPath("temp"), 'path-result');
-
-  try {
-    await execPromise("rm " + outputPath);
-  }
-  catch {
-  }
-
-  const TIMEOUT_SEC = 60;
-  function execWithTimeout(cmd: string, timeoutMs: number) {
-    return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-      // start the process and keep a reference to it
-      const child = exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-        clearTimeout(timer);
-        if (error) {
-          return reject(error);              // exec error (exit != 0, ENOENT, etc.)
-        }
-        resolve({ stdout, stderr });         // finished successfully
-      });
-
-      // if the timeout fires, kill the process and reject
-      const timer = setTimeout(() => {
-        // Try a graceful shutdown first …
-        child.kill(process.platform === "win32" ? undefined : "SIGTERM");
-
-        // … and if it’s still around after 5 s, force-kill it.
-        setTimeout(() => child.kill("SIGKILL"), 5_000);
-
-        reject(new Error("Execution timed out"));
-      }, timeoutMs);
+  const promise = new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+    child = exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+      clearTimeout(timer);
+      if (error) return reject(error);
+      resolve({ stdout, stderr });
     });
-  }
-  const runWithTimeout = (cmd: string, timeout: number) => {
-    return Promise.race([
-      execPromise(cmd),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Execution timed out")), timeout)
-      ),
+  });
 
-    ]);
-  };
+  const timer = setTimeout(() => {
+    child.kill(process.platform === "win32" ? undefined : "SIGTERM");
+    // force-kill after a grace period
+    setTimeout(() => child.kill("SIGKILL"), 5_000);
+  }, timeoutMs);
+
+  return { child, timer, promise };
+}
+type ActiveRun = { child: ChildProcess; timer: NodeJS.Timeout; token: number };
+let activeRun: ActiveRun | null = null;
+let requestToken = 0;
+
+function killActive() {
+  if (!activeRun) return;
+  activeRun.child.kill(process.platform === "win32" ? undefined : "SIGTERM");
+  clearTimeout(activeRun.timer);
+  activeRun = null;
+}
+
+ipcMain.on(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
+  // cancel any older request right away 
+  killActive();
+
+  const myToken = ++requestToken;
+  const outputPath = path.join(app.getPath("temp"), `path-result-${myToken}.json`);
+  await fs.promises.rm(outputPath, { force: true }).catch(() => { });
+
+  const cmd =
+    getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
+
+  // launch the new child and store it in the global slot 
+  const run = execWithTimeout(cmd, 60_000);
+  activeRun = { ...run, token: myToken };
 
   try {
-    const executableCall = getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
-    // console.log("EC: ", executableCall)
-    const { stderr } = await execWithTimeout(executableCall, TIMEOUT_SEC * 1000);
-    if (stderr) {
+    const { stderr } = await run.promise;
+
+    // if another request arrived while we were running, bail out quietly
+    if (myToken !== requestToken) return;
+
+    if (stderr) throw new Error(stderr);
+
+    const data = await fs.promises.readFile(outputPath, "utf-8");
+    const { data: roverPath, metrics } = JSON.parse(data);
+
+    const transformedMetrics = {
+      totalDistance: metrics.totalDistance,
+      elevationGain: metrics.elevationGain,
+      elevationLoss: metrics.elevationLoss,
+      maxSlope: metrics.maxSlope,
+      averageSlope: metrics.averageSlope,
+      maxElevation: 0,
+      minElevation: 0,
+      baseElevation: 0,
+      asTheCrowFlysDistance: metrics.asTheCrowFlysDistance,
+    };
+
+    getRendererWindow().webContents.send(ON_ALGORITHIM_END, {
+      path: roverPath,
+      metrics: transformedMetrics,
+    });
+  } catch {
+    if (myToken === requestToken) {
       getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
-      return;
     }
-  } catch (error) {
-    getRendererWindow().webContents.send(ON_ALGORITHIM_END, null);
-    return;
+  } finally {
+    /* clear the slot only if we’re still the latest request */
+    if (myToken === requestToken) activeRun = null;
   }
-
-  const data: string = fs.readFileSync(outputPath, "utf-8");
-
-  let roverPath = JSON.parse(data).data;
-  let metrics = JSON.parse(data).metrics;
-  const transformedMetrics = {
-    totalDistance: metrics.totalDistance,
-    elevationGain: metrics.elevationGain,
-    elevationLoss: metrics.elevationLoss,
-    maxSlope: metrics.maxSlope,
-    averageSlope: metrics.averageSlope,
-    maxElevation: 0,
-    minElevation: 0,
-    baseElevation: 0,
-    asTheCrowFlysDistance: metrics.asTheCrowFlysDistance
-  };
-
-  getRendererWindow().webContents.send(ON_ALGORITHIM_END, { path: roverPath, metrics: transformedMetrics });
-  // event.sender.send(ON_ALGORITHIM_END, { path: roverPath, metrics: transformedMetrics });
 });
