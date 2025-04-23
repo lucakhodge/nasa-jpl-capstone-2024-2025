@@ -37,9 +37,9 @@ export default function Map3d(props: Map3dPropsI) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-red-700">
+    <div className="w-full h-full flex flex-col">
       <div className="relative flex-grow w-full min-w-0">
-        <canvas ref={canvasRef} className="absolute w-full h-full bg-blue-300" />
+        <canvas ref={canvasRef} className="absolute w-full h-full" />
       </div>
       <div className="p-4 text-center">
         <MyButton onClick={handleTogglePlay}>Play/Pause</MyButton>

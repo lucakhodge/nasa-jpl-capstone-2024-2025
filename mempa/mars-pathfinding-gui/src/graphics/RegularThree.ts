@@ -123,7 +123,7 @@ export default class RegularThree {
       color: 0xDB7030,
       roughness: 1,
       metalness: 0,
-      flatShading: true,
+      flatShading: false,
     });
     // const material = new THREE.MeshStandardMaterial({
     //   color: 0xDB7030,
