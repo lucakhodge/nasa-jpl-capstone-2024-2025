@@ -15,7 +15,7 @@ export default class RegularThree {
   tickTime = 0;
   movingObject: THREE.Mesh;
   track: THREE.CatmullRomCurve3;
-  isPlaying = true;
+  playSpeed = 1;
 
   resizeObserver: ResizeObserver;
   resizeTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -268,9 +268,10 @@ export default class RegularThree {
     // this.resizeToCanvas();
 
     // move object along path
-    if (this.isPlaying) {
-      this.tickTime += 0.001; // Adjust speed
+    if (this.playSpeed) {
+      this.tickTime += 0.001 * this.playSpeed; // Adjust speed
       if (this.tickTime > 1) this.tickTime = 0; // Loop animation
+      if (this.tickTime < 0) this.tickTime = 1; // Loop animation
       const position = this.track.getPointAt(this.tickTime);
       this.movingObject.position.set(position.x, position.y, position.z);
     }
@@ -281,8 +282,8 @@ export default class RegularThree {
     this.renderer.render(this.scene, this.camera);
   }
 
-  togglePlay() {
-    this.isPlaying = !this.isPlaying;
+  setPlaySpeed(playSpeed: number) {
+    this.playSpeed = playSpeed;
   }
 
 }
