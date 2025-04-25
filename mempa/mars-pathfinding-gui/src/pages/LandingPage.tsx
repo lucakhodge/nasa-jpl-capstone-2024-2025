@@ -26,9 +26,13 @@ export default function (props: LandingPagePropsI) {
         <div className='w-full text-center p-4 bg-gray-800 rounded-lg border border-gray-700'>
           <p className='text-white font-medium mb-2'>Welcome to the Mars Elevation Model Pathfinding Algorithm Application</p>
           <p className='text-white/80 text-sm'>
-            MEMPA helps plan optimal rover traversal paths across the Martian terrain by analyzing elevation data, adhering to
-            slope tolerances while minimizing energy consumption. Upload DEM data, select your start and end
-            coordinates, and discover the most efficient path for your mission.
+            Our project is an autonomous pathfinding algorithm for mars rovers written in C++.
+            The algorithm works under limited visibility, adheres to slope tolerance, and stays within memory limitations.
+            We also created a simulator to run the algorithm with data from a geoTiff file.
+            The simulator can be run from the command line or visualized in a desktop app (this).
+            {/* MEMPA helps plan optimal rover traversal paths across the Martian terrain by analyzing elevation data, adhering to */}
+            {/* slope tolerances while minimizing energy consumption. Upload DEM data, select your start and end */}
+            {/* coordinates, and discover the most efficient path for your mission. */}
           </p>
         </div>
         <div className="flex justify-center w-full">
