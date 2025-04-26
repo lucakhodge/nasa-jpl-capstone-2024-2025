@@ -26,8 +26,10 @@ const getExecutablePath = () => {
 
 const getFlags = (parameters: Parameters, inputPath: string, outputPath: string) => {
   let flagsStr = ""
-  flagsStr += " --start " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
-  flagsStr += " --end " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
+  flagsStr += " --start-pixel " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
+  flagsStr += " --end-pixel " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
+  // flagsStr += " --start " + parameters.startCoordinate.x + "," + parameters.startCoordinate.y
+  // flagsStr += " --end " + parameters.endCoordinate.x + "," + parameters.endCoordinate.y
   flagsStr += " --input " + inputPath
   flagsStr += " --output " + outputPath
   flagsStr += " --radius " + parameters.radius
@@ -77,6 +79,7 @@ ipcMain.on(CALL_ALGORITHIM, async (_event, parameters: Parameters) => {
 
   const cmd =
     getExecutablePath() + getFlags(parameters, getDemFilePath(), outputPath);
+  // console.log("command:", cmd)
 
   // launch the new child and store it in the global slot 
   const run = execWithTimeout(cmd, 60_000);
