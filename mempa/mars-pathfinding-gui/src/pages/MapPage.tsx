@@ -21,7 +21,7 @@ export default function MapPage(props: MapPagePropsI) {
     <div
       className="w-screen h-screen flex flex-col gap-4 overflow-scroll"
     >
-      <div className="flex flex-1">
+      <div className="w-full flex flex-1">
         {(loadState === 'error' || loadState === 'idle') && (
           <PathError onBack={props.onBack} />
         )}

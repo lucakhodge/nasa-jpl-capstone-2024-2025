@@ -20,7 +20,7 @@ const initialState: ParamatersState = {
   endCoordinate: { x: null, y: null },
   slope: null,
   radius: null,
-  memory: null
+  memory: 1000 //TODO:remove this
 }
 
 // const initialState: ParamatersState = {
