@@ -1,0 +1,8 @@
+[requires]
+gdal/3.8.3
+libtiff/4.6.0
+nlohmann_json/3.11.3
+
+[generators]
+CMakeDeps
+CMakeToolchain

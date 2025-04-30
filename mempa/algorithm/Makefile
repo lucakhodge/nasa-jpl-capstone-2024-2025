@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -D_USE_MATH_DEFINES
 INCLUDES = -Isrc -I/opt/homebrew/include -I/usr/local/include -I/usr/include -I/usr/include/gdal -I/usr/local/include/gdal -L/usr/lib -lgdal -Iexternal/json/include -I/home/linuxbrew/.linuxbrew/include
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L/usr/lib
 LIBS = -lgdal -ltiff

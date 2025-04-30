@@ -8,37 +8,104 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
+      # ────────────── Checkout ──────────────
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y g++ gdal-bin libgdal-dev libtiff5-dev cmake git nlohmann-json3-dev
+      # ────────────── Linux deps ──────────────
+      - name: Install build dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            g++ cmake git \
+            gdal-bin libgdal-dev \
+            libtiff5-dev nlohmann-json3-dev \
+            ninja-build
 
-    - name: Build the main program
-      run: |
-        make
-      working-directory: mempa/algorithm
+      # ────────────── Windows: Setup Conan ──────────────
+      - name: Setup Conan (Windows)
+        if: runner.os == 'Windows'
+        uses: conan-io/setup-conan@v1
+        with:
+          version: "2.15.1"
 
-    - name: Download Mars DEM .tif
-      run: |
-        mkdir -p mempa/tests
-        curl -L https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif -o mars_dem.tif
-      working-directory: mempa/algorithm/tests
+      # ────────────── Windows: Pull deps via Conan ──────────────
+      # - name: Conan install (Windows)
+      #   if: runner.os == 'Windows'
+      #   shell: pwsh
+      #   run: |
+      #     mkdir build; cd build; conan install .. --build=missing -s build_type=Release -s compiler.cppstd=17 
+    
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S mempa/algorithm -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
-    - name: Build and run tests
-      run: |
-        make test
-      env:
-        PRINT_OUTPUT: "false"
-      working-directory: mempa/algorithm
+      # ────────────── Configure (Linux) ──────────────
+      - name: Configure (Linux)
+        if: runner.os == 'Linux'
+        run: cmake -S mempa/algorithm -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
-    - name: Clean up
-      run: |
-        make clean
-      working-directory: mempa/algorithm
+      # ────────────── Configure (Windows) ──────────────
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S mempa/algorithm -B build `
+            -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake `
+            -DCMAKE_BUILD_TYPE=Release
+
+      # ────────────── Build (Linux) ──────────────
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: ninja -C build
+
+      # ────────────── Build (Windows) ──────────────
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: cmake --build build --config Release --parallel
+
+      # ────────────── Download DEM ──────────────
+      - name: Download Mars DEM .tif
+        run: |
+          mkdir -p mempa/algorithm/tests
+          curl -L \
+            https://planetarymaps.usgs.gov/mosaic/Mars/THEMIS_controlled_mosaics/SinusSabaeus_DayIR_31Jan2014/THEMIS_DayIR_ControlledMosaic_SinusSabaeus_30S00E_100mpp.tif \
+            -o mempa/algorithm/tests/mars_dem.tif
+
+      # ────────────── Run tests (Linux) ──────────────
+      - name: Run unit tests (Linux)
+        if: runner.os == 'Linux'
+        run: ctest --test-dir build --output-on-failure
+        env:
+          PRINT_OUTPUT: "false"
+
+      # ────────────── Run tests (Windows) ──────────────
+      - name: Run unit tests (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+        env:
+          PRINT_OUTPUT: "false"
+
+      # ────────────── Clean up (Linux) ──────────────
+      - name: Clean build directory (Linux)
+        if: runner.os == 'Linux'
+        run: ninja -C build clean
+
+      # ────────────── Clean up (Windows) ──────────────
+      - name: Clean build directory (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: cmake --build build --config Release --target clean
